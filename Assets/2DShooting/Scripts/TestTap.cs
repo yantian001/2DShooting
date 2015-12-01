@@ -5,6 +5,8 @@ using UnityStandardAssets.CrossPlatformInput;
 public class TestTap : MonoBehaviour {
 
     // Use this for initialization
+    public Transform gameObj;
+    public float ratio = 0.1f;
     Animator anim;
 	void Start () {
         anim = GetComponent<Animator>();
@@ -12,15 +14,11 @@ public class TestTap : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if(CrossPlatformInputManager.GetButtonDown("Shoot"))
-        {
-            //Debug.Log("fire");
-            anim.SetBool("isShooting",true);
-            
-        }
-        if(CrossPlatformInputManager.GetButtonUp("Shoot")) 
-        {
-            anim.SetBool("isShooting", false);
-        }
-	}
+        float h = CrossPlatformInputManager.GetAxis("Horizontal");
+        float v = CrossPlatformInputManager.GetAxis("Vertical");
+        gameObj.transform.position = gameObj.transform.position + new Vector3(h, v, 0) * ratio;
+        CrossPlatformInputManager.SetAxisZero("Horizontal");
+        CrossPlatformInputManager.SetAxisZero("Vertical");
+        // Debug.Log("x :" + h + "y :" + v);
+    }
 }

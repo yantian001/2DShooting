@@ -41,14 +41,26 @@ public class JoystickBackgroundMovment : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float horazital = CrossPlatformInputManager.GetAxis("JoyStickX");
-		float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
 		
-		Vector3 newPos = transform.position - new Vector3(horazital, vertical, 0) * smoothRatio;
-		if(useRestriction)
-		{
-			newPos = new Vector3(Mathf.Clamp(newPos.x, minWidth, MaxWidth), Mathf.Clamp(newPos.y, minHight, maxHight), newPos.z);
-		}
-		transform.position = newPos;
 	}
+
+    void FixedUpdate()
+    {
+        Move();
+    }
+
+    void Move()
+    {
+        float horazital = CrossPlatformInputManager.GetAxis("JoyStickX");
+        float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
+        CrossPlatformInputManager.SetAxisZero("JoyStickX");
+        CrossPlatformInputManager.SetAxisZero("JoyStickY");
+        Vector3 newPos = transform.position - new Vector3(horazital, vertical, 0) * smoothRatio;
+        if (useRestriction)
+        {
+            newPos = new Vector3(Mathf.Clamp(newPos.x, minWidth, MaxWidth), Mathf.Clamp(newPos.y, minHight, maxHight), newPos.z);
+        }
+        //transform.position = newPos;
+        transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime);
+    }
 }

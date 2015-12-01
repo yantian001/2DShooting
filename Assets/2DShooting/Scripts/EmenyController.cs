@@ -82,10 +82,20 @@ public class EmenyController : MonoBehaviour {
 
 	void SpwanObjectAt(GameObject obj , Transform parent){
 		GameObject swpanObj = (GameObject)Instantiate (obj, parent.position, parent.rotation);
-		if (swpanObj != null) {
-			//swpanObj.transform. = parent.transform;
-			swpanObj.transform.localScale = parent.transform.localScale;
-			swpanObj.transform.parent = parent.transform;
-		}
+        if (swpanObj != null) {
+            //swpanObj.transform. = parent.transform;
+            swpanObj.transform.localScale = parent.transform.localScale;
+            swpanObj.transform.parent = parent.transform;
+            EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
+            if (ee != null)
+            {
+                EnemyEmerge enew = swpanObj.AddComponent<EnemyEmerge>();
+                enew.CopyFrom(ee);
+                enew.RunEmerge();
+            }
+        }
+        
+        //swpanObj.AddComponent(typeof)
+         
 	}
 }

@@ -14,18 +14,19 @@ public class Enemy : MonoBehaviour {
 	public GameObject bullet;
 	//射击目标（主角）
 	public GameObject target ;
-
+    //枪口效果
+    public GameObject muzzleEffect;
 	float timeFromShoot = 0f;
 	bool isDead = false;
 	Animator anim;
-	BoxCollider2D collider;
+	BoxCollider2D collider2d;
 	void Start () {
 		timeFromShoot = 0.0f;
 		anim = this.GetComponent<Animator> ();
-		if (collider == null) {
-			collider = GetComponent<BoxCollider2D>();
-			if(collider == null){
-				collider = gameObject.AddComponent<BoxCollider2D>();
+		if (collider2d == null) {
+            collider2d = GetComponent<BoxCollider2D>();
+			if(collider2d == null){
+                collider2d = gameObject.AddComponent<BoxCollider2D>();
 			}
 		}
 
@@ -58,11 +59,14 @@ public class Enemy : MonoBehaviour {
 	}
 
 	void Shoot(){
-		//Debug.Log ("shooting:");
+        //Debug.Log ("shooting:");
+        PlayFireAnimation();
+        PlayMuzzleEffect(firePlace);
 		ShowBullet ();
 
 	}
 
+    //显示射击子弹
 	void ShowBullet()
 	{
 		Vector3 to = (firePlace.transform.position - target.transform.position).normalized;
@@ -72,10 +76,30 @@ public class Enemy : MonoBehaviour {
 		iTween.MoveTo (blt, iTween.Hash ("position", target.transform.position, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
 		iTween.ScaleTo (blt, scale,.2f);
 	}
-
+    // 子弹自动销毁
 	void OnBulletMoveComplete(System.Object obj){
 		Destroy ((GameObject)obj);
 	}
+
+    void PlayMuzzleEffect(Transform tran)
+    {
+        if (muzzleEffect != null)
+        {
+            GameObject muzzle = Instantiate(muzzleEffect);
+            muzzle.transform.position = tran.position;
+            muzzle.transform.localScale = transform.lossyScale;
+            muzzle.transform.parent = tran;      
+        }
+    }
+
+    //播放人物射击动画
+    void PlayFireAnimation()
+    {
+        if (anim != null)
+        {
+            anim.SetTrigger("shoot");
+        }
+    }
 
 	public void TakeDamage(float damageVal){
 		Debug.Log ("Take damage :" + damageVal);
@@ -91,7 +115,7 @@ public class Enemy : MonoBehaviour {
 	void Die(){
 		//play die animation
 		isDead = true;
-		collider.enabled = false;
+        collider2d.enabled = false;
 		if (anim != null) {
 			anim.SetTrigger("dead");
 			//float length = anim.GetCurrentAnimatorClipInfo(0).Length;
