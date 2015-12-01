@@ -33,6 +33,8 @@ public class EnemyEmerge : MonoBehaviour
         }
     }
     Animator anim;
+
+    Enemy enemy;
     // Use this for initialization
     void Start()
     {
@@ -48,38 +50,64 @@ public class EnemyEmerge : MonoBehaviour
         }
     }
 
+    public void OnEnable()
+    {
+        if (anim == null)
+        {
+            anim = GetComponent<Animator>();
+        }
+
+        if (enemy == null)
+        {
+            enemy = GetComponent<Enemy>();
+        }
+        if (enemy != null)
+        {
+            enemy.ReadyFroShoot = false;
+          //  RunEmerge();
+        }
+      
+    }
+
     //执行出现
     public void RunEmerge()
     {
-        if(anim == null)
-        {
-            anim = GetComponent<Animator>();
-
-        }
         switch (emergeType)
         {
             case EmergeType.Runin:
-                Vector3 pos = gameObject.transform.localPosition + emergeValue;
-                pos = gameObject.transform.parent.InverseTransformVector(pos);
-                iTween.MoveTo(gameObject, iTween.Hash("position", pos, "time", emergeTime, "easetype","linear" , "oncomplete", "OnEmergeComplete", "islocal",true, "oncompletetarget", gameObject));
-                if (emergeValue.z != 0)
-                {
-                    Vector3 scale = new Vector3(emergeValue.z, emergeValue.z, emergeValue.z);
-                    iTween.ScaleTo(gameObject, scale, emergeTime);
-                }
-                if (anim != null)
-                {
-                    anim.SetBool("isWalking", true);
-                }
+                RunAction("isWalking");
                 break;
             case EmergeType.Dropdown:
+                RunAction("isDroping");
                 break;
         }
     }
 
-    void OnEmergeComplete()
+    void RunAction(string paramName)
     {
-        anim.SetBool("isWalking", false);
+        Vector3 pos = gameObject.transform.localPosition + emergeValue;
+        pos = gameObject.transform.parent.InverseTransformVector(pos);
+        iTween.MoveTo(gameObject, iTween.Hash("position", pos, "time", emergeTime, "easetype", "linear", "oncomplete", "OnEmergeComplete", "islocal", true, "oncompletetarget", gameObject, "oncompleteparams", paramName));
+        if (emergeValue.z != 0)
+        {
+            Vector3 scale = new Vector3(emergeValue.z, emergeValue.z, emergeValue.z);
+            iTween.ScaleTo(gameObject, scale, emergeTime);
+        }
+        if (anim != null)
+        {
+            anim.SetBool(paramName, true);
+        }
+    }
+    void OnEmergeComplete(System.Object param)
+    {
+        if (enemy)
+        {
+            enemy.ReadyFroShoot = true;
+        }
+        if (anim != null)
+        {
+            anim.SetBool(param.ToString(), false);
+        }
         isFinish = true;
     }
 

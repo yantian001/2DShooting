@@ -17,9 +17,19 @@ public class Enemy : MonoBehaviour {
     //枪口效果
     public GameObject muzzleEffect;
 	float timeFromShoot = 0f;
+	bool _readyForShoot = true;
+
+    //是否可以准备好射击
+    public bool ReadyFroShoot
+    {
+        get { return _readyForShoot; }
+        set { _readyForShoot = value; }
+    }
+
 	bool isDead = false;
 	Animator anim;
 	BoxCollider2D collider2d;
+
 	void Start () {
 		timeFromShoot = 0.0f;
 		anim = this.GetComponent<Animator> ();
@@ -51,7 +61,7 @@ public class Enemy : MonoBehaviour {
 
 	bool CanShoot(){
 		bool canShoot = true;
-		if (timeFromShoot < shootInterval || target == null || isDead) {
+		if (timeFromShoot < shootInterval || target == null || isDead || !ReadyFroShoot) {
 			canShoot = false;
 		}
 		return canShoot;

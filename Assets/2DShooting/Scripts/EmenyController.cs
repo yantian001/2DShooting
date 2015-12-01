@@ -82,6 +82,7 @@ public class EmenyController : MonoBehaviour {
 
 	void SpwanObjectAt(GameObject obj , Transform parent){
 		GameObject swpanObj = (GameObject)Instantiate (obj, parent.position, parent.rotation);
+       
         if (swpanObj != null) {
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.localScale;
@@ -92,6 +93,17 @@ public class EmenyController : MonoBehaviour {
                 EnemyEmerge enew = swpanObj.AddComponent<EnemyEmerge>();
                 enew.CopyFrom(ee);
                 enew.RunEmerge();
+            }
+
+            //更改显示SortingLayer
+            SortLayer sl = parent.GetComponent<SortLayer>();
+            if (sl != null && sl.layerName != "")
+            {
+                SpriteRenderer render = swpanObj.GetComponent<SpriteRenderer>();
+                if(render != null)
+                {
+                    render.sortingLayerName = sl.layerName;
+                }
             }
         }
         
