@@ -5,6 +5,8 @@ using UnityStandardAssets.CrossPlatformInput;
 public class JoystickBackgroundMovment : MonoBehaviour {
 
 	public float smoothRatio = 0.08f;
+    public float updateInterval = 0.1f;
+    public float timeOnInterval = 5f;
 	public bool useRestriction = true;
 	//资源宽度单位
 	float textureWidthUnit;
@@ -33,10 +35,11 @@ public class JoystickBackgroundMovment : MonoBehaviour {
 		MaxWidth = transform.position.x + (textureWidthUnit / 2 ) - cameraWidth;
 		minHight = transform.position.y - (textureHightUnit / 2 ) + cameraHight;
 		maxHight = transform.position.y + (textureHightUnit / 2 ) - cameraHight;
-		//Vector3 pos = transform.position;
+        //Vector3 pos = transform.position;
 
-//		Debug.Log (GetComponent<SpriteRenderer> ().sprite.pixelsPerUnit);
-//		Debug.Log (GetComponent<SpriteRenderer> ().sprite.texture.width);
+        //		Debug.Log (GetComponent<SpriteRenderer> ().sprite.pixelsPerUnit);
+        //		Debug.Log (GetComponent<SpriteRenderer> ().sprite.texture.width);
+        StartCoroutine(checkMove());
 	}
 	
 	// Update is called once per frame
@@ -46,7 +49,7 @@ public class JoystickBackgroundMovment : MonoBehaviour {
 
     void FixedUpdate()
     {
-        Move();
+       // Move();
     }
 
     void Move()
@@ -55,12 +58,27 @@ public class JoystickBackgroundMovment : MonoBehaviour {
         float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
         CrossPlatformInputManager.SetAxisZero("JoyStickX");
         CrossPlatformInputManager.SetAxisZero("JoyStickY");
+       // Vector3.SmoothDamp()
         Vector3 newPos = transform.position - new Vector3(horazital, vertical, 0) * smoothRatio;
         if (useRestriction)
         {
             newPos = new Vector3(Mathf.Clamp(newPos.x, minWidth, MaxWidth), Mathf.Clamp(newPos.y, minHight, maxHight), newPos.z);
         }
         //transform.position = newPos;
-        transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime);
+        //transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * (smoothRatio > 100 ? smoothRatio /100 : 1));
+
+        transform.position = Vector3.Lerp(transform.position, newPos,updateInterval / timeOnInterval);
+        //transform.position = newPos;
+        //iTween.MoveTo(gameObject, newPos, updateInterval);
+    }
+
+    IEnumerator checkMove()
+    {
+        while(true)
+        {
+            
+            yield return new WaitForSeconds(updateInterval);
+            Move();
+        }
     }
 }

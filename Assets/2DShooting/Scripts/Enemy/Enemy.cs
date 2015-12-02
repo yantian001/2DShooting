@@ -29,16 +29,19 @@ public class Enemy : MonoBehaviour {
 	bool isDead = false;
 	Animator anim;
 	BoxCollider2D collider2d;
+    Collider2D[] coliders;
 
 	void Start () {
 		timeFromShoot = 0.0f;
 		anim = this.GetComponent<Animator> ();
-		if (collider2d == null) {
-            collider2d = GetComponent<BoxCollider2D>();
-			if(collider2d == null){
-                collider2d = gameObject.AddComponent<BoxCollider2D>();
-			}
-		}
+
+        //物理对象
+        coliders = GetComponents<Collider2D>();
+        if (coliders == null && coliders.Length <= 0)
+        {
+            gameObject.AddComponent<BoxCollider2D>();
+            coliders = GetComponents<Collider2D>();
+        }
 
 		//获得射击对象 
 		if (target == null) {
@@ -125,11 +128,17 @@ public class Enemy : MonoBehaviour {
 	void Die(){
 		//play die animation
 		isDead = true;
-        collider2d.enabled = false;
+        if (coliders != null)
+        {
+            for (int i = 0; i < coliders.Length; i++)
+            {
+                coliders[i].enabled = false;
+            }
+        }
+
 		if (anim != null) {
 			anim.SetTrigger("dead");
 			//float length = anim.GetCurrentAnimatorClipInfo(0).Length;
-
 			Destroy(gameObject,2);
 		}
 	}

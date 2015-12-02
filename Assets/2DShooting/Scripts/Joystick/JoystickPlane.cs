@@ -37,7 +37,7 @@ public class JoystickPlane : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
 	void UpdateVirtualAxes(Vector3 delta)
 	{
-        delta /= moveRange;
+        //delta /= moveRange;
 		if (m_UseX)
 		{
 			m_HorizontalVirtualAxis.Update(delta.x);
@@ -72,14 +72,18 @@ public class JoystickPlane : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 	public void OnDrag(PointerEventData data)
 	{
         //if (!isFirstPressed)
-       // {
-            Debug.Log(data.position);
+        // {
+        Debug.Log(data.useDragThreshold);
+        Debug.Log(data.position);
+        Debug.Log("OnDrag PressPosition:" + data.pressPosition);
             Vector2 delta =( data.position - m_LastPos ) ;
             Debug.Log(delta);
             UpdateVirtualAxes(delta);
        // }
         m_LastPos = data.position;
         isFirstPressed = false;
+        
+       
         
 	}
 
@@ -95,6 +99,7 @@ public class JoystickPlane : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 	public void OnPointerDown(PointerEventData data)
     {
         m_LastPos = data.position;
+        data.useDragThreshold = false;
         isFirstPressed = true;
     }
 

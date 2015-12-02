@@ -11,9 +11,13 @@ public class Weapon : MonoBehaviour {
 	public float shootInterval = 0.2f;
 	//瞄准器的位置
 	public Transform signTransform;
-	
+    //是否随机射击，否则一直射击准星
+    public bool randomShooting = false;
+    //随机射击的大小
+    public Vector3 randomShootingSize = Vector3.zero;
+
     //枪击的音效
-	public AudioSource fireAudio;
+	public AudioClip fireAudio;
 	//枪口效果位置
 	public GameObject muzzleEffectPlace;
     //枪口的效果
@@ -26,6 +30,8 @@ public class Weapon : MonoBehaviour {
     //场景对象
     public GameObject background;
 
+    public bool shakeWhenShoot = false;
+
 	bool canShoot = false;
 	float deltaTime =0.0f;
     Animator anim;
@@ -37,10 +43,24 @@ public class Weapon : MonoBehaviour {
 			anim = this.GetComponent<Animator>();
 		}
 		if (fireAudio == null) {
-			fireAudio = GetComponent<AudioSource>();
+            fireAudio = GetComponent<AudioSource>().clip ;
 		}
 		canShoot = false;
 		deltaTime = 0.0f;
+
+        //获取随机射击的范围
+        if(randomShooting && randomShootingSize == Vector3.zero)
+        {
+            if (signTransform != null && signTransform.GetComponent<SpriteRenderer>() != null )
+            {
+                randomShootingSize = signTransform.GetComponent<SpriteRenderer>().bounds.size;
+            }
+            else
+            {
+                randomShootingSize = new Vector3(.25f, .25f, 0f);
+            }
+        }
+       
 	}
 	
 	// Update is called once per frame
@@ -51,20 +71,33 @@ public class Weapon : MonoBehaviour {
 		} else {
 			canShoot = false;
 		}
-
 	}
 
 
 	public void Fire(bool isCombo){
-		Vector3 pos = signTransform.position;
+		
 		bool canFire = true;
 		if (isCombo && !canComboFire) {
 			canFire = false;
 		} 
-
 		if(canFire && canShoot)
-			Shoot (pos);
+        {
+            Vector3 pos = GetShootPosition(isCombo);
+            Shoot(pos);
+        }
+			
 	}
+
+    Vector3 GetShootPosition(bool comboFire)
+    {
+        Vector3 shootPos = signTransform.position;
+        if(randomShooting && comboFire)
+        {
+
+            shootPos = shootPos + new Vector3(Random.Range(-randomShootingSize.x / 2, randomShootingSize.x / 2), Random.Range(-randomShootingSize.y / 2, randomShootingSize.y / 2), 0);
+        }
+        return shootPos;
+    }
 
 	public void Shoot(Vector3 postion){
 		//Debug.Log (postion);
@@ -73,7 +106,11 @@ public class Weapon : MonoBehaviour {
 		anim.SetTrigger ("isShooting");
 		PlayMuzzleEffect ();
 		PlayShootAudio ();
-        ShowBullet();
+        ShowBullet(postion);
+        if(shakeWhenShoot)
+        {
+            ShakeBackground();
+        }
         RaycastHit2D rayhit = Physics2D.Raycast (postion, Vector2.zero);
 		if ((rayhit != null) && rayhit.collider != null) {
 			//Debug.Log(rayhit.collider.name);
@@ -90,8 +127,16 @@ public class Weapon : MonoBehaviour {
 
 	}
 
+    //晃动
+    void ShakeBackground()
+    {
+        //iTween.ShakePosition(background, new Vector3(.05f, .05f, 0), 0.05f);
+        iTween.ShakePosition(Camera.main.gameObject, new Vector3(.05f, .05f, 0), 0.05f);
+
+    }
+
     //显示子弹，从枪口到准星
-    void ShowBullet()
+    void ShowBullet(Vector3 target)
     {
         if(bullet == null)
         {
@@ -105,7 +150,7 @@ public class Weapon : MonoBehaviour {
         //bulletTransform.position = signTransform.position;
         //bulletTransform.localScale = bult.transform.localScale * 0.5f;
         //子弹运行到准星的位置
-        iTween.MoveTo(bult, iTween.Hash("position", signTransform.position, "time", 0.1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject,"oncompleteparams",(System.Object)bult));
+        iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject,"oncompleteparams",(System.Object)bult));
         
     }
 
@@ -133,8 +178,10 @@ public class Weapon : MonoBehaviour {
 	void PlayShootAudio()
 	{
 		if (fireAudio != null) {
-			if(!fireAudio.isPlaying)
-				fireAudio.Play();
+			//if(!fireAudio.isPlaying)
+			//	fireAudio.Play();
+
+            iTween.Stab(gameObject, fireAudio, 0f);
 //			AudioSource auio = (AudioSource)Instantiate(fireAudio);
 //			auio.Play();
 		}
