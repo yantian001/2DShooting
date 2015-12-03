@@ -114,10 +114,22 @@ public class Weapon : MonoBehaviour {
         RaycastHit2D rayhit = Physics2D.Raycast (postion, Vector2.zero);
 		if ((rayhit != null) && rayhit.collider != null) {
 			//Debug.Log(rayhit.collider.name);
+            
 			Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
            
 			if(enemy != null){
-				enemy.TakeDamage(attack);
+
+                Debug.Log(rayhit.collider.GetType());
+                if(rayhit.collider.GetType() == typeof(CircleCollider2D))
+                {
+                    Debug.Log("Head shoot");
+                    enemy.TakeDamage(attack);
+                }
+                else
+                {
+                    enemy.TakeDamage(attack);
+                }
+				
 			}
 		}
         else
@@ -131,7 +143,7 @@ public class Weapon : MonoBehaviour {
     void ShakeBackground()
     {
         //iTween.ShakePosition(background, new Vector3(.05f, .05f, 0), 0.05f);
-        iTween.ShakePosition(Camera.main.gameObject, new Vector3(.05f, .05f, 0), 0.05f);
+        iTween.ShakePosition(Camera.main.gameObject, new Vector3(.015f, .015f, 0), 0.01f);
 
     }
 
@@ -144,13 +156,8 @@ public class Weapon : MonoBehaviour {
         }
         GameObject bult = Instantiate(bullet) as GameObject;
         bult.transform.position = muzzleEffectPlace.transform.position;
-        bult.transform.parent = muzzleEffectPlace.transform;
-        
-        //Transform bulletTransform =
-        //bulletTransform.position = signTransform.position;
-        //bulletTransform.localScale = bult.transform.localScale * 0.5f;
-        //子弹运行到准星的位置
-        iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject,"oncompleteparams",(System.Object)bult));
+
+        iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject,"oncompleteparams",(System.Object)bult));
         
     }
 

@@ -21,14 +21,14 @@ public class JoystickShoot : MonoBehaviour {
 		if (weapon == null)
 			return;
 		if (CrossPlatformInputManager.GetButtonDown ("Fire")) {
-			Debug.Log(3);
+			//Debug.Log(3);
 			//weapon.Fire();
 			//weapon.Fire(isPressed);
 			isPressed = true;
 		}
 
 		if (CrossPlatformInputManager.GetButtonUp ("Fire")) {
-			Debug.Log(2);
+			//Debug.Log(2);
 			isPressed = false;
 			isCombo =false;
 		}

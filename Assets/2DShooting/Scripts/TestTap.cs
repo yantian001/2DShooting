@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.Events;
 
 public class TestTap : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class TestTap : MonoBehaviour {
     Animator anim;
 	void Start () {
         anim = GetComponent<Animator>();
+        
 	}
 	
 	// Update is called once per frame
