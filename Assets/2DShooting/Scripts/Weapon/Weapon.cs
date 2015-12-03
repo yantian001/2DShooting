@@ -171,6 +171,7 @@ public class Weapon : MonoBehaviour {
 	void PlayMuzzleEffect(){
 		if (muzzleEffect != null && muzzleEffectPlace != null) {
 			GameObject effect = (GameObject)Instantiate(muzzleEffect,muzzleEffectPlace.transform.position,muzzleEffectPlace.transform.rotation);
+            effect.transform.localScale = muzzleEffectPlace.transform.localScale;
 			effect.transform.parent = muzzleEffectPlace.transform;
 		}
 	}

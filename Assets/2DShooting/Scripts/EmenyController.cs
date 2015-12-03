@@ -44,9 +44,16 @@ public class EmenyController : MonoBehaviour {
 
 	//判断能否可以产生敌人
 	bool CanSpwanEnemy(){
-		bool rst = true;
+        bool rst = true;
+
+        if(GameManager.Instance.Statu != GameManager.GameStatu.InGame)
+        {
+            return false;
+        }
+
 		if (timeSinceSpwan < spwanInterval) {
 			rst = false;
+            return rst;
 		}
 
 		int enemyCount = 0;

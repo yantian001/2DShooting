@@ -82,12 +82,28 @@ public class Enemy : MonoBehaviour {
     //显示射击子弹
 	void ShowBullet()
 	{
-		Vector3 to = (firePlace.transform.position - target.transform.position).normalized;
-		GameObject blt = (GameObject)Instantiate(bullet,firePlace.transform.position,Quaternion.FromToRotation(Vector3.right,to));
-		Vector3 scale = blt.transform.localScale;
-		blt.transform.localScale = Vector3.zero;
-		iTween.MoveTo (blt, iTween.Hash ("position", target.transform.position, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
-		iTween.ScaleTo (blt, scale,.2f);
+        Vector3 to = (firePlace.transform.position - target.transform.position).normalized;
+       // Vector3 to = (Camera.main.WorldToScreenPoint(firePlace.transform.position) - Camera.main.WorldToScreenPoint(target.transform.position)).normalized;
+        Debug.Log( Camera.main.WorldToScreenPoint(target.transform.position));
+        Debug.Log(Camera.main.WorldToScreenPoint(firePlace.transform.position));
+        GameObject blt = (GameObject)Instantiate(bullet,firePlace.transform.position,Quaternion.FromToRotation(Vector3.right,to));
+       
+
+        blt.transform.parent = firePlace.transform;
+        Debug.Log("target world pos:" + target.transform.position); 
+        Debug.Log("target world pos1:" + target.transform.TransformVector(target.transform.localPosition));
+        Vector3 pso = blt.transform.parent.InverseTransformVector(target.transform.position);
+        //Camera.main.()
+        //Vector3 scale = blt.transform.localScale;
+        //blt.transform.localScale = Vector3.zero;
+        // X, Y
+       // Vector3 movetoXY = new Vector3(target.transform.position.x, target.transform.position.y, blt.transform.position.z);
+		iTween.MoveTo (blt, iTween.Hash ("position", pso, "islocal",true, "time", 1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
+        //Vector3 movetoZ = new Vector3(blt.transform.position.x, blt.transform.position.y, target.transform.position.z);
+        //iTween.MoveTo(blt, iTween.Hash("position", movetoZ, "time", 1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
+        
+        //iTween.move
+        //iTween.ScaleTo (blt, scale,.2f);
 	}
     // 子弹自动销毁
 	void OnBulletMoveComplete(System.Object obj){
