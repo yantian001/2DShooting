@@ -122,7 +122,6 @@ public class Weapon : MonoBehaviour {
                 Debug.Log(rayhit.collider.GetType());
                 if(rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
-                    Debug.Log("Head shoot");
                     enemy.TakeDamage(attack);
                 }
                 else

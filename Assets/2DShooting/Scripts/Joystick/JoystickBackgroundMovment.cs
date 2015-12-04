@@ -93,7 +93,7 @@ public class JoystickBackgroundMovment : MonoBehaviour {
             if(hasTarget)
             {
                 interval = nearInteval;
-                //Debug.Log("near target");
+                Debug.Log("near target");
             }
             
         }

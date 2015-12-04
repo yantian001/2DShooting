@@ -9,16 +9,18 @@ public class EmenyController : MonoBehaviour {
 	public GameObject[] enemys;
 	//敌人产生的位置
 	public List<GameObject> enemySpwanPosition;
-	
-	//敌人产生的间隔
-	public float spwanInterval = 5f;
-	//同时存在的敌人的最大量
-	public int maxEnemyCount = 1;
 
-	public int maxEnemyPerPosition = 1;
+    //敌人产生的间隔
+    public float spwanInterval = 5f;
+    //同时存在的敌人的最大量
+    public int maxEnemyCount = 1;
 
-	//已经产生了的位置
-	List<Transform> spwanedPosition;
+    public int maxEnemyPerPosition = 1;
+
+    public GameData gameData { get; set; }
+
+    //已经产生了的位置
+    List<Transform> spwanedPosition;
 
 	float timeSinceSpwan = 0.0f;
 	
@@ -51,7 +53,11 @@ public class EmenyController : MonoBehaviour {
             return false;
         }
 
-		if (timeSinceSpwan < spwanInterval) {
+        if(gameData == null)
+        {
+            return false;
+        }
+		if (timeSinceSpwan < gameData.emenySpwanInterval) {
 			rst = false;
             return rst;
 		}
@@ -62,23 +68,23 @@ public class EmenyController : MonoBehaviour {
 			enemyCount += enemySpwanPosition[i].transform.childCount;
 		}
 
-		if (maxEnemyCount <= enemyCount) {
-			rst = false;
+		if (gameData.maxEnemyCount <= enemyCount) {
+			return false;
 		}
 		if (enemySpwanPosition.Count <= 0) {
-					rst = false;
+					return false;
 		}
-		if (enemys.Length <= 0)
-			rst = false;
-		//if(maxEnemyCount <= spwanedPosition.)
-		return rst;
+        if (enemys.Length <= 0)
+            return false;
+        //if(maxEnemyCount <= spwanedPosition.)
+        return true;
 	}
 
 	//获取产生敌人的对象
 	Transform getSpwanPosition(){
 		Transform rst = null;
 		List<GameObject> lstCanSpwan = enemySpwanPosition.FindAll (p => {
-			return p.transform.childCount < maxEnemyPerPosition; 
+			return p.transform.childCount < gameData.maxEnemyPerPosition; 
 		});
 
 		if (lstCanSpwan != null && lstCanSpwan.Count > 0) {
@@ -102,6 +108,27 @@ public class EmenyController : MonoBehaviour {
                 enew.RunEmerge();
             }
 
+            //敌人的属性
+            Enemy e = swpanObj.GetComponent<Enemy>();
+            if(e == null)
+            {
+                Debug.Log("Dont have Enemy component!");
+                e = swpanObj.AddComponent<Enemy>();
+            }
+
+            e.shootInterval = gameData.emenyShootInterval;
+            e.attack = gameData.emenyAttack;
+            if (gameData.useRondomAttack)
+            {
+                e.attack += Random.Range(-gameData.emenyAttackRandomVal, gameData.emenyAttackRandomVal);
+            }
+            e._HP = gameData.emenyHP;
+            if (gameData.useRandomHP)
+            {
+                e._HP += Random.Range(-gameData.emenyHPRandomVal, gameData.emenyHPRandomVal);
+            }
+           
+
             //更改显示SortingLayer
             SortLayer sl = parent.GetComponent<SortLayer>();
             if (sl != null && sl.layerName != "")
@@ -112,9 +139,10 @@ public class EmenyController : MonoBehaviour {
                     render.sortingLayerName = sl.layerName;
                 }
             }
-        }
-        
-        //swpanObj.AddComponent(typeof)
-         
+
+            //通知GameManager ，产生了敌人
+            GameManager.Instance.SpawnedEnemy();
+        } 
+
 	}
 }
