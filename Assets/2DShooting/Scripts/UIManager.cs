@@ -2,35 +2,60 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class UIManager : MonoBehaviour {
+public class UIManager : MonoBehaviour
+{
 
 
 
     #region 连杀UI
-    public GameObject Combo;
+    public RectTransform Combo;
     public Text comboText;
     bool isComboShow = false;
     public void ShowCombo(int icombo)
     {
-        if(!isComboShow)
+        if (!isComboShow)
         {
-            iTween.MoveTo(Combo, iTween.Hash( "position",new Vector3(10, -21, 0),"time", 0.1f,"islocal",true));
+            LeanTween.move(Combo, new Vector3(10f, -31.5f, 0), 0.1f);
             isComboShow = true;
         }
         UpdateComboText(icombo);
     }
     void UpdateComboText(int icombo)
     {
+        RectTransform rect = comboText.GetComponent<RectTransform>();
+        Vector3 loclScale = rect.localScale;
+        LeanTween.scale(rect, loclScale * 1.5f, 0.05f).setOnComplete(() =>
+        {
+            comboText.text = icombo.ToString();
+            LeanTween.scale(rect, loclScale, 0.05f);
+        });
         comboText.text = icombo.ToString();
     }
 
     public void HideCombo()
     {
-        if(isComboShow)
+        if (isComboShow)
         {
-            iTween.MoveTo(Combo, iTween.Hash("position", new Vector3(210, -21, 0), "time", 0.1f, "islocal", true));
+            LeanTween.move(Combo.GetComponent<RectTransform>(), new Vector3(250f, -31.5f, 0), 0.1f);
             isComboShow = false;
         }
+    }
+    #endregion
+
+    #region 弹夹
+    public Text bulletClipText;
+
+    public void UpdateBulletDisplay(LTEvent evt)
+    {
+        if (bulletClipText != null && evt.data != null)
+        {
+            bulletClipText.text = evt.data.ToString();
+        }
+    }
+
+    public void OnClipButtonClick()
+    {
+        LeanTween.dispatchEvent((int)Events.RELOAD);
     }
     #endregion
 
@@ -40,7 +65,7 @@ public class UIManager : MonoBehaviour {
     {
         get
         {
-            if(_instance == null)
+            if (_instance == null)
             {
                 _instance = FindObjectOfType<UIManager>();
                 if (_instance == null)
@@ -56,11 +81,37 @@ public class UIManager : MonoBehaviour {
         {
             _instance = value;
         }
-   
+
     }
     #endregion
+
+
+    public void OnEnable()
+    {
+       
+    }
+
+    public void Awake()
+    {
+        //添加子弹数量变化事件
+        LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
+        Debug.Log("UIManager Inited");
+    }
+
+    public void OnDisable()
+    {
+        //移除事件
+        LeanTween.removeListener((int)Events.BULLETCHANGED, UpdateBulletDisplay);
+    }
+
+    void Start()
+    {
+
+    }
+
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }
