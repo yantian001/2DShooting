@@ -59,6 +59,47 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    #region 分数显示
+    [Tooltip("连击分数预制")]
+    public GameObject comboPoint;
+    [Tooltip("爆头分数预制")]
+    public GameObject headShotPoint;
+    [Tooltip("显示分数的位置")]
+    public RectTransform pointTransform;
+
+    public void ShowPoint(int score , bool isHeadShot)
+    {
+        if(pointTransform == null)
+        {
+            return;
+        }
+        GameObject createPrefab = comboPoint;
+        if(isHeadShot && headShotPoint)
+        {
+            createPrefab = headShotPoint;
+        }
+        if (!createPrefab)
+            return;
+        GameObject created = Instantiate(createPrefab);
+        RectTransform createdRectTransform = created.GetComponent<RectTransform>();
+        //createdRectTransform. = pointTransform;
+        createdRectTransform.SetParent(pointTransform.parent);
+        createdRectTransform.anchoredPosition = pointTransform.anchoredPosition;
+        createdRectTransform.anchorMax = pointTransform.anchorMax;
+        createdRectTransform.anchorMin = pointTransform.anchorMin;
+        createdRectTransform.pivot = pointTransform.pivot;
+        //createdRectTransform.
+        //更改分数显示
+        Text pointTxt = created.GetComponent<Text>();
+        if(pointTxt)
+        {
+            pointTxt.text = string.Format(pointTxt.text, score);
+        }
+        
+    }
+
+    #endregion
+
     #region 单例模式
     public static UIManager _instance;
     public static UIManager Instance

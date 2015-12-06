@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour {
         {
             Debug.LogError("Init level gamedata error");
         }
-        if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Count))
+        if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Time))
         {
             curMissionCount = gameData.missionCount;
         }
@@ -145,6 +145,9 @@ public class GameManager : MonoBehaviour {
         }
         //更新最大连击数
         maxCombo = maxCombo > currentCombo ? maxCombo : currentCombo;
+
+        //显示分数
+        UIManager.Instance.ShowPoint(3000, headshoot);
         //SoundManager.Instance.PlaySound(SoundManager.SoundType.OneKill);
     }
 	
