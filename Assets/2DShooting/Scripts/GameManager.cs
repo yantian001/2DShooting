@@ -20,15 +20,7 @@ public class GameManager : MonoBehaviour {
         get { return _statu; }
         private set { _statu = value; }
     }
-
-    public enum GameDifficulty
-    {
-        Normal =1,
-        Hard,
-        Infinity
-    }
-
-
+    
     //当前关卡
     public int level = 1;
 
@@ -92,6 +84,8 @@ public class GameManager : MonoBehaviour {
 
     void Init()
     {
+        level = GameLogic.s_CurrentScene;
+        gameDifficulty = GameLogic.s_CurrentDifficulty;
         //初始化游戏数据
         InitGameData();
         //初始 emenyController

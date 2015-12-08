@@ -18,6 +18,7 @@ public class LevelMapManager : MonoBehaviour {
     public Button playButton;
 
     private int selectScene = -1;
+    private GameDifficulty selectDifficulty = GameDifficulty.Normal;
 
     public void Start()
     {
@@ -46,7 +47,12 @@ public class LevelMapManager : MonoBehaviour {
 
     void OnPlayButtonClicked()
     {
-
+        if (selectScene != -1)
+        {
+            GameLogic.s_CurrentScene = selectScene;
+            GameLogic.s_CurrentDifficulty = selectDifficulty;
+            GameLogic.Loading();
+        }
     }
 
     void OnToggleValueChange(bool selected , LevelMapObject mapObj)

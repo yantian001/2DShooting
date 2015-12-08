@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 [AddComponentMenu("UI/Effects/Gradient")]
 public class Gradient : BaseMeshEffect
@@ -47,6 +48,11 @@ public class Gradient : BaseMeshEffect
             }
             mesh.SetColors(colors);
         }
+    }
+
+    public override void ModifyMesh(VertexHelper vh)
+    {
+        
     }
 }
 
