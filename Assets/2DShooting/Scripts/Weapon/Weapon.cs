@@ -45,7 +45,7 @@ public class Weapon : MonoBehaviour
 
     void Start()
     {
-       
+        UpdateBulletDisplay();
     }
 
     public void OnEnable()
@@ -155,7 +155,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk)
+        if (canFire && canShoot && isBulltOk && GameManager.Instance.Statu == GameManager.GameStatu.InGame)
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);
@@ -203,7 +203,7 @@ public class Weapon : MonoBehaviour
                 Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
-                    enemy.TakeDamage(attack);
+                    enemy.TakeDamage(attack,true);
                 }
                 else
                 {

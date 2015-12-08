@@ -13,6 +13,15 @@ public class GameData : ScriptableObject {
     }
     //游戏类型
     public GameType gameType;
+    /// <summary>
+    /// 玩家血量
+    /// </summary>
+    [Tooltip("玩家血量")]
+    public float playerHealth = 100f;
+    /// <summary>
+    /// 任务总数
+    /// </summary>
+    [Tooltip("任务总数")]
     public float missionCount;
     //敌人产生的间隔
     public float emenySpwanInterval = 1.0f;
@@ -37,4 +46,5 @@ public class GameData : ScriptableObject {
     public int maxEnemyCount = 1;
     //同一地点最多的人数
     public int maxEnemyPerPosition = 1;
+    
 }

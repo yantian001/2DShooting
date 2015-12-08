@@ -91,8 +91,17 @@ public class SoundManager : MonoBehaviour {
         iTween.Stab(gameObject, iTween.Hash("audioclip",ac, "volume",volume, "delay", delay));
     }
 
-    public void PlayComboSound(int combo)
+    /// <summary>
+    /// 播放连杀音效
+    /// </summary>
+    /// <param name="combo"></param>
+    /// <param name="headShot"></param>
+    public void PlayComboSound(int combo,bool headShot = false)
     {
+        if(headShot)
+        {
+            PlaySound(SoundType.HeadShot);
+        }
         if(combo > 1)
         {
             if(combo == 2)

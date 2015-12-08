@@ -71,11 +71,10 @@ public class Enemy : MonoBehaviour {
 
     bool CanShoot() {
         bool canShoot = true;
-        if (timeFromShoot < shootInterval || target == null || isDead || !ReadyFroShoot) {
+        if (timeFromShoot < shootInterval || target == null || isDead || !ReadyFroShoot || !GameManager.Instance.IsInGame()) {
             canShoot = false;
         }
         return canShoot;
-
     }
 
     void Shoot() {
@@ -84,6 +83,7 @@ public class Enemy : MonoBehaviour {
         PlayMuzzleEffect(firePlace);
         ShowBullet();
         PlayFireAudio();
+        GameManager.Instance.PlayerInjured(attack);
     }
 
     //播放开枪音效
@@ -129,18 +129,25 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    public void TakeDamage(float damageVal) {
-        Debug.Log("Take damage :" + damageVal);
+    public void TakeDamage(float damageVal,bool isHeadShot = false) {
+        //Debug.Log("Take damage :" + damageVal);
         if (isDead) {
             return;
         }
-        _HP -= damageVal;
+        if (isHeadShot)
+        {
+            _HP -= damageVal * 2;
+        }
+        else
+        {
+            _HP -= damageVal;
+        }
         if (_HP <= 0.0f) {
-            Die();
+            Die(isHeadShot);
         }
     }
 
-    void Die() {
+    void Die(bool isHeadShot = false) {
         //play die animation
         isDead = true;
         if (coliders != null)
@@ -159,9 +166,12 @@ public class Enemy : MonoBehaviour {
         PlayDeathAudio();
 
         //通知GameManager死亡
-        GameManager.Instance.EmenyDead();
+        GameManager.Instance.EmenyDead(isHeadShot);
     }
 
+    /// <summary>
+    /// 播放死亡音效
+    /// </summary>
     void PlayDeathAudio()
     {
         if (deathAduio != null)

@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
     //当前关卡
     public int level = 1;
 
+    
     //游戏难度
     public GameDifficulty gameDifficulty = GameDifficulty.Normal;
     //游戏数据
@@ -65,8 +66,10 @@ public class GameManager : MonoBehaviour {
     //EnemyController
     private EmenyController emenyController;
 
-    //当前任务书
+    //当前剩余任务数
     public float curMissionCount = 0f;
+
+
     //连击有效时间
     public float comboInterval = 5.0f;
 
@@ -74,9 +77,18 @@ public class GameManager : MonoBehaviour {
     //当前连击数
     private int currentCombo = 0;
     //最大连击数
-    private int maxCombo = 0;
+    //private int maxCombo = 0;
 
     private bool isCombo = false;
+
+    /// <summary>
+    /// 玩家当前血量
+    /// </summary>
+    float playerCurrentHP;
+    bool isPlayerDie = false;
+
+    //游戏记录
+    public GameRecords records = null;
 
     void Init()
     {
@@ -84,9 +96,28 @@ public class GameManager : MonoBehaviour {
         InitGameData();
         //初始 emenyController
         InitEmenyController();
+        //初始化UI
+        InitUI();
+        if(records == null)
+        {
+            records = new GameRecords(level,(int)gameDifficulty);
+        }
         Statu = GameStatu.InGame;
     }
 
+    void InitUI()
+    {
+        //更新任务
+        UIManager.Instance.GameType = (int)gameData.gameType;
+        UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
+
+        //更新血量显示
+        UIManager.Instance.UpdatePlayerHUD(playerCurrentHP, gameData.playerHealth);
+    }
+
+    /// <summary>
+    /// 初始化 敌人控制器
+    /// </summary>
     void InitEmenyController()
     {
         emenyController = FindObjectOfType<EmenyController>();
@@ -102,6 +133,7 @@ public class GameManager : MonoBehaviour {
         //if(gameData == null)
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
         gameData = Resources.Load<GameData>(levelPath);
+        playerCurrentHP = gameData.playerHealth;
         if(gameData == null)
         {
             Debug.LogError("Init level gamedata error");
@@ -122,42 +154,97 @@ public class GameManager : MonoBehaviour {
         if(gameData.gameType == GameData.GameType.Count)
         {
             curMissionCount -= count;
+            UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
         }
     }
 
+    /// <summary>
+    /// 敌人死亡
+    /// </summary>
+    /// <param name="headshoot">是否爆头死亡</param>
     public void EmenyDead(bool headshoot = false)
     {
+        records.EnemyKills += 1;
+        if(headshoot)
+        {
+            records.HeadShotCount += 1;
+        }
         isCombo = true;
         curRemainComboInterval = comboInterval;
         currentCombo += 1;
-        if(headshoot)
+        SoundManager.Instance.PlayComboSound(currentCombo, headshoot);
+        if (currentCombo > 0)
         {
-            SoundManager.Instance.PlaySound(SoundManager.SoundType.HeadShot);
-        }
-        else
-        {
-            SoundManager.Instance.PlayComboSound(currentCombo);
-        }
-
-        if(currentCombo > 1)
-        {
-            UIManager.Instance.ShowCombo(currentCombo);
+            UIManager.Instance.ShowCombo(currentCombo,headshoot);
         }
         //更新最大连击数
-        maxCombo = maxCombo > currentCombo ? maxCombo : currentCombo;
-
+        records.MaxCombos = currentCombo;
         //显示分数
-        UIManager.Instance.ShowPoint(3000, headshoot);
+       // UIManager.Instance.ShowPoint(3000, headshoot);
         //SoundManager.Instance.PlaySound(SoundManager.SoundType.OneKill);
     }
 	
-	// Update is called once per frame
-	void Update () {
+    public void PlayerInjured(float demage)
+    {
+        playerCurrentHP -= demage;
+        UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+        UIManager.Instance.ShowPlayDamageEffect();
+    }
 
+    /// <summary>
+    /// 玩家死亡
+    /// </summary>
+    void PlayerDead()
+    {
+        isPlayerDie = true;
+    }
+	
+	void Update () {
+        if(Statu == GameStatu.InGame)
+        {
+            if (playerCurrentHP <= 0)
+            {
+                PlayerDead();
+            }
+
+            CheckGameStatu();
+        }
         //更新连击
         UpdateCombo();
-	}
+        //InvokeRepeating()
+    }
+    /// <summary>
+    /// 检查游戏状态
+    /// </summary>
+    void CheckGameStatu()
+    {
+        if(isPlayerDie)
+        {
+            Statu = GameStatu.GameFailed;
+            LeanTween.dispatchEvent((int)Events.GAMEFAILED,records);
+        }
 
+        if(gameData.gameType == GameData.GameType.Count)
+        {
+            if(curMissionCount == 0 && records.EnemyKills == gameData.missionCount)
+            {
+                Statu = GameStatu.GameSuccessed;
+                LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
+            }
+        }
+        else if(gameData.gameType == GameData.GameType.Time)
+        {
+            if(curMissionCount <= 0)
+            {
+                Statu = GameStatu.GameSuccessed;
+                LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 更新连击
+    /// </summary>
     void UpdateCombo()
     {
         if(isCombo)
@@ -170,5 +257,10 @@ public class GameManager : MonoBehaviour {
                 UIManager.Instance.HideCombo();
             }
         }
+    }
+
+    public bool IsInGame()
+    {
+        return Statu == GameStatu.InGame;
     }
 }
