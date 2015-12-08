@@ -18,5 +18,9 @@ public enum Events
     /// <summary>
     /// 游戏暂停
     /// </summary>
-    GAMEPAUSED
+    GAMEPAUSED,
+    /// <summary>
+    /// 游戏重新开始
+    /// </summary>
+    GAMERESTART
 }

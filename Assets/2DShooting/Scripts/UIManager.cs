@@ -108,6 +108,8 @@ public class UIManager : MonoBehaviour
     public GameObject headShotPoint;
     [Tooltip("显示分数的位置")]
     public RectTransform pointTransform;
+    [Tooltip("分数显示")]
+    public Text scoreText;
 
     public void ShowPoint(int score, bool isHeadShot)
     {
@@ -138,6 +140,18 @@ public class UIManager : MonoBehaviour
             pointTxt.text = string.Format(pointTxt.text, score);
         }
 
+    }
+
+    /// <summary>
+    /// 更新分数显示
+    /// </summary>
+    /// <param name="score"></param>
+    public void UpdateScoreText(int score)
+    {
+        if (scoreText)
+        {
+            scoreText.text = score.ToString();
+        }
     }
 
     #endregion
@@ -205,7 +219,7 @@ public class UIManager : MonoBehaviour
         if (MissionUIs != null && gType >= MissionUIs.Length)
             return;
         //显示当前任务类型的ui
-        for(int i= 0; i<MissionUIs.Length;i++)
+        for (int i = 0; i < MissionUIs.Length; i++)
         {
             if (gType == i)
             {
@@ -223,7 +237,7 @@ public class UIManager : MonoBehaviour
     /// <param name="remain"></param>
     public void UpdateMissionRemain(int remain)
     {
-        if(missionRemainText != null)
+        if (missionRemainText != null)
         {
             missionRemainText.text = remain.ToString();
         }
@@ -241,23 +255,23 @@ public class UIManager : MonoBehaviour
     /// </summary>
     /// <param name="current">当前血量</param>
     /// <param name="max">最大血量,最大血量 = 0时 ,不更新</param>
-    public void UpdatePlayerHUD(float current,float max = 0)
+    public void UpdatePlayerHUD(float current, float max = 0)
     {
-        if(playerHUD == null)
+        if (playerHUD == null)
         {
             return;
         }
-        if(max != 0)
+        if (max != 0)
         {
             playerHUD.maxValue = max;
         }
-        if(current >= 0)
+        if (current >= 0)
         {
             playerHUD.value = current;
         }
 
         playerHUDText = playerHUD.GetComponentInChildren<Text>();
-        if(playerHUDText != null)
+        if (playerHUDText != null)
         {
             playerHUDText.text = current.ToString();
         }
@@ -298,20 +312,70 @@ public class UIManager : MonoBehaviour
         ShowFinishUI(false, evt.data as GameRecords);
     }
 
-    void ShowFinishUI(bool success , GameRecords record)
+    void ShowFinishUI(bool success, GameRecords record)
     {
-        if(uiFinish)
+        if (uiFinish)
         {
             uiFinish.SetActive(true);
             RectTransform bgRect = uiFinish.GetComponent<RectTransform>().FindChild("Background").GetComponent<RectTransform>();
-            if(bgRect)
+            if (bgRect)
             {
                 Vector3 bgScale = bgRect.localScale;
                 bgRect.localScale = Vector3.zero;
                 LeanTween.scale(bgRect, bgScale, 0.2f);
+
+                //显示title
+                GameObject tltSucc = bgRect.FindChild("TitleSuccess").gameObject;
+                GameObject tltFail = bgRect.FindChild("TitleFailed").gameObject;
+                if (tltSucc)
+                {
+                    tltSucc.SetActive(success);
+                }
+                if (tltFail)
+                {
+                    tltFail.SetActive(!success);
+                }
+
+                //更新数据显示
+
+                //杀敌数
+                Text txtKillCount = bgRect.FindChild("KillsTitle/KillsCount").GetComponent<Text>();
+                if (txtKillCount)
+                {
+                    txtKillCount.text = record.EnemyKills.ToString();
+                }
+                //最大连击数
+                Text txtMaxHits = bgRect.FindChild("MaxHitsTitle/MaxHitsCount").GetComponent<Text>();
+                if (txtMaxHits)
+                    txtMaxHits.text = record.MaxCombos.ToString();
+
+                //爆头数
+                Text txtHeadShot = bgRect.FindChild("HeadShotTitle/HeadShotCount").GetComponent<Text>();
+                if (txtHeadShot)
+                    txtHeadShot.text = record.HeadShotCount.ToString();
+                //分数
+                Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
+                if (txtScore)
+                {
+                    txtScore.text = record.Scores.ToString();
+                }
+
+                //重新开始按钮
+                Button btnRestart = bgRect.FindChild("BtnRestart").GetComponent<Button>();
+                if (btnRestart)
+                {
+                    btnRestart.onClick.AddListener(OnRestartClicked);
+                }
             }
+
         }
     }
+
+    void OnRestartClicked()
+    {
+        LeanTween.dispatchEvent((int)Events.GAMERESTART);
+    }
+    //RectTransform FindChildByName()
 
     #endregion
 
@@ -324,7 +388,7 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-        Debug.Log("UIManager Inited");
+        //Debug.Log("UIManager Inited");
 
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);
@@ -335,6 +399,8 @@ public class UIManager : MonoBehaviour
     {
         //移除事件
         LeanTween.removeListener((int)Events.BULLETCHANGED, UpdateBulletDisplay);
+        LeanTween.removeListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);
+        LeanTween.removeListener(gameObject, (int)Events.GAMEFAILED, OnGameFailed);
     }
 
     void Start()

@@ -23,6 +23,11 @@ public class Enemy : MonoBehaviour {
 
     //开枪音效
     public AudioClip fireAudio;
+    /// <summary>
+    /// 死亡得分
+    /// </summary>
+    [Tooltip("死亡得分")]
+    public int score = 0;
     float timeFromShoot = 0f;
     bool _readyForShoot = true;
 
@@ -166,7 +171,7 @@ public class Enemy : MonoBehaviour {
         PlayDeathAudio();
 
         //通知GameManager死亡
-        GameManager.Instance.EmenyDead(isHeadShot);
+        GameManager.Instance.EmenyDead(score,isHeadShot);
     }
 
     /// <summary>

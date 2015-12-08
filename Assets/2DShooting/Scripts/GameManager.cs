@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour {
     /// 敌人死亡
     /// </summary>
     /// <param name="headshoot">是否爆头死亡</param>
-    public void EmenyDead(bool headshoot = false)
+    public void EmenyDead(int score,bool headshoot = false)
     {
         records.EnemyKills += 1;
         if(headshoot)
@@ -179,8 +179,10 @@ public class GameManager : MonoBehaviour {
         }
         //更新最大连击数
         records.MaxCombos = currentCombo;
+        records.Scores += score;
+        UIManager.Instance.UpdateScoreText(records.Scores);
         //显示分数
-       // UIManager.Instance.ShowPoint(3000, headshoot);
+        UIManager.Instance.ShowPoint(score, headshoot);
         //SoundManager.Instance.PlaySound(SoundManager.SoundType.OneKill);
     }
 	
