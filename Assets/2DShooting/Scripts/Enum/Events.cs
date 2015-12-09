@@ -22,5 +22,18 @@ public enum Events
     /// <summary>
     /// 游戏重新开始
     /// </summary>
-    GAMERESTART
+    GAMERESTART,
+    /// <summary>
+    /// 返回主页
+    /// </summary>
+    MAINMENU,
+    /// <summary>
+    /// 击中了道具  医疗包 ,附带参数为回复的血量
+    /// </summary>
+    ITEMMEDKITHIT,
+    /// <summary>
+    /// 击中了道具  盾牌 , 附带盾牌值
+    /// </summary>
+    ITEMSHIELDHIT
+
 }

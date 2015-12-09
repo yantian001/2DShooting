@@ -57,6 +57,36 @@ public class GameRecords
         }
     }
 
+    private int _hitAddScores = 0;
+   /// <summary>
+   /// 连击增加分数
+   /// </summary>
+    public int HitAddAcores
+    {
+        get { return _hitAddScores;}
+        set { _hitAddScores = value; }
+    }
+
+    private int _headshotAddScore = 0;
+    /// <summary>
+    /// 爆头增加分数
+    /// </summary>
+    public int HeadshotAddScore
+    {
+        get
+        {
+            return _headshotAddScore;
+        }
+        set
+        {
+            _headshotAddScore = value;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="level"></param>
+    /// <param name="diffcutly"></param>
     public GameRecords(int level ,int diffcutly)
     {
         Level = level;

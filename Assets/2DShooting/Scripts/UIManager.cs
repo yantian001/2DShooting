@@ -35,6 +35,21 @@ public class UIManager : MonoBehaviour
         });
         comboText.text = icombo.ToString();
     }
+    /// <summary>
+    /// 更新剩余连击时间显示
+    /// </summary>
+    /// <param name="value"></param>
+    public void UpdateRemainComboTime(float value)
+    {
+        if(Combo)
+        {
+            Slider remainTime = Combo.GetComponentInChildren<Slider>();
+            if(remainTime)
+            {
+                remainTime.value = value;
+            }
+        }
+    }
 
     public bool isShowComboStar = true;
 
@@ -312,6 +327,11 @@ public class UIManager : MonoBehaviour
         ShowFinishUI(false, evt.data as GameRecords);
     }
 
+    /// <summary>
+    /// 显示结束UI
+    /// </summary>
+    /// <param name="success"></param>
+    /// <param name="record"></param>
     void ShowFinishUI(bool success, GameRecords record)
     {
         if (uiFinish)
@@ -348,16 +368,24 @@ public class UIManager : MonoBehaviour
                 Text txtMaxHits = bgRect.FindChild("MaxHitsTitle/MaxHitsCount").GetComponent<Text>();
                 if (txtMaxHits)
                     txtMaxHits.text = record.MaxCombos.ToString();
+                //连击加分
+                Text txtMaxAddScoreHits = bgRect.FindChild("MaxHitsTitle/MaxHitsAddScore").GetComponent<Text>();
+                if (txtMaxAddScoreHits)
+                    txtMaxAddScoreHits.text = string.Format(txtMaxAddScoreHits.text, record.HitAddAcores.ToString());
 
                 //爆头数
                 Text txtHeadShot = bgRect.FindChild("HeadShotTitle/HeadShotCount").GetComponent<Text>();
                 if (txtHeadShot)
                     txtHeadShot.text = record.HeadShotCount.ToString();
+                //爆头加分
+                Text txtHeadShotAddScore = bgRect.FindChild("HeadShotTitle/HeadShotAddScore").GetComponent<Text>();
+                if (txtHeadShotAddScore)
+                    txtHeadShotAddScore.text =string.Format(txtHeadShotAddScore.text, record.HeadshotAddScore.ToString());
                 //分数
                 Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
                 if (txtScore)
                 {
-                    txtScore.text = record.Scores.ToString();
+                    txtScore.text =  record.Scores.ToString();
                 }
 
                 //重新开始按钮
@@ -366,6 +394,15 @@ public class UIManager : MonoBehaviour
                 {
                     btnRestart.onClick.AddListener(OnRestartClicked);
                 }
+
+
+                //回主页按钮
+                Button btnMainMenu = bgRect.FindChild("BtnMainMenu").GetComponent<Button>();
+                if (btnMainMenu)
+                {
+                    btnMainMenu.onClick.AddListener(OnMenuClicked);
+                }
+
             }
 
         }
@@ -374,6 +411,11 @@ public class UIManager : MonoBehaviour
     void OnRestartClicked()
     {
         LeanTween.dispatchEvent((int)Events.GAMERESTART);
+    }
+
+    void OnMenuClicked()
+    {
+        LeanTween.dispatchEvent((int)Events.MAINMENU);
     }
     //RectTransform FindChildByName()
 
@@ -388,7 +430,7 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-        //Debug.Log("UIManager Inited");
+        Debug.Log("UIManager Inited");
 
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);

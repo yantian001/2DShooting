@@ -97,6 +97,8 @@ public class GameManager : MonoBehaviour {
             records = new GameRecords(level,(int)gameDifficulty);
         }
         Statu = GameStatu.InGame;
+        //播放开始音效
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
     }
 
     void InitUI()
@@ -173,6 +175,11 @@ public class GameManager : MonoBehaviour {
         }
         //更新最大连击数
         records.MaxCombos = currentCombo;
+        int addScore = GameGlobalValue.GetHitScore(currentCombo, ref score, headshoot);
+        if (headshoot)
+            records.HeadshotAddScore += addScore;
+        else
+            records.HitAddAcores += addScore;
         records.Scores += score;
         UIManager.Instance.UpdateScoreText(records.Scores);
         //显示分数
@@ -217,14 +224,16 @@ public class GameManager : MonoBehaviour {
         if(isPlayerDie)
         {
             Statu = GameStatu.GameFailed;
+            SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
             LeanTween.dispatchEvent((int)Events.GAMEFAILED,records);
         }
 
         if(gameData.gameType == GameData.GameType.Count)
         {
-            if(curMissionCount == 0 && records.EnemyKills == gameData.missionCount)
+            if(curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
             {
                 Statu = GameStatu.GameSuccessed;
+                SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
         }
@@ -233,6 +242,7 @@ public class GameManager : MonoBehaviour {
             if(curMissionCount <= 0)
             {
                 Statu = GameStatu.GameSuccessed;
+                SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
         }
@@ -252,6 +262,7 @@ public class GameManager : MonoBehaviour {
                 currentCombo = 0;
                 UIManager.Instance.HideCombo();
             }
+            UIManager.Instance.UpdateRemainComboTime(curRemainComboInterval / comboInterval);
         }
     }
 

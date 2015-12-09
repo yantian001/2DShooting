@@ -48,7 +48,7 @@ public class EmenyController : MonoBehaviour {
 	bool CanSpwanEnemy(){
         bool rst = true;
 
-        if(GameManager.Instance.Statu != GameManager.GameStatu.InGame)
+        if(GameManager.Instance.Statu != GameManager.GameStatu.InGame || GameManager.Instance.curMissionCount <= 0)
         {
             return false;
         }

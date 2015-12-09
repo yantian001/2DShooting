@@ -11,7 +11,11 @@ public class SoundManager : MonoBehaviour {
         ThreeKill,
         FourKill,
         FiveKill,
-        SixKill
+        SixKill,
+        GameStart,
+        GameLoaded,
+        GameSuccess,
+        GameFailed
     }
     /*--
     **/
@@ -21,6 +25,10 @@ public class SoundManager : MonoBehaviour {
     public AudioClip fourKillAudio;
     public AudioClip fiveKillAudio;
     public AudioClip sixKillAudio;
+    public AudioClip gameStartAudio;
+    public AudioClip gameLoadedAudio;
+    public AudioClip gameSuccessAudio;
+    public AudioClip gameFailedAudio;
 
     public static SoundManager _instance;
 
@@ -81,6 +89,31 @@ public class SoundManager : MonoBehaviour {
                     PlaySound(sixKillAudio, volume, delay);
                 }
                 break;
+            case SoundType.GameStart:
+                if(gameStartAudio)
+                {
+                    PlaySound(gameStartAudio, volume, delay);
+                }
+                break;
+            case SoundType.GameLoaded:
+                if(gameLoadedAudio)
+                {
+                    PlaySound(gameLoadedAudio, volume, delay);
+                        
+                }
+                break;
+            case SoundType.GameSuccess:
+                if(gameSuccessAudio)
+                {
+                    PlaySound(gameSuccessAudio, volume, delay);
+                }
+                break;
+            case SoundType.GameFailed:
+                if (gameFailedAudio)
+                {
+                    PlaySound(gameFailedAudio, volume, delay);
+                }
+                break;
             default:
                 break;
         }
@@ -89,6 +122,11 @@ public class SoundManager : MonoBehaviour {
     void PlaySound(AudioClip ac ,float volume ,float delay)
     {
         iTween.Stab(gameObject, iTween.Hash("audioclip",ac, "volume",volume, "delay", delay));
+    }
+
+    public static void PlayAduio(GameObject obj,AudioClip ac ,float volume = 1.0f, float delay = 0f)
+    {
+        iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
     }
 
     /// <summary>

@@ -195,11 +195,11 @@ public class Weapon : MonoBehaviour
         {
             //Debug.Log(rayhit.collider.name);
 
+            //是否击中了敌人
             Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
 
             if (enemy != null)
             {
-
                 Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
@@ -211,6 +211,9 @@ public class Weapon : MonoBehaviour
                 }
 
             }
+
+            //判断是否击中了箱子
+            GameItem item = rayhit.collider.GetComponent<GameItem>();
         }
         else
         {

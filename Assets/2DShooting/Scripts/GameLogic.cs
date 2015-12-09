@@ -16,14 +16,23 @@ public class GameLogic : MonoBehaviour
     /// Loading界面
     /// </summary>
     public static int s_LoadingSceneId = 2;
+
+    public static int s_MainMenuSceneId = 0;
     void Awake()
     {
         LeanTween.addListener((int)Events.GAMERESTART, OnGameRestart);
+        LeanTween.addListener((int)Events.MAINMENU, OnGameMainMenu);
     }
 
     void OnGameRestart(LTEvent evt)
     {
         Application.LoadLevel(Application.loadedLevel);
+    }
+
+    void OnGameMainMenu(LTEvent evt)
+    {
+        s_CurrentScene = s_MainMenuSceneId;
+        Loading();
     }
 
     // Update is called once per frame
