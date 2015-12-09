@@ -49,9 +49,11 @@ public class GameItem : MonoBehaviour
     [Tooltip("破碎的声音")]
     public AudioClip brokenAc;
 
+    private bool isDie = false;
     float currentTime = 0;
     void Start()
     {
+        isDie = false;
         //如果限制时间 
         if(isLimitTime)
         {
@@ -87,11 +89,22 @@ public class GameItem : MonoBehaviour
 
     public void TakeDamage(float attck)
     {
+        if (IsDie())
+            return;
+
         _HP -= attck;
         if(_HP <= 0)
         {
             Die();
         }
+    }
+    /// <summary>
+    /// 是否已死亡
+    /// </summary>
+    /// <returns></returns>
+    public bool IsDie()
+    {
+        return isDie;
     }
 
     void Die()
@@ -115,5 +128,7 @@ public class GameItem : MonoBehaviour
         {
             SoundManager.PlayAduio(gameObject, brokenAc);
         }
+
+        Destroy(gameObject, 0.1f);
     }
 }

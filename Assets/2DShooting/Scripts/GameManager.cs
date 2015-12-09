@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     //游戏状态
     public enum GameStatu
@@ -12,7 +14,7 @@ public class GameManager : MonoBehaviour {
         GameSuccessed,
         GameFailed
     }
-    
+
     private GameStatu _statu;
     //游戏状态
     public GameStatu Statu
@@ -20,11 +22,11 @@ public class GameManager : MonoBehaviour {
         get { return _statu; }
         private set { _statu = value; }
     }
-    
+
     //当前关卡
     public int level = 1;
 
-    
+
     //游戏难度
     public GameDifficulty gameDifficulty = GameDifficulty.Normal;
     //游戏数据
@@ -36,16 +38,16 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-            if(!_instance)
+            if (!_instance)
             {
                 _instance = FindObjectOfType<GameManager>();
-                if(!_instance)
+                if (!_instance)
                 {
                     GameObject gameManagerContainer = new GameObject();
                     gameManagerContainer.name = "GameManagerContainer";
-                    _instance = gameManagerContainer.AddComponent<GameManager>(); 
+                    _instance = gameManagerContainer.AddComponent<GameManager>();
                 }
-                    
+
             }
             return _instance;
         }
@@ -53,7 +55,7 @@ public class GameManager : MonoBehaviour {
         {
             _instance = value;
         }
-      }
+    }
 
     //EnemyController
     private EmenyController emenyController;
@@ -92,9 +94,9 @@ public class GameManager : MonoBehaviour {
         InitEmenyController();
         //初始化UI
         InitUI();
-        if(records == null)
+        if (records == null)
         {
-            records = new GameRecords(level,(int)gameDifficulty);
+            records = new GameRecords(level, (int)gameDifficulty);
         }
         Statu = GameStatu.InGame;
         //播放开始音效
@@ -117,7 +119,7 @@ public class GameManager : MonoBehaviour {
     void InitEmenyController()
     {
         emenyController = FindObjectOfType<EmenyController>();
-        if(emenyController == null)
+        if (emenyController == null)
         {
             Debug.Log("Init EmenyController error!!");
         }
@@ -130,7 +132,7 @@ public class GameManager : MonoBehaviour {
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
         gameData = Resources.Load<GameData>(levelPath);
         playerCurrentHP = gameData.playerHealth;
-        if(gameData == null)
+        if (gameData == null)
         {
             Debug.LogError("Init level gamedata error");
         }
@@ -139,15 +141,14 @@ public class GameManager : MonoBehaviour {
             curMissionCount = gameData.missionCount;
         }
     }
-	void Start () {
-       // Debug.Log("Start");
-        Init();
-	}
 
-    
+    /// <summary>
+    /// 产生怪物
+    /// </summary>
+    /// <param name="count">产生怪物的数量</param>
     public void SpawnedEnemy(int count = 1)
     {
-        if(gameData.gameType == GameData.GameType.Count)
+        if (gameData.gameType == GameData.GameType.Count)
         {
             curMissionCount -= count;
             UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
@@ -158,10 +159,10 @@ public class GameManager : MonoBehaviour {
     /// 敌人死亡
     /// </summary>
     /// <param name="headshoot">是否爆头死亡</param>
-    public void EmenyDead(int score,bool headshoot = false)
+    public void EmenyDead(int score, bool headshoot = false)
     {
         records.EnemyKills += 1;
-        if(headshoot)
+        if (headshoot)
         {
             records.HeadShotCount += 1;
         }
@@ -171,7 +172,7 @@ public class GameManager : MonoBehaviour {
         SoundManager.Instance.PlayComboSound(currentCombo, headshoot);
         if (currentCombo > 0)
         {
-            UIManager.Instance.ShowCombo(currentCombo,headshoot);
+            UIManager.Instance.ShowCombo(currentCombo, headshoot);
         }
         //更新最大连击数
         records.MaxCombos = currentCombo;
@@ -186,13 +187,18 @@ public class GameManager : MonoBehaviour {
         UIManager.Instance.ShowPoint(score, headshoot);
         //SoundManager.Instance.PlaySound(SoundManager.SoundType.OneKill);
     }
-	
+
+    /// <summary>
+    /// 玩家受到伤害
+    /// </summary>
+    /// <param name="demage">伤害值</param>
     public void PlayerInjured(float demage)
     {
         playerCurrentHP -= demage;
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
         UIManager.Instance.ShowPlayDamageEffect();
     }
+
 
     /// <summary>
     /// 玩家死亡
@@ -201,45 +207,31 @@ public class GameManager : MonoBehaviour {
     {
         isPlayerDie = true;
     }
-	
-	void Update () {
-        if(Statu == GameStatu.InGame)
-        {
-            if (playerCurrentHP <= 0)
-            {
-                PlayerDead();
-            }
 
-            CheckGameStatu();
-        }
-        //更新连击
-        UpdateCombo();
-        //InvokeRepeating()
-    }
     /// <summary>
     /// 检查游戏状态
     /// </summary>
     void CheckGameStatu()
     {
-        if(isPlayerDie)
+        if (isPlayerDie)
         {
             Statu = GameStatu.GameFailed;
             SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
-            LeanTween.dispatchEvent((int)Events.GAMEFAILED,records);
+            LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
         }
 
-        if(gameData.gameType == GameData.GameType.Count)
+        if (gameData.gameType == GameData.GameType.Count)
         {
-            if(curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
+            if (curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
             {
                 Statu = GameStatu.GameSuccessed;
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
         }
-        else if(gameData.gameType == GameData.GameType.Time)
+        else if (gameData.gameType == GameData.GameType.Time)
         {
-            if(curMissionCount <= 0)
+            if (curMissionCount <= 0)
             {
                 Statu = GameStatu.GameSuccessed;
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
@@ -253,10 +245,10 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     void UpdateCombo()
     {
-        if(isCombo)
+        if (isCombo)
         {
             curRemainComboInterval -= Time.deltaTime;
-            if(curRemainComboInterval <= 0.0f)
+            if (curRemainComboInterval <= 0.0f)
             {
                 isCombo = false;
                 currentCombo = 0;
@@ -270,4 +262,79 @@ public class GameManager : MonoBehaviour {
     {
         return Statu == GameStatu.InGame;
     }
+
+
+
+    /// <summary>
+    /// 获得医疗包
+    /// </summary>
+    /// <param name="evt"></param>
+    void OnGetMedKit(LTEvent evt)
+    {
+        if(evt.data != null)
+        {
+            float addedValue = 0.0f;
+            if(float.TryParse(evt.data.ToString(),out addedValue))
+            {
+                playerCurrentHP += addedValue;
+                UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+            }
+        }
+    }
+
+
+
+    /// <summary>
+    /// 获得盾牌道具
+    /// </summary>
+    /// <param name="obj"></param>
+    private void OnGetShield(LTEvent evt)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    #region MonoBehaviour Method
+
+    public void OnEnable()
+    {
+        //监听打破医疗包
+        LeanTween.addListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);
+        //监听获得盾牌
+        LeanTween.addListener((int)Events.ITEMSHIELDHIT, OnGetShield);
+    }
+
+
+
+    void Start()
+    {
+        // Debug.Log("Start");
+        Init();
+    }
+
+
+    void Update()
+    {
+        if (Statu == GameStatu.InGame)
+        {
+            if (playerCurrentHP <= 0)
+            {
+                PlayerDead();
+            }
+
+            CheckGameStatu();
+        }
+        //更新连击
+        UpdateCombo();
+        //InvokeRepeating()
+    }
+    public void OnDisable()
+    {
+        LeanTween.removeListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);
+        LeanTween.removeListener((int)Events.ITEMSHIELDHIT, OnGetShield);
+    }
+
+    #endregion
+
+
 }

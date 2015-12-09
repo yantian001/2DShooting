@@ -214,6 +214,10 @@ public class Weapon : MonoBehaviour
 
             //判断是否击中了箱子
             GameItem item = rayhit.collider.GetComponent<GameItem>();
+            if(item)
+            {
+                item.TakeDamage(attack);
+            }
         }
         else
         {
