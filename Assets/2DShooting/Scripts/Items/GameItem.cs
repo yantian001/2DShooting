@@ -78,7 +78,7 @@ public class GameItem : MonoBehaviour
         Vector2 position = Camera.main.WorldToScreenPoint(worldPos);
         //得到真实的坐标
         position = new Vector2(position.x, Screen.height - position.y);
-        Vector3 scale = transform.localScale;
+        Vector3 scale = transform.lossyScale;
         Vector2 silderSize = GUI.skin.label.CalcSize(new GUIContent(timeRemainFill));
         silderSize = new Vector2(silderSize.x * scale.x, silderSize.y * scale.y);
         float fillWidth = (timeRemainFill.width  * (lifeSpan - currentTime) / lifeSpan)*scale.x ;

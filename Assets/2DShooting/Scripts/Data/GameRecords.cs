@@ -83,6 +83,10 @@ public class GameRecords
         }
     }
     /// <summary>
+    /// 场景权重
+    /// </summary>
+    public float Weight { get; set; }
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="level"></param>

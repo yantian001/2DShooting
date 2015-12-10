@@ -101,6 +101,9 @@ public class GameManager : MonoBehaviour
         Statu = GameStatu.InGame;
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
+        PlayerPrefs.DeleteAll();
+        Player player = Player.CurrentPlayer;
+       
     }
 
     void InitUI()
@@ -237,6 +240,11 @@ public class GameManager : MonoBehaviour
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
+        }
+
+        if(Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
+        {
+            Player.CurrentPlayer.AddPlayRecord(records);
         }
     }
 

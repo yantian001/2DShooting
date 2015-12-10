@@ -49,11 +49,5 @@ public class Gradient : BaseMeshEffect
             mesh.SetColors(colors);
         }
     }
-
-    public override void ModifyMesh(VertexHelper vh)
-    {
-       
-       // throw new NotImplementedException();
-    }
 }
 
