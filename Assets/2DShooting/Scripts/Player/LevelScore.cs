@@ -7,6 +7,11 @@ public class LevelScore
     /// 关卡ID
     /// </summary>
     public int LevelID { get; set; }
+
+    /// <summary>
+    /// 排行榜ID
+    /// </summary>
+    public string LeardBoardID { get; set; }
     /// <summary>
     /// 最佳纪录
     /// </summary>

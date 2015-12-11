@@ -41,7 +41,7 @@ public class NetworkHandler : MonoBehaviour
             ConvertPlayer2Object(play, ref obj);
             obj.SaveAsync().ContinueWith(t =>
             {
-
+                
                 Debug.Log(obj.Get<string>("objectId"));
             });
         }

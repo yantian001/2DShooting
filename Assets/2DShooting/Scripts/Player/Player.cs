@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Parse;
+using UnityEngine.SocialPlatforms;
 
 public class Player {
     
@@ -39,7 +39,10 @@ public class Player {
             if(_crurrntPlayer == null)
             {
                 _crurrntPlayer = CreatePlayer();
+
+                
             }
+
             return _crurrntPlayer;
         }
         private set
@@ -66,9 +69,25 @@ public class Player {
             player = new Player();
             player.UserID = SystemInfo.deviceUniqueIdentifier;
             player.UserName = "Player" + player.UserID.Substring(0, 4);
-            NetworkHandler.Instance.SavePlayer2Server(player);
+            
+            player.LevelScores.Add(new LevelScore(1) { LeardBoardID = "CgkImsCF9cIaEAIQAA" });
+            player.Save2File();
         }
+
+
         return player;
+    }
+
+  public void Init()
+    {
+        SocialManager.Instance.Authenticate(ok=> {
+            if(ok)
+            {
+                UserName = Social.localUser.userName;
+                UserID = Social.localUser.id;
+            }
+           
+        });
     }
     #endregion
 
@@ -101,7 +120,8 @@ public class Player {
         if(score.SetScore(record.Scores))
         {
             //重新计算总分
-           // SaveAsync();
+            // SaveAsync();
+            SocialManager.Instance.ReportScore(score.BestScore, score.LeardBoardID);
         }
 
         Save2File();
@@ -133,9 +153,38 @@ public class Player {
         if(score == null)
         {
             score = new LevelScore(level);
+            score.LeardBoardID = GameGlobalValue.GetBoardIdByLevel(level);
             LevelScores.Add(score);
         }
         return score;
+    }
+
+    LevelScore GetScoreByBoardId(string boardId)
+    {
+        LevelScore score = LevelScores.Find(p => { return p.LeardBoardID == boardId; });
+        if(score == null)
+        {
+            score = new LevelScore(GameGlobalValue.GetLevelIdByBoardId(boardId));
+            score.LeardBoardID = boardId;
+            LevelScores.Add(score);
+        }
+        return score;
+    }
+
+    public void UpdateRank(string boardid , IScore score)
+    {
+        LevelScore levelScore = GetScoreByBoardId(boardid);
+        if(levelScore.BestScore <= score.value)
+        {
+            levelScore.BestScore = (int)score.value;
+            levelScore.Rank = score.rank;
+            Save2File();
+        }
+        else 
+        {
+            SocialManager.Instance.ReportScore(levelScore.BestScore, boardid);
+        }
+
     }
 
     #endregion

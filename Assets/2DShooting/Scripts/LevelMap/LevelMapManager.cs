@@ -6,15 +6,22 @@ public class LevelMapManager : MonoBehaviour {
 
     // Use this for initialization
     /// <summary>
-    /// 滑动区域
+    /// 所有场景的父对象
     /// </summary>
-    [Tooltip("滑动列表")]
-    public GameObject ScrollGrid;
+    [Tooltip("所有场景的父对象")]
+    public GameObject Scenes;
     /// <summary>
     /// 场景缩略图
     /// </summary>
     public Image sceneThumb;
+    /// <summary>
+    /// 玩家名称显示
+    /// </summary>
+    public Text playerNameText;
 
+    /// <summary>
+    /// 开始按钮
+    /// </summary>
     public Button playButton;
 
     private int selectScene = -1;
@@ -22,10 +29,12 @@ public class LevelMapManager : MonoBehaviour {
 
     public void Start()
     {
+        //更新名称显示
+
         //附加选择事件
-        if(ScrollGrid != null)
+        if(Scenes != null)
         {
-            Toggle[] toggles = ScrollGrid.GetComponentsInChildren<Toggle>();
+            Toggle[] toggles = Scenes.GetComponentsInChildren<Toggle>();
             if(toggles != null && toggles.Length > 0)
             {
                for(int i= 0;i<toggles.Length;i++)
@@ -34,6 +43,10 @@ public class LevelMapManager : MonoBehaviour {
                     tog.onValueChanged.AddListener((b) => {
                         OnToggleValueChange(b, tog.GetComponent<LevelMapObject>());
                     });
+                    if(tog.isOn)
+                    {
+                        OnToggleValueChange(true, tog.GetComponent<LevelMapObject>());
+                    }
                 }
             }
         }
@@ -62,19 +75,14 @@ public class LevelMapManager : MonoBehaviour {
             if(mapObj)
             {
                 selectScene = mapObj.level;
-                if(sceneThumb)
-                {
-                    Rect textureRect = new Rect(sceneThumb.GetComponent<RectTransform>().rect);
-                    textureRect.position = new Vector2(0, 0);
-                    Sprite sp = Sprite.Create(mapObj.thumb,textureRect,sceneThumb.sprite.pivot);
-                    sceneThumb.sprite = sp;
-                }
+                //获得当前的排名
+
             }
         }
         else
         {
             selectScene = -1;
-            playButton.enabled = false;
+            //playButton.enabled = false;
         }
     }
 }

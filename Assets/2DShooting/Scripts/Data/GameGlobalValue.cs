@@ -1,17 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class GameGlobalValue  {
+public class GameGlobalValue
+{
 
-	//Score
+    //Score
     public static float hit2Score = .2f;
     public static float hit3Score = .3f;
     public static float hit4Score = .4f;
     public static float hit5Score = .5f;
-    public static float hit6Score = .6f ;
+    public static float hit6Score = .6f;
     public static float headShotScore = 1f;
 
-    public static int GetHitScore(int combo,ref int score ,bool headShot = false)
+    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkImsCF9cIaEAIQAA" } };
+
+    public static int GetLevelIdByBoardId(string id)
+    {
+        int levelid = 1;
+        foreach (KeyValuePair<int, string> keyVal in LevelBoardMap)
+        {
+            if (keyVal.Value == id)
+            {
+                levelid = keyVal.Key;
+                break;
+            }
+
+        }
+        return levelid;
+    }
+
+    public static string GetBoardIdByLevel(int level)
+    {
+        string ret = "";
+        if(LevelBoardMap.ContainsKey(level))
+        {
+            ret = LevelBoardMap[level];
+        }
+        return ret;
+    }
+
+    public static int GetHitScore(int combo, ref int score, bool headShot = false)
     {
         //爆头
         int addScore = 0;
@@ -19,16 +48,16 @@ public class GameGlobalValue  {
         {
             //addScore = (int)(score * headShotScore) - score;
             addScore = (int)(score * headShotScore);
-            
+
         }
-       
+
 
         //两连杀
-        if(combo == 2)
+        if (combo == 2)
         {
             addScore += (int)(score * hit2Score);
         }
-        else if(combo == 3)
+        else if (combo == 3)
         {
             addScore += (int)(score * hit3Score);
         }

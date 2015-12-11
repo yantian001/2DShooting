@@ -11,5 +11,7 @@ public class LevelMapObject : MonoBehaviour {
     public int level = 1;
     [Tooltip("场景缩略图")]
     public Texture2D thumb;
+    [Tooltip("排行榜ID")]
+    public string LeardBoardID = "";
 
 }
