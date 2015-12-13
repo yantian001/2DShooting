@@ -57,31 +57,24 @@ public class SocialManager
     {
         SocialObjects = new Dictionary<string, List<SocialObject>>();
 
-        if (Application.internetReachability != NetworkReachability.NotReachable)
+        string str = FileUtils.ReadFile(rankFileName);
+        if (!string.IsNullOrEmpty(str))
         {
-            //get rank info from server 
-
-        }
-        else
-        {
-            string str = FileUtil.ReadFile(rankFileName);
-            if(!string.IsNullOrEmpty(str))
+            Dictionary<string, List<SocialObject>> localObjects = JsonConvert.DeserializeObject<Dictionary<string, List<SocialObject>>>(str);
+            foreach (KeyValuePair<int, string> keyVal in GameGlobalValue.LevelBoardMap)
             {
-                Dictionary<string, List<SocialObject>> localObjects = JsonConvert.DeserializeObject<Dictionary<string, List<SocialObject>>>(str);
-                foreach (KeyValuePair<int, string> keyVal in GameGlobalValue.LevelBoardMap)
+                if (localObjects.ContainsKey(keyVal.Value))
                 {
-                    if (localObjects.ContainsKey(keyVal.Value))
-                    {
-                        SocialObjects.Add(keyVal.Value, localObjects[keyVal.Value]);
-                    }
-                    else
-                    {
-                        SocialObjects.Add(keyVal.Value, null);
-                    }
+                    SocialObjects.Add(keyVal.Value, localObjects[keyVal.Value]);
+                }
+                else
+                {
+                    SocialObjects.Add(keyVal.Value, null);
                 }
             }
         }
-        
+
+
     }
 
     public bool CheckUpdated()
@@ -110,7 +103,7 @@ public class SocialManager
         }
         else
         {
-            if(updatedUserCount >= updateUserCount && updatedRankCount >= updateRankCount)
+            if (updatedUserCount >= updateUserCount && updatedRankCount >= updateRankCount)
             {
                 updated = true;
                 SaveRank2Local();
@@ -125,7 +118,7 @@ public class SocialManager
     {
         // Ranks
         string jsonstr = JsonConvert.SerializeObject(SocialObjects);
-        FileUtil.Save2File(rankFileName, jsonstr);
+        FileUtils.Save2File(rankFileName, jsonstr);
     }
 
     public void SyncRank()
@@ -217,6 +210,7 @@ public class SocialManager
     void Init()
     {
 #if UNITY_ANDROID
+        GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
         GooglePlayGames.PlayGamesPlatform.Activate();
 #endif
 #if UNITY_IPHONE
@@ -297,6 +291,21 @@ public class SocialManager
        {
            onComplete(ok, lb.scores);
        });
+    }
+
+
+    /// <summary>
+    /// 获取相应排行版的信息
+    /// </summary>
+    /// <param name="leardboardId"></param>
+    /// <returns></returns>
+    public List<SocialObject> GetObjectsById(string leardboardId)
+    {
+        if (SocialObjects.ContainsKey(leardboardId))
+        {
+            return SocialObjects[leardboardId];
+        }
+        return null;
     }
 
     #endregion

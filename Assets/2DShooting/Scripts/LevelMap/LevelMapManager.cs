@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-public class LevelMapManager : MonoBehaviour {
+public class LevelMapManager : MonoBehaviour
+{
 
     // Use this for initialization
     /// <summary>
@@ -20,30 +22,60 @@ public class LevelMapManager : MonoBehaviour {
     public Text playerNameText;
 
     /// <summary>
+    /// 排名显示区域
+    /// </summary>
+    public RectTransform rankZone;
+    /// <summary>
+    /// 排名显示对象
+    /// </summary>
+    public GameObject rankItem;
+    /// <summary>
+    /// 对象的高度
+    /// </summary>
+    public float rankItemHight = 50f;
+    /// <summary>
+    /// 我的排名的显示区域
+    /// </summary>
+    [Tooltip("我的排名的显示区域")]
+    public Transform myRankInfo;
+
+    /// <summary>
     /// 开始按钮
     /// </summary>
     public Button playButton;
 
     private int selectScene = -1;
     private GameDifficulty selectDifficulty = GameDifficulty.Normal;
+    /// <summary>
+    /// 当前选中的场景对象
+    /// </summary>
+    private LevelMapObject currentMapObject;
+    /// <summary>
+    /// 现有排名对象
+    /// </summary>
+    private List<GameObject> rankItems;
 
     public void Start()
     {
         //更新名称显示
-
+        if (playerNameText != null)
+        {
+            playerNameText.text = Player.CurrentPlayer.UserName;
+        }
         //附加选择事件
-        if(Scenes != null)
+        if (Scenes != null)
         {
             Toggle[] toggles = Scenes.GetComponentsInChildren<Toggle>();
-            if(toggles != null && toggles.Length > 0)
+            if (toggles != null && toggles.Length > 0)
             {
-               for(int i= 0;i<toggles.Length;i++)
+                for (int i = 0; i < toggles.Length; i++)
                 {
                     Toggle tog = toggles[i];
-                    tog.onValueChanged.AddListener((b) => {
+                    tog.onValueChanged.AddListener((b) =>
+                    {
                         OnToggleValueChange(b, tog.GetComponent<LevelMapObject>());
                     });
-                    if(tog.isOn)
+                    if (tog.isOn)
                     {
                         OnToggleValueChange(true, tog.GetComponent<LevelMapObject>());
                     }
@@ -52,7 +84,7 @@ public class LevelMapManager : MonoBehaviour {
         }
 
         //开始按钮点击事件
-        if(playButton != null)
+        if (playButton != null)
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
@@ -68,21 +100,118 @@ public class LevelMapManager : MonoBehaviour {
         }
     }
 
-    void OnToggleValueChange(bool selected , LevelMapObject mapObj)
+    void OnToggleValueChange(bool selected, LevelMapObject mapObj)
     {
-        if(selected)
+        if (selected)
         {
-            if(mapObj)
+            if (mapObj)
             {
+                currentMapObject = mapObj;
                 selectScene = mapObj.level;
                 //获得当前的排名
-
+                UpdateRankDisplay(mapObj);
             }
         }
         else
         {
             selectScene = -1;
             //playButton.enabled = false;
+        }
+    }
+
+
+    void UpdateRankDisplay(LevelMapObject mapObj)
+    {
+        //显示玩家的排名
+        // LevelScore Player.CurrentPlayer.
+        UpdatePlayerLevelRank(mapObj.level);
+        // rankZone.rect.Set(rankZone.rect.x, rankZone.rect.y, rankZone.rect.width, 1000f);
+        //rankZone.sizeDelta = new Vector2(rankZone.sizeDelta.x,1000f)x;
+        UpdateLevelLeardBoard(mapObj.LeardBoardID);
+        
+
+    }
+
+    void UpdateLevelLeardBoard(string leardid)
+    {
+        if(rankZone == null|| rankItem == null)
+        {
+            return;
+        }
+        rankZone.transform.DetachChildren();
+        List<SocialObject> socials = SocialManager.Instance.GetObjectsById(leardid);
+
+        
+        if (socials != null)
+        {
+            int itemCount = socials.Count;
+            if(itemCount > 0)
+            {
+                for(int i = 0;i<itemCount;i++)
+                {
+                    //添加排名
+                    SocialObject social = socials[i];
+                    if (social!=null)
+                    {
+                        GameObject item = Instantiate(rankItem);
+                        SetChildText(item.transform, "TextRank", social.Rank.ToString());
+                        SetChildText(item.transform, "TextUserName", social.UserName);
+                        SetChildText(item.transform, "TexBestScore", social.Score);
+                        item.transform.parent = rankZone.transform;
+                    }
+                }
+                if(itemCount > 5)
+                {
+                    float itemHight = rankZone.GetComponent<GridLayoutGroup>().cellSize.y;
+                    
+                }
+            }
+            rankZone.sizeDelta = new Vector2(rankZone.sizeDelta.x, itemCount * rankItemHight);
+        }
+    }
+
+    /// <summary>
+    /// 更新用户场景排名
+    /// </summary>
+    /// <param name="level"></param>
+    void UpdatePlayerLevelRank(int level)
+    {
+        if (myRankInfo != null)
+        {
+            SetChildText(myRankInfo, "TextMyName", Player.CurrentPlayer.UserName);
+        }
+        LevelScore score = Player.CurrentPlayer.GetScoreByLevel(level);
+        if (score != null)
+        {
+            SetChildText(myRankInfo, "TextMyScore", score.BestScore.ToString());
+            if (score.Rank <= 0)
+            {
+                SetChildText(myRankInfo, "TextMyRank", "-");
+            }
+            else
+            {
+                SetChildText(myRankInfo, "TextMyRank", score.Rank.ToString());
+            }
+        }
+        // if(score)
+    }
+
+    /// <summary>
+    /// 设置子对象的文本值
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="child"></param>
+    /// <param name="value"></param>
+    void SetChildText(Transform parent, string child, string value)
+    {
+        Transform childTran = parent.FindChild(child);
+        if (childTran != null)
+        {
+            Text childText = childTran.GetComponent<Text>();
+            if (childText)
+            {
+                childText.text = value;
+            }
         }
     }
 }

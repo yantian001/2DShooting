@@ -78,7 +78,7 @@ public class Player {
         return player;
     }
 
-  public void Init()
+  public void Login()
     {
         SocialManager.Instance.Authenticate(ok=> {
             if(ok)
@@ -147,7 +147,7 @@ public class Player {
     /// </summary>
     /// <param name="level"></param>
     /// <returns></returns>
-    LevelScore GetScoreByLevel(int level)
+    public LevelScore GetScoreByLevel(int level)
     {
         LevelScore score =LevelScores.Find(p => { return p.LevelID == level; });
         if(score == null)
@@ -159,7 +159,7 @@ public class Player {
         return score;
     }
 
-    LevelScore GetScoreByBoardId(string boardId)
+    public LevelScore GetScoreByBoardId(string boardId)
     {
         LevelScore score = LevelScores.Find(p => { return p.LeardBoardID == boardId; });
         if(score == null)

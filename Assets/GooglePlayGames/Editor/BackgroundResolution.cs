@@ -67,7 +67,7 @@ namespace GooglePlayGames
             //Marshmallow permissions requires app-compat
             svcSupport.DependOn("com.android.support",
                 "appcompat-v7",
-                "23.1.0+");
+                "19.0.0+");
         }
 
 #if UNITY_5
