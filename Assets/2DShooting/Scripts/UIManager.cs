@@ -201,11 +201,11 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 任务类型显示UI
     /// </summary>
-    public GameObject[] MissionUIs;
+    //public GameObject[] MissionUIs;
     /// <summary>
     /// 任务剩余数量显示文本
     /// </summary>
-    private Text missionRemainText;
+    public Text missionRemainText;
     /// <summary>
     /// 任务类型
     /// </summary>
@@ -231,19 +231,19 @@ public class UIManager : MonoBehaviour
     /// <param name="gType">当前的任务类型</param>
     public void ChangeGameType(int gType)
     {
-        if (MissionUIs != null && gType >= MissionUIs.Length)
-            return;
-        //显示当前任务类型的ui
-        for (int i = 0; i < MissionUIs.Length; i++)
-        {
-            if (gType == i)
-            {
-                MissionUIs[i].SetActive(true);
-                missionRemainText = MissionUIs[i].GetComponentInChildren<Text>();
-            }
-            else
-                MissionUIs[i].SetActive(false);
-        }
+        //if (MissionUIs != null && gType >= MissionUIs.Length)
+        //    return;
+        ////显示当前任务类型的ui
+        //for (int i = 0; i < MissionUIs.Length; i++)
+        //{
+        //    if (gType == i)
+        //    {
+        //        MissionUIs[i].SetActive(true);
+        //        missionRemainText = MissionUIs[i].GetComponentInChildren<Text>();
+        //    }
+        //    else
+        //        MissionUIs[i].SetActive(false);
+        //}
     }
 
     /// <summary>
@@ -419,6 +419,62 @@ public class UIManager : MonoBehaviour
     }
     //RectTransform FindChildByName()
 
+    #endregion
+
+    #region 盾牌
+
+    public RectTransform itemShield;
+
+        /// <summary>
+        /// 显示盾牌
+        /// </summary>
+        /// 
+    public void ShowShield()
+    {
+        if(itemShield)
+        {
+            Vector3 to = itemShield.anchoredPosition3D + new Vector3(0,450,0);
+            LeanTween.move(itemShield, to, .2f);
+        }
+    }
+
+    public void UpdateShieldStatu()
+    {
+        if(itemShield)
+        {
+            int childCount = itemShield.childCount;
+            int randomIndex = Random.Range(0, childCount - 1);
+            int i = 0;
+            while(i < childCount)
+            {
+                if(randomIndex >= childCount)
+                {
+                    randomIndex -= childCount;
+                }
+                var t = itemShield.GetChild(randomIndex);
+                if(!t.gameObject.activeSelf)
+                {
+                    t.gameObject.SetActive(true);
+                    break;
+                }
+                randomIndex++;
+                i++;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 隐藏盾牌
+    /// </summary>
+    public void HideShield()
+    {
+        if (itemShield)
+        {
+            Vector3 to = itemShield.anchoredPosition3D + new Vector3(0, -450, 0);
+            LeanTween.move(itemShield, to, .2f);
+        }
+    }
     #endregion
 
     public void OnEnable()

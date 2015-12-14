@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class LevelMapManager : MonoBehaviour
 {
-
+    #region 变量 & 属性
     // Use this for initialization
     /// <summary>
     /// 所有场景的父对象
@@ -55,6 +55,9 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     private List<GameObject> rankItems;
 
+    #endregion
+
+    #region MonoBehaviour
     public void Start()
     {
         //更新名称显示
@@ -88,8 +91,40 @@ public class LevelMapManager : MonoBehaviour
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
+
+        //添加事件监听
+        AddEventListener();
+    }
+    public void OnDisable()
+    {
+        RemoveEventListener();
+    }
+    #endregion
+
+    #region Events
+    void AddEventListener()
+    {
+        //监听排行版更新
+        LeanTween.addListener((int)Events.LEARDBOARDUPDATED, OnLeardBoardUpdated);
     }
 
+    void RemoveEventListener()
+    {
+        LeanTween.removeListener((int)Events.LEARDBOARDUPDATED, OnLeardBoardUpdated);
+    }
+
+    /// <summary>
+    /// 排行版更新事件
+    /// </summary>
+    /// <param name="evt"></param>
+    void OnLeardBoardUpdated(LTEvent evt)
+    {
+        UpdateRankDisplay(currentMapObject);
+    }
+
+    /// <summary>
+    /// 开始按钮点击
+    /// </summary>
     void OnPlayButtonClicked()
     {
         if (selectScene != -1)
@@ -118,40 +153,46 @@ public class LevelMapManager : MonoBehaviour
             //playButton.enabled = false;
         }
     }
-
-
+    #endregion
+    
+    /// <summary>
+    /// 更新排行版显示
+    /// </summary>
+    /// <param name="mapObj"></param>
     void UpdateRankDisplay(LevelMapObject mapObj)
     {
+        if (currentMapObject == null)
+            return;
         //显示玩家的排名
         // LevelScore Player.CurrentPlayer.
         UpdatePlayerLevelRank(mapObj.level);
         // rankZone.rect.Set(rankZone.rect.x, rankZone.rect.y, rankZone.rect.width, 1000f);
         //rankZone.sizeDelta = new Vector2(rankZone.sizeDelta.x,1000f)x;
         UpdateLevelLeardBoard(mapObj.LeardBoardID);
-        
+
 
     }
 
     void UpdateLevelLeardBoard(string leardid)
     {
-        if(rankZone == null|| rankItem == null)
+        if (rankZone == null || rankItem == null)
         {
             return;
         }
         rankZone.transform.DetachChildren();
         List<SocialObject> socials = SocialManager.Instance.GetObjectsById(leardid);
 
-        
+
         if (socials != null)
         {
             int itemCount = socials.Count;
-            if(itemCount > 0)
+            if (itemCount > 0)
             {
-                for(int i = 0;i<itemCount;i++)
+                for (int i = 0; i < itemCount; i++)
                 {
                     //添加排名
                     SocialObject social = socials[i];
-                    if (social!=null)
+                    if (social != null)
                     {
                         GameObject item = Instantiate(rankItem);
                         SetChildText(item.transform, "TextRank", social.Rank.ToString());
@@ -160,10 +201,10 @@ public class LevelMapManager : MonoBehaviour
                         item.transform.parent = rankZone.transform;
                     }
                 }
-                if(itemCount > 5)
+                if (itemCount > 5)
                 {
                     float itemHight = rankZone.GetComponent<GridLayoutGroup>().cellSize.y;
-                    
+
                 }
             }
             rankZone.sizeDelta = new Vector2(rankZone.sizeDelta.x, itemCount * rankItemHight);

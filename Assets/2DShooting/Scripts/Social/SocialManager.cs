@@ -45,7 +45,6 @@ public class SocialManager
         {
             _instance = value;
         }
-
     }
 
 
@@ -56,25 +55,6 @@ public class SocialManager
     private SocialManager()
     {
         SocialObjects = new Dictionary<string, List<SocialObject>>();
-
-        string str = FileUtils.ReadFile(rankFileName);
-        if (!string.IsNullOrEmpty(str))
-        {
-            Dictionary<string, List<SocialObject>> localObjects = JsonConvert.DeserializeObject<Dictionary<string, List<SocialObject>>>(str);
-            foreach (KeyValuePair<int, string> keyVal in GameGlobalValue.LevelBoardMap)
-            {
-                if (localObjects.ContainsKey(keyVal.Value))
-                {
-                    SocialObjects.Add(keyVal.Value, localObjects[keyVal.Value]);
-                }
-                else
-                {
-                    SocialObjects.Add(keyVal.Value, null);
-                }
-            }
-        }
-
-
     }
 
     public bool CheckUpdated()
@@ -107,6 +87,7 @@ public class SocialManager
             {
                 updated = true;
                 SaveRank2Local();
+                LeanTween.dispatchEvent((int)Events.LEARDBOARDUPDATED);
             }
         }
     }
@@ -118,11 +99,14 @@ public class SocialManager
     {
         // Ranks
         string jsonstr = JsonConvert.SerializeObject(SocialObjects);
+        Debug.Log("Save rankinfo to disk" + jsonstr);
         FileUtils.Save2File(rankFileName, jsonstr);
     }
 
     public void SyncRank()
     {
+        if (!Social.localUser.authenticated)
+            return;
         GetRankFromService();
     }
 
@@ -153,20 +137,26 @@ public class SocialManager
                 //更新排行榜
                 this.GetTopByByLeaderboardID(boardId, new Range(1, 25), (ok, scores) =>
                 {
+                    Debug.Log(ok);
                     if (ok)
                     {
                         List<SocialObject> objs = new List<SocialObject>();
                         List<string> UserIds = new List<string>();
                         foreach (IScore s in scores)
                         {
-                            UserIds.Add(s.userID);
+                            if(s != null)
+                                UserIds.Add(s.userID);
                         }
                         Social.LoadUsers(UserIds.ToArray(), users =>
                         {
                             foreach (IScore s in scores)
                             {
                                 SocialObject obj = new SocialObject(s);
-                                obj.UserName = FindUser(users, s.userID).userName;
+                                IUserProfile user = FindUser(users, s.userID);
+                                if(user != null)
+                                {
+                                    obj.UserName = FindUser(users, s.userID).userName;
+                                }
                                 objs.Add(obj);
                             }
                             SocialObjects.Add(boardId, objs);
@@ -179,6 +169,29 @@ public class SocialManager
         }
     }
 
+    /// <summary>
+    /// 从本地获取排名信息
+    /// </summary>
+    void GetRankFromLocal()
+    {
+        string str = FileUtils.ReadFile(rankFileName);
+        if (!string.IsNullOrEmpty(str))
+        {
+            Dictionary<string, List<SocialObject>> localObjects = JsonConvert.DeserializeObject<Dictionary<string, List<SocialObject>>>(str);
+            foreach (KeyValuePair<int, string> keyVal in GameGlobalValue.LevelBoardMap)
+            {
+                if (localObjects.ContainsKey(keyVal.Value))
+                {
+                    SocialObjects.Add(keyVal.Value, localObjects[keyVal.Value]);
+                }
+                else
+                {
+                    SocialObjects.Add(keyVal.Value, null);
+                }
+            }
+        }
+
+    }
     /// <summary>
     /// 通过用户ID查找用户
     /// </summary>
@@ -217,6 +230,8 @@ public class SocialManager
     // by defaults when player gets achievement nothing happens, so we call this function to show standard iOS popup when achievement is completed by user
     UnityEngine.SocialPlatforms.GameCenter.GameCenterPlatform.ShowDefaultAchievementCompletionBanner(true);
 #endif
+        //从本地获取排名信息
+        GetRankFromLocal();
     }
     #endregion
 
@@ -226,6 +241,7 @@ public class SocialManager
     /// </summary>
     public void Authenticate(System.Action<bool> onAuthComplete)
     {
+        //if(!Application.)
         if (!Social.localUser.authenticated)
         {
             Social.localUser.Authenticate(onAuthComplete);
@@ -282,7 +298,12 @@ public class SocialManager
     /// <param name="userScope">用户区间</param>
     public void GetTopByByLeaderboardID(string id, Range range, System.Action<bool, IScore[]> onComplete, TimeScope scope = TimeScope.AllTime, UserScope userScope = UserScope.Global)
     {
+        if (!Social.localUser.authenticated)
+            return;
         ILeaderboard lb = Social.CreateLeaderboard();
+        Debug.Log(lb);
+        if (lb == null)
+            return;
         lb.id = id;
         lb.range = range;
         lb.timeScope = scope;

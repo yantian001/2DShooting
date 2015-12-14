@@ -34,6 +34,10 @@ public enum Events
     /// <summary>
     /// 击中了道具  盾牌 , 附带盾牌值
     /// </summary>
-    ITEMSHIELDHIT
+    ITEMSHIELDHIT,
+    /// <summary>
+    /// 排行榜更新了
+    /// </summary>
+    LEARDBOARDUPDATED
 
 }

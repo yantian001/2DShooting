@@ -5,14 +5,16 @@ public class SocialHandler : MonoBehaviour {
 
     static SocialHandler _instance = null;
 
-    /// <summary>
-    /// 启动时 自动刷新 
-    /// </summary>
-    public bool refreshOnStart = false;
+    
     /// <summary>
     /// 自动登录
     /// </summary>
     public bool loginOnStart = false;
+    /// <summary>
+    /// 启动时 自动刷新 
+    /// </summary>
+    public bool refreshAfterLogin = false;
+
 
     [Tooltip("是否自动刷新")]
     public bool AutoRefresh = false;
@@ -54,19 +56,24 @@ public class SocialHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        
-        if(loginOnStart)
+        IsLoadFinish = false;
+        if(Application.internetReachability != NetworkReachability.NotReachable)
         {
-            Player.CurrentPlayer.Login();
-        }
-	    if(Application.internetReachability != NetworkReachability.NotReachable)
-        {
-            if(refreshOnStart)
+            if (loginOnStart)
             {
-                Sync();
+                Player.CurrentPlayer.Login((ok)=> 
+                    {
+                        if(ok)
+                        {
+                            if(refreshAfterLogin)
+                            {
+                                Sync();
+                            }
+                        }
+                    }
+                );
             }
-
-            if(AutoRefresh)
+            if (AutoRefresh)
             {
                 StartCoroutine(AutoSync());
             }
@@ -75,7 +82,6 @@ public class SocialHandler : MonoBehaviour {
         {
             IsLoadFinish = true;
         }
-        
 	}
 
     IEnumerator AutoSync()
@@ -89,6 +95,10 @@ public class SocialHandler : MonoBehaviour {
 
     void Sync()
     {
+        if(Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            return;
+        }
         SocialManager.Instance.SyncRank();
         IsLoadFinish = false;
         isLoading = true;
@@ -103,7 +113,6 @@ public class SocialHandler : MonoBehaviour {
                 isLoading = false;
                 IsLoadFinish = true;
             }
-
         }
 	}
 }

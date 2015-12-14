@@ -100,7 +100,7 @@ public class GameItemManager : MonoBehaviour {
         });
         if(newList!=null && newList.Count > 0)
         {
-            tran = newList[(int)Random.Range(0, newList.Count - 1)];
+            tran = newList[Mathf.RoundToInt(Random.Range(0f, newList.Count - 1))];
         }
         return tran;
     }
@@ -115,7 +115,8 @@ public class GameItemManager : MonoBehaviour {
 
         if(spwanItems != null && spwanItems.Length > 0)
         {
-            obj = spwanItems[(int)Random.Range(0, spwanItems.Length - 1)];
+            
+            obj = spwanItems[Mathf.RoundToInt( Random.Range(0f, spwanItems.Length-1))];
         }
         return obj;
     }

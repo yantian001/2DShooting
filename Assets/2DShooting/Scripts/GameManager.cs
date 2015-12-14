@@ -80,6 +80,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     float playerCurrentHP;
     bool isPlayerDie = false;
+    /// <summary>
+    /// 是否有护盾
+    /// </summary>
+    bool haveShield = false;
+
+    /// <summary>
+    /// 护盾值
+    /// </summary>
+    float shieldValue = 0.0f;
 
     //游戏记录
     public GameRecords records = null;
@@ -88,16 +97,17 @@ public class GameManager : MonoBehaviour
     {
         level = GameLogic.s_CurrentScene;
         gameDifficulty = GameLogic.s_CurrentDifficulty;
+        if (records == null)
+        {
+            records = new GameRecords(level, (int)gameDifficulty);
+        }
         //初始化游戏数据
         InitGameData();
         //初始 emenyController
         InitEmenyController();
         //初始化UI
         InitUI();
-        if (records == null)
-        {
-            records = new GameRecords(level, (int)gameDifficulty);
-        }
+       
         Statu = GameStatu.InGame;
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
@@ -110,7 +120,7 @@ public class GameManager : MonoBehaviour
     {
         //更新任务
         UIManager.Instance.GameType = (int)gameData.gameType;
-        UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
+        UIManager.Instance.UpdateMissionRemain(records.EnemyKills);
 
         //更新血量显示
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP, gameData.playerHealth);
@@ -151,11 +161,11 @@ public class GameManager : MonoBehaviour
     /// <param name="count">产生怪物的数量</param>
     public void SpawnedEnemy(int count = 1)
     {
-        if (gameData.gameType == GameData.GameType.Count)
-        {
-            curMissionCount -= count;
-            UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
-        }
+        //if (gameData.gameType == GameData.GameType.Count)
+        //{
+        //    curMissionCount -= count;
+        //    UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
+        //}
     }
 
     /// <summary>
@@ -164,7 +174,10 @@ public class GameManager : MonoBehaviour
     /// <param name="headshoot">是否爆头死亡</param>
     public void EmenyDead(int score, bool headshoot = false)
     {
+
         records.EnemyKills += 1;
+        UIManager.Instance.UpdateMissionRemain(records.EnemyKills);
+
         if (headshoot)
         {
             records.HeadShotCount += 1;
@@ -197,9 +210,31 @@ public class GameManager : MonoBehaviour
     /// <param name="demage">伤害值</param>
     public void PlayerInjured(float demage)
     {
-        playerCurrentHP -= demage;
-        UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
-        UIManager.Instance.ShowPlayDamageEffect();
+        if (haveShield && shieldValue > 0)
+        {
+            if (shieldValue >= demage)
+            {
+                shieldValue -= demage;
+            }
+            else
+            {
+                shieldValue = 0;
+                playerCurrentHP -= (demage - shieldValue);
+                UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+                UIManager.Instance.ShowPlayDamageEffect();
+            }
+            if (shieldValue <= 0)
+            {
+                haveShield = false;
+                UIManager.Instance.HideShield();
+            }
+        }
+        else
+        {
+            playerCurrentHP -= demage;
+            UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+            UIManager.Instance.ShowPlayDamageEffect();
+        }
     }
 
 
@@ -298,7 +333,17 @@ public class GameManager : MonoBehaviour
     /// <param name="obj"></param>
     private void OnGetShield(LTEvent evt)
     {
-        throw new NotImplementedException();
+       // throw new NotImplementedException();
+       if(evt.data != null)
+        {
+            float addedVal = 0.0f;
+            if (float.TryParse(evt.data.ToString(), out addedVal))
+            {
+                this.haveShield = true;
+                shieldValue += addedVal;
+                UIManager.Instance.ShowShield();
+            }
+        }
     }
 
 

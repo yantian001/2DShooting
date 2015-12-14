@@ -82,7 +82,7 @@ public class JoystickBackgroundMovment : MonoBehaviour {
                 {
                     for(int i = 0;i<raycasts.Length;i++)
                     {
-                        if (raycasts[i].collider.gameObject.GetComponent<Enemy>() != null)
+                        if (raycasts[i].collider.gameObject.GetComponent<Enemy>() != null || raycasts[i].collider.gameObject.GetComponent<GameItem>() != null)
                         {
                             hasTarget = true;
                             break;
@@ -93,7 +93,7 @@ public class JoystickBackgroundMovment : MonoBehaviour {
             if(hasTarget)
             {
                 interval = nearInteval;
-                Debug.Log("near target");
+              //  Debug.Log("near target");
             }
             
         }

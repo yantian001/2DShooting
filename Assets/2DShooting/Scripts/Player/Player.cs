@@ -77,16 +77,30 @@ public class Player {
 
         return player;
     }
-
+    /// <summary>
+    /// 登录
+    /// </summary>
   public void Login()
     {
-        SocialManager.Instance.Authenticate(ok=> {
-            if(ok)
+        Login(null);
+    }
+    /// <summary>
+    /// 登录
+    /// </summary>
+    /// <param name="onComplete">登录完成后回调</param>
+    public void Login(System.Action<bool> onComplete)
+    {
+        SocialManager.Instance.Authenticate(ok => {
+            if (ok)
             {
                 UserName = Social.localUser.userName;
                 UserID = Social.localUser.id;
+                Save2File();
             }
-           
+            if (onComplete != null)
+            {
+                onComplete(ok);
+            }
         });
     }
     #endregion

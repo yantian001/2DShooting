@@ -22,7 +22,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         public void SetUpState()
         {
             CrossPlatformInputManager.SetButtonUp(Name);
-			Debug.Log (1);
+			//Debug.Log (1);
         }
 
 

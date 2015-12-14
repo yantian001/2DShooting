@@ -69,7 +69,8 @@ public class GameItem : MonoBehaviour
 
     public void OnGUI()
     {
-       
+        if (!isDisplayTimeRemain)
+            return;  
         BoxCollider2D collider = GetComponent<BoxCollider2D>();
         if (collider == null)
             return;
