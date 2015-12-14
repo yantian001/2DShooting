@@ -90,6 +90,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     float shieldValue = 0.0f;
 
+    /// <summary>
+    /// 盾值的4分之一
+    /// </summary>
+    float qurShieldValue = 0.0f;
+
+    float curQurShildValue = 0.0f;
     //游戏记录
     public GameRecords records = null;
 
@@ -215,6 +221,12 @@ public class GameManager : MonoBehaviour
             if (shieldValue >= demage)
             {
                 shieldValue -= demage;
+                curQurShildValue -= demage;
+                if(curQurShildValue <= 0)
+                {
+                    UIManager.Instance.UpdateShieldStatu();
+                    curQurShildValue = qurShieldValue;
+                }
             }
             else
             {
@@ -341,6 +353,8 @@ public class GameManager : MonoBehaviour
             {
                 this.haveShield = true;
                 shieldValue += addedVal;
+                qurShieldValue = shieldValue / 4;
+                curQurShildValue = qurShieldValue;
                 UIManager.Instance.ShowShield();
             }
         }

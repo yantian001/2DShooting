@@ -438,6 +438,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 添加弹孔
+    /// </summary>
     public void UpdateShieldStatu()
     {
         if(itemShield)
@@ -472,8 +475,17 @@ public class UIManager : MonoBehaviour
         if (itemShield)
         {
             Vector3 to = itemShield.anchoredPosition3D + new Vector3(0, -450, 0);
-            LeanTween.move(itemShield, to, .2f);
+            LeanTween.move(itemShield, to, .2f).setOnComplete(()=> {
+                for(int i=0;i<itemShield.childCount;i++)
+                {
+                    itemShield.GetChild(i).gameObject.SetActive(false);
+                }
+            });
+
+           
         }
+
+
     }
     #endregion
 
