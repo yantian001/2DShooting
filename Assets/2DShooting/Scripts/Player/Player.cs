@@ -63,18 +63,17 @@ public class Player {
             string jsonstr = PlayerPrefs.GetString("GameData");
             Debug.Log(jsonstr);
             player = JsonConvert.DeserializeObject<Player>(jsonstr);
+            
         }
         if(player == null)
         {
             player = new Player();
             player.UserID = SystemInfo.deviceUniqueIdentifier;
             player.UserName = "Player" + player.UserID.Substring(0, 4);
-            
             player.LevelScores.Add(new LevelScore(1) { LeardBoardID = "CgkImsCF9cIaEAIQAA" });
             player.Save2File();
         }
-
-
+        
         return player;
     }
     /// <summary>
@@ -95,6 +94,19 @@ public class Player {
             {
                 UserName = Social.localUser.userName;
                 UserID = Social.localUser.id;
+
+                List<LevelScore> needReportScores = GetNeedReportScores();
+                if(needReportScores != null && needReportScores.Count > 0)
+                {
+                    for(int i =0;i<needReportScores.Count;i++)
+                    {
+                        LevelScore score = needReportScores[i];
+                        this.ReportScore(score.LeardBoardID, score.BestScore, (b) => {
+                            score.NeedReported = !b;
+                        });
+                    }
+                }
+
                 Save2File();
             }
             if (onComplete != null)
@@ -129,21 +141,15 @@ public class Player {
         { return; }
 
         score.PlayCount += 1;
-        //score.Weight = record.Weight;
         score.MaxHits = record.MaxCombos;
         if(score.SetScore(record.Scores))
         {
             //重新计算总分
-            // SaveAsync();
-            SocialManager.Instance.ReportScore(score.BestScore, score.LeardBoardID);
+            this.ReportScore(score.LeardBoardID, score.BestScore, (ok) => {
+                score.NeedReported = !ok;
+            });
         }
-
         Save2File();
-    }
-
-    void Sync2Server(Player player)
-    {
-        //this.SaveAsync();
     }
 
     /// <summary>
@@ -185,6 +191,11 @@ public class Player {
         return score;
     }
 
+    /// <summary>
+    /// 更新榜单排名
+    /// </summary>
+    /// <param name="boardid"></param>
+    /// <param name="score"></param>
     public void UpdateRank(string boardid , IScore score)
     {
         LevelScore levelScore = GetScoreByBoardId(boardid);
@@ -196,9 +207,36 @@ public class Player {
         }
         else 
         {
-            SocialManager.Instance.ReportScore(levelScore.BestScore, boardid);
+           this.ReportScore(boardid, levelScore.BestScore, (ok)=> {
+               levelScore.NeedReported = !ok;
+           });
         }
 
+    }
+    /// <summary>
+    /// 获取所有需要上传的成绩
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public List<LevelScore> GetNeedReportScores()
+    {
+        List<LevelScore> result = null;
+        if(this.LevelScores != null)
+        {
+            result = LevelScores.FindAll(p => { return p.NeedReported; });
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 上传成绩到指定排行榜
+    /// </summary>
+    /// <param name="boardId">排行版ID</param>
+    /// <param name="score">分数</param>
+    /// <param name="onComplete">回调函数</param>
+    public void ReportScore(string boardId ,int score,System.Action<bool> onComplete = null)
+    {
+        SocialManager.Instance.ReportScore( score, boardId, onComplete);
     }
 
     #endregion

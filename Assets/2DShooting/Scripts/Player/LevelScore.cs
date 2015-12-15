@@ -50,13 +50,17 @@ public class LevelScore
     /// 爆头总数
     /// </summary>
     public int HeadShotCount { get; set; }
-
+    /// <summary>
+    /// 是否已将最高分上传服务器
+    /// </summary>
+    public bool NeedReported { get; set; }
 
     public LevelScore(int level )
     {
         LevelID = level;
         BestScore = 0;
         PlayCount = 0;
+        NeedReported = false;
     }
 
     /// <summary>
@@ -70,7 +74,14 @@ public class LevelScore
         if(newScore)
         {
             BestScore = score;
+            NeedReported = true;
         }
         return newScore;
     }
+
+    public void Reported()
+    {
+        NeedReported = false;
+    }
+
 }

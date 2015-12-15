@@ -334,6 +334,7 @@ public class GameManager : MonoBehaviour
                 playerCurrentHP += addedValue;
                 UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
             }
+            SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
         }
     }
 

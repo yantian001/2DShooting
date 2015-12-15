@@ -119,6 +119,7 @@ public class LevelMapManager : MonoBehaviour
     /// <param name="evt"></param>
     void OnLeardBoardUpdated(LTEvent evt)
     {
+        Debug.Log("LeardBoard Updated!");
         UpdateRankDisplay(currentMapObject);
     }
 

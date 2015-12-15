@@ -54,6 +54,7 @@ public class SocialHandler : MonoBehaviour {
 
     }
 
+
 	// Use this for initialization
 	void Start () {
         IsLoadFinish = false;

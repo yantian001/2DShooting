@@ -159,7 +159,14 @@ public class SocialManager
                                 }
                                 objs.Add(obj);
                             }
-                            SocialObjects.Add(boardId, objs);
+                            if (SocialObjects.ContainsKey(boardId))
+                            {
+                                SocialObjects[boardId] = objs;
+                            }
+                            else
+                            {
+                                SocialObjects.Add(boardId, objs);
+                            }
                             updatedRankCount += 1;
                             CheckUpdateStatu();
                         });
@@ -168,6 +175,9 @@ public class SocialManager
             }
         }
     }
+
+
+    
 
     /// <summary>
     /// 从本地获取排名信息
@@ -285,7 +295,19 @@ public class SocialManager
     /// <param name="onComplete"></param>
     public void ReportScore(long score, string id, System.Action<bool> onComplete = null)
     {
-        Social.ReportScore(score, id, onComplete);
+        if(!CommonUtils.IsNetworkOk() || !Social.localUser.authenticated)
+        {
+            if(onComplete != null)
+            {
+                onComplete(false);
+            }
+        }
+        else
+        {
+            Debug.Log("Report to:" + id + " with score :" + score.ToString());
+            Social.ReportScore(score, id, onComplete);
+        }
+        
     }
 
     /// <summary>

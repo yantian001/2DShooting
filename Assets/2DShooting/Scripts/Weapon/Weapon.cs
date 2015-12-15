@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Weapon : MonoBehaviour
 {
@@ -169,7 +170,7 @@ public class Weapon : MonoBehaviour
         if (randomShooting && comboFire)
         {
 
-            shootPos = shootPos + new Vector3(Random.Range(-randomShootingSize.x / 2, randomShootingSize.x / 2), Random.Range(-randomShootingSize.y / 2, randomShootingSize.y / 2), 0);
+            shootPos = shootPos + new Vector3(UnityEngine.Random.Range(-randomShootingSize.x / 2, randomShootingSize.x / 2), UnityEngine.Random.Range(-randomShootingSize.y / 2, randomShootingSize.y / 2), 0);
         }
         return shootPos;
     }
@@ -181,6 +182,7 @@ public class Weapon : MonoBehaviour
         canShoot = false;
         anim.SetTrigger("isShooting");
         PlayMuzzleEffect();
+        PlaySignEffect();
         PlayShootAudio();
         ShowBullet(postion);
         //更新子弹数量显示
@@ -191,7 +193,7 @@ public class Weapon : MonoBehaviour
             ShakeBackground();
         }
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
-        if ((rayhit != null) && rayhit.collider != null)
+        if ( rayhit.collider != null)
         {
             //Debug.Log(rayhit.collider.name);
 
@@ -226,6 +228,22 @@ public class Weapon : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 播放准星动画
+    /// </summary>
+    private void PlaySignEffect()
+    {
+        //throw new NotImplementedException();
+        if(signTransform != null)
+        {
+            var animator = signTransform.GetComponent<Animator>();
+            if(animator != null)
+            {
+                animator.SetTrigger("shot");
+            }
+        }
+    }
+
     //晃动
     void ShakeBackground()
     {
@@ -244,14 +262,14 @@ public class Weapon : MonoBehaviour
         GameObject bult = Instantiate(bullet) as GameObject;
         bult.transform.position = muzzleEffectPlace.transform.position;
 
-        iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", (System.Object)bult));
+        iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", bult));
 
     }
 
     public void OnBulletMoveComplete(System.Object target)
     {
         // Debug.Log("move complete");
-        Destroy((Object)target);
+        Destroy((target as UnityEngine.Object));
     }
 
     //添加子弹击中地面的标记

@@ -41,10 +41,10 @@ public class UIManager : MonoBehaviour
     /// <param name="value"></param>
     public void UpdateRemainComboTime(float value)
     {
-        if(Combo)
+        if (Combo)
         {
             Slider remainTime = Combo.GetComponentInChildren<Slider>();
-            if(remainTime)
+            if (remainTime)
             {
                 remainTime.value = value;
             }
@@ -344,18 +344,20 @@ public class UIManager : MonoBehaviour
                 bgRect.localScale = Vector3.zero;
                 LeanTween.scale(bgRect, bgScale, 0.2f);
 
-                //显示title
-                GameObject tltSucc = bgRect.FindChild("TitleSuccess").gameObject;
-                GameObject tltFail = bgRect.FindChild("TitleFailed").gameObject;
-                if (tltSucc)
+                if (GameType != 2)
                 {
-                    tltSucc.SetActive(success);
+                    //显示title
+                    GameObject tltSucc = bgRect.FindChild("TitleSuccess").gameObject;
+                    GameObject tltFail = bgRect.FindChild("TitleFailed").gameObject;
+                    if (tltSucc)
+                    {
+                        tltSucc.SetActive(success);
+                    }
+                    if (tltFail)
+                    {
+                        tltFail.SetActive(!success);
+                    }
                 }
-                if (tltFail)
-                {
-                    tltFail.SetActive(!success);
-                }
-
                 //更新数据显示
 
                 //杀敌数
@@ -380,12 +382,12 @@ public class UIManager : MonoBehaviour
                 //爆头加分
                 Text txtHeadShotAddScore = bgRect.FindChild("HeadShotTitle/HeadShotAddScore").GetComponent<Text>();
                 if (txtHeadShotAddScore)
-                    txtHeadShotAddScore.text =string.Format(txtHeadShotAddScore.text, record.HeadshotAddScore.ToString());
+                    txtHeadShotAddScore.text = string.Format(txtHeadShotAddScore.text, record.HeadshotAddScore.ToString());
                 //分数
                 Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
                 if (txtScore)
                 {
-                    txtScore.text =  record.Scores.ToString();
+                    txtScore.text = record.Scores.ToString();
                 }
 
                 //重新开始按钮
@@ -425,17 +427,21 @@ public class UIManager : MonoBehaviour
 
     public RectTransform itemShield;
 
-        /// <summary>
-        /// 显示盾牌
-        /// </summary>
-        /// 
+    private bool isShieldShow = false;
+    /// <summary>
+    /// 显示盾牌
+    /// </summary>
+    /// 
     public void ShowShield()
     {
-        if(itemShield)
+        if (isShieldShow)
+            return;
+        if (itemShield)
         {
-            Vector3 to = itemShield.anchoredPosition3D + new Vector3(0,450,0);
+            Vector3 to = itemShield.anchoredPosition3D + new Vector3(0, 450, 0);
             LeanTween.move(itemShield, to, .2f);
         }
+        isShieldShow = true;
     }
 
     /// <summary>
@@ -443,19 +449,19 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void UpdateShieldStatu()
     {
-        if(itemShield)
+        if (itemShield)
         {
             int childCount = itemShield.childCount;
             int randomIndex = Random.Range(0, childCount - 1);
             int i = 0;
-            while(i < childCount)
+            while (i < childCount)
             {
-                if(randomIndex >= childCount)
+                if (randomIndex >= childCount)
                 {
                     randomIndex -= childCount;
                 }
                 var t = itemShield.GetChild(randomIndex);
-                if(!t.gameObject.activeSelf)
+                if (!t.gameObject.activeSelf)
                 {
                     t.gameObject.SetActive(true);
                     break;
@@ -472,20 +478,21 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void HideShield()
     {
+        if (!isShieldShow)
+            return;
         if (itemShield)
         {
             Vector3 to = itemShield.anchoredPosition3D + new Vector3(0, -450, 0);
-            LeanTween.move(itemShield, to, .2f).setOnComplete(()=> {
-                for(int i=0;i<itemShield.childCount;i++)
+            LeanTween.move(itemShield, to, .2f).setOnComplete(() =>
+            {
+                for (int i = 0; i < itemShield.childCount; i++)
                 {
                     itemShield.GetChild(i).gameObject.SetActive(false);
                 }
             });
-
-           
         }
 
-
+        isShieldShow = false;
     }
     #endregion
 
