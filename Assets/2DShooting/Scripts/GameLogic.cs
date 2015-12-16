@@ -4,24 +4,48 @@ using System.Collections;
 public class GameLogic : MonoBehaviour
 {
 
-    /// <summary>
-    /// 当前场景
-    /// </summary>
-    public static int s_CurrentScene = 1;
-    /// <summary>
-    /// 当前游戏难度
-    /// </summary>
-    public static GameDifficulty s_CurrentDifficulty = GameDifficulty.Normal;
+   
     /// <summary>
     /// Loading界面
     /// </summary>
-    public static int s_LoadingSceneId = 2;
+    public  int s_LoadingSceneId = 2;
+    public  int s_MainMenuSceneId = 0;
+    
 
-    public static int s_MainMenuSceneId = 0;
+    private static GameLogic _logic = null;
+
+    public static GameLogic Instance
+    {
+        get
+        {
+            if(_logic == null)
+            {
+                _logic = FindObjectOfType<GameLogic>();
+                if(_logic == null)
+                {
+                    GameObject logicContainer = new GameObject();
+                    logicContainer.name = "GameLogicContainer";
+                    _logic = logicContainer.AddComponent<GameLogic>();
+                }
+            }
+            return _logic;
+        }
+    }
+
     void Awake()
     {
-        LeanTween.addListener((int)Events.GAMERESTART, OnGameRestart);
-        LeanTween.addListener((int)Events.MAINMENU, OnGameMainMenu);
+        if(_logic == null)
+        {
+            _logic = this;
+            DontDestroyOnLoad(gameObject);
+
+            LeanTween.addListener((int)Events.GAMERESTART, OnGameRestart);
+            LeanTween.addListener((int)Events.MAINMENU, OnGameMainMenu);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void OnGameRestart(LTEvent evt)
@@ -31,7 +55,7 @@ public class GameLogic : MonoBehaviour
 
     void OnGameMainMenu(LTEvent evt)
     {
-        s_CurrentScene = s_MainMenuSceneId;
+        GameGlobalValue.s_CurrentScene = s_MainMenuSceneId;
         Loading();
     }
 
@@ -47,7 +71,7 @@ public class GameLogic : MonoBehaviour
         LeanTween.removeListener((int)Events.GAMERESTART, OnGameRestart);
     }
 
-    public static void Loading()
+    public  void Loading()
     {
         Application.LoadLevel(s_LoadingSceneId);
     }

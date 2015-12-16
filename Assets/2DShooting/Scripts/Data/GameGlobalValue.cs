@@ -76,4 +76,17 @@ public class GameGlobalValue
         score += addScore;
         return addScore;
     }
+
+    /// <summary>
+    /// 当前场景
+    /// </summary>
+    public static int s_CurrentScene = 1;
+    /// <summary>
+    /// 当前游戏难度
+    /// </summary>
+    public static GameDifficulty s_CurrentDifficulty = GameDifficulty.Normal;
+    /// <summary>
+    /// 当前武器ID
+    /// </summary>
+    public static int s_currentWeaponId = 0;
 }

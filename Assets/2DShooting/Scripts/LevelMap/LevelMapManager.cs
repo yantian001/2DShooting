@@ -130,9 +130,9 @@ public class LevelMapManager : MonoBehaviour
     {
         if (selectScene != -1)
         {
-            GameLogic.s_CurrentScene = selectScene;
-            GameLogic.s_CurrentDifficulty = selectDifficulty;
-            GameLogic.Loading();
+            GameGlobalValue.s_CurrentScene = selectScene;
+            GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
+            GameLogic.Instance.Loading();
         }
     }
 

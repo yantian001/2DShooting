@@ -25,7 +25,7 @@ public class LoadingScene : MonoBehaviour {
 	
     IEnumerator LoadScene()
     {
-        async = Application.LoadLevelAsync(GameLogic.s_CurrentScene);
+        async = Application.LoadLevelAsync(GameGlobalValue.s_CurrentScene);
         async.allowSceneActivation = false;
         yield return async;
     }

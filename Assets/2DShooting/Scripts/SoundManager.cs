@@ -53,6 +53,21 @@ public class SoundManager : MonoBehaviour {
         }
     }
     
+
+    public void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
+
     public void PlaySound(SoundType st,float volume = 1.0f, float delay = 0.0f)
     {
         switch(st)

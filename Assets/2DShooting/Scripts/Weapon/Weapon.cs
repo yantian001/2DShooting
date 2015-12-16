@@ -195,13 +195,13 @@ public class Weapon : MonoBehaviour
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
         if ( rayhit.collider != null)
         {
-            //Debug.Log(rayhit.collider.name);
+            Debug.Log(rayhit.collider.name);
 
             //是否击中了敌人
             Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
-
             if (enemy != null)
             {
+                
                 Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
@@ -213,6 +213,24 @@ public class Weapon : MonoBehaviour
                 }
 
             }
+
+            GAFEnemy gafEnemy = rayhit.collider.gameObject.GetComponentInParent<GAFEnemy>();
+            if (gafEnemy != null)
+            {
+
+                Debug.Log(gafEnemy.name);
+                //Debug.Log(rayhit.collider.GetType());
+                if (rayhit.collider.GetType() == typeof(CircleCollider2D))
+                {
+                    gafEnemy.TakeDamage(attack, true);
+                }
+                else
+                {
+                    gafEnemy.TakeDamage(attack);
+                }
+
+            }
+
 
             //判断是否击中了箱子
             GameItem item = rayhit.collider.GetComponent<GameItem>();

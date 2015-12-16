@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 
+
 public class GameManager : MonoBehaviour
 {
 
@@ -98,11 +99,19 @@ public class GameManager : MonoBehaviour
     float curQurShildValue = 0.0f;
     //游戏记录
     public GameRecords records = null;
+    /// <summary>
+    /// 武器集合
+    /// </summary>
+    public Weapon[] weaponList;
 
+    private Weapon currentWeapon = null;
+
+    private int currentWeaponId = 0;
     void Init()
     {
-        level = GameLogic.s_CurrentScene;
-        gameDifficulty = GameLogic.s_CurrentDifficulty;
+        level = GameGlobalValue.s_CurrentScene;
+        gameDifficulty = GameGlobalValue.s_CurrentDifficulty;
+        currentWeaponId = GameGlobalValue.s_currentWeaponId;
         if (records == null)
         {
             records = new GameRecords(level, (int)gameDifficulty);
@@ -113,15 +122,26 @@ public class GameManager : MonoBehaviour
         InitEmenyController();
         //初始化UI
         InitUI();
-       
+        
         Statu = GameStatu.InGame;
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
-        PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         Player player = Player.CurrentPlayer;
-       
+        
+    }
+    
+    /// <summary>
+    /// 初始化武器
+    /// </summary>
+    void InitWeapon()
+    {
+
     }
 
+    /// <summary>
+    /// 初始化UI
+    /// </summary>
     void InitUI()
     {
         //更新任务
