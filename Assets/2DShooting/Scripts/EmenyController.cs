@@ -109,11 +109,11 @@ public class EmenyController : MonoBehaviour {
             }
 
             //敌人的属性
-            Enemy e = swpanObj.GetComponent<Enemy>();
+            GAFEnemy e = swpanObj.GetComponent<GAFEnemy>();
             if(e == null)
             {
                 Debug.Log("Dont have Enemy component!");
-                e = swpanObj.AddComponent<Enemy>();
+                e = swpanObj.AddComponent<GAFEnemy>();
             }
 
             e.shootInterval = gameData.emenyShootInterval;

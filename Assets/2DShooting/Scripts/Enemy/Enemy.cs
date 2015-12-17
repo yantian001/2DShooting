@@ -62,6 +62,12 @@ public class Enemy : MonoBehaviour {
                 target = GameObject.FindWithTag("Player");
             }
         }
+
+        //开火口
+        if(firePlace == null)
+        {
+            firePlace = transform.FindChild("FirePlace");
+        }
     }
 
     // Update is called once per frame

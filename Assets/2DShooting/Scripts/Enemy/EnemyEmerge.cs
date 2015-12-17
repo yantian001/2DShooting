@@ -34,7 +34,7 @@ public class EnemyEmerge : MonoBehaviour
     }
     Animator anim;
 
-    Enemy enemy;
+    GAFEnemy enemy;
     // Use this for initialization
     void Start()
     {
@@ -52,18 +52,19 @@ public class EnemyEmerge : MonoBehaviour
 
     public void OnEnable()
     {
-        if (anim == null)
-        {
-            anim = GetComponent<Animator>();
-        }
+        //if (anim == null)
+        //{
+        //    anim = GetComponent<Animator>();
+        //}
 
         if (enemy == null)
         {
-            enemy = GetComponent<Enemy>();
+            enemy = GetComponent<GAFEnemy>();
         }
         if (enemy != null)
         {
             enemy.ReadyFroShoot = false;
+            anim = enemy.anim;
           //  RunEmerge();
         }
       

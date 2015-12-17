@@ -133,10 +133,10 @@ public class GAFEnemy : MonoBehaviour {
     //播放人物射击动画
     void PlayFireAnimation()
     {
-        if (anim != null)
-        {
-            anim.SetTrigger("shoot");
-        }
+        //if (anim != null)
+        //{
+        //    anim.SetTrigger("shoot");
+        //}
     }
 
     public void TakeDamage(float damageVal,bool isHeadShot = false) {
@@ -172,8 +172,8 @@ public class GAFEnemy : MonoBehaviour {
         if (anim != null) {
             anim.SetTrigger("dead");
             //float length = anim.GetCurrentAnimatorClipInfo(0).Length;
-            Destroy(gameObject, 2);
         }
+        Destroy(gameObject, 2);
         PlayDeathAudio();
 
         //通知GameManager死亡
