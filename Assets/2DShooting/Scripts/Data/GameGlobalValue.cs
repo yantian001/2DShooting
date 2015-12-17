@@ -88,5 +88,5 @@ public class GameGlobalValue
     /// <summary>
     /// 当前武器ID
     /// </summary>
-    public static int s_currentWeaponId = 0;
+    public static int s_currentWeaponId = 1;
 }

@@ -390,6 +390,13 @@ public class UIManager : MonoBehaviour
                     txtScore.text = record.Scores.ToString();
                 }
 
+                //加成分数
+                Text txtBounsScore = bgRect.FindChild("BonusSocreText").GetComponent<Text>();
+                if(txtBounsScore)
+                {
+                    txtBounsScore.text = string.Format(txtBounsScore.text,record.WeaponScoreBonus.ToString());
+                }
+
                 //重新开始按钮
                 Button btnRestart = bgRect.FindChild("BtnRestart").GetComponent<Button>();
                 if (btnRestart)

@@ -4,7 +4,10 @@ using System;
 
 public class Weapon : MonoBehaviour
 {
-
+    /// <summary>
+    /// 武器的ID
+    /// </summary>
+    public int ID = 0;
     //是否可以连续开枪
     public bool canComboFire = true;
     //枪支的攻击力
@@ -30,12 +33,31 @@ public class Weapon : MonoBehaviour
     public GameObject bullet;
     //子弹数量
     public int BulletCount;
-
-
+    
     //场景对象
     public GameObject background;
 
     public bool shakeWhenShoot = false;
+    /// <summary>
+    /// 是否覆盖移动速度
+    /// </summary>
+    public bool overrideMovement = false;
+    /// <summary>
+    /// 移动速度
+    /// </summary>
+    public float moveSpeed = 30f;
+    /// <summary>
+    /// 是否检查敌人
+    /// </summary>
+    public bool checkNearTarget = false;
+    /// <summary>
+    /// 近敌人移动速度
+    /// </summary>
+    public float nearTargetMoveSpeed = 20f;
+    /// <summary>
+    /// 得分加成
+    /// </summary>
+    public float scoreBonus = 0.0f;
 
     bool canShoot = false;
     float deltaTime = 0.0f;
@@ -66,6 +88,22 @@ public class Weapon : MonoBehaviour
         canShoot = false;
         deltaTime = 0.0f;
 
+        //设置移动速度
+        if (background != null)
+        {
+            var joystickMovement = background.GetComponent<JoystickBackgroundMovment>();
+            if (joystickMovement != null)
+            {
+                joystickMovement.signTran = signTransform;
+                if (overrideMovement)
+                {
+                    joystickMovement.smoothRatio = moveSpeed / 10;
+                    joystickMovement.checkNearTarget = checkNearTarget;
+                    joystickMovement.nearSmoothRatio = nearTargetMoveSpeed / 10;
+                }
+            }
+        }
+        
         //获取随机射击的范围
         if (randomShooting && randomShootingSize == Vector3.zero)
         {
@@ -108,7 +146,7 @@ public class Weapon : MonoBehaviour
         {
             isBulltOk = false;
             anim.SetTrigger("reload");
-            
+
         }
         else
         {
@@ -135,7 +173,7 @@ public class Weapon : MonoBehaviour
 
     void CheckBulletStatu()
     {
-        if(curBulltCount <= 0)
+        if (curBulltCount <= 0)
         {
             Reload();
         }
@@ -152,7 +190,7 @@ public class Weapon : MonoBehaviour
 
         bool canFire = true;
         CheckBulletStatu();
-        if (isCombo && !canComboFire )
+        if (isCombo && !canComboFire)
         {
             canFire = false;
         }
@@ -193,7 +231,7 @@ public class Weapon : MonoBehaviour
             ShakeBackground();
         }
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
-        if ( rayhit.collider != null)
+        if (rayhit.collider != null)
         {
             Debug.Log(rayhit.collider.name);
 
@@ -201,11 +239,11 @@ public class Weapon : MonoBehaviour
             Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
             if (enemy != null)
             {
-                
+
                 Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
-                    enemy.TakeDamage(attack,true);
+                    enemy.TakeDamage(attack, true);
                 }
                 else
                 {
@@ -234,7 +272,7 @@ public class Weapon : MonoBehaviour
 
             //判断是否击中了箱子
             GameItem item = rayhit.collider.GetComponent<GameItem>();
-            if(item)
+            if (item)
             {
                 item.TakeDamage(attack);
             }
@@ -252,10 +290,10 @@ public class Weapon : MonoBehaviour
     private void PlaySignEffect()
     {
         //throw new NotImplementedException();
-        if(signTransform != null)
+        if (signTransform != null)
         {
             var animator = signTransform.GetComponent<Animator>();
-            if(animator != null)
+            if (animator != null)
             {
                 animator.SetTrigger("shot");
             }

@@ -82,6 +82,8 @@ public class GameRecords
             _headshotAddScore = value;
         }
     }
+
+    public int WeaponScoreBonus;
     /// <summary>
     /// 场景权重
     /// </summary>

@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
 
     private Weapon currentWeapon = null;
 
-    private int currentWeaponId = 0;
+    private int currentWeaponId = 1;
     void Init()
     {
         level = GameGlobalValue.s_CurrentScene;
@@ -122,21 +122,49 @@ public class GameManager : MonoBehaviour
         InitEmenyController();
         //初始化UI
         InitUI();
-        
+        //初始化武器
+        InitWeapon();
+
         Statu = GameStatu.InGame;
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
         //PlayerPrefs.DeleteAll();
         Player player = Player.CurrentPlayer;
-        
+
     }
-    
+
     /// <summary>
     /// 初始化武器
     /// </summary>
     void InitWeapon()
     {
+        if (weaponList == null || weaponList.Length <= 0)
+        {
+            Debug.LogError("cant find weapon !");
+            return;
+        }
+        currentWeapon = GetWeapon(currentWeaponId);
 
+        if(currentWeapon == null)
+        {
+            Debug.LogError("Current weapon error!");
+        }
+
+        currentWeapon.gameObject.transform.parent.gameObject.SetActive( true);
+    }
+
+    Weapon GetWeapon(int weaponId)
+    {
+        Weapon result = null;
+        for (int i = 0; i < weaponList.Length; i++)
+        {
+            if (weaponList[i].ID == weaponId)
+            {
+                result = weaponList[i];
+                break;
+            }
+        }
+        return result;
     }
 
     /// <summary>
@@ -223,6 +251,13 @@ public class GameManager : MonoBehaviour
             records.HeadshotAddScore += addScore;
         else
             records.HitAddAcores += addScore;
+
+        //计算武器加成
+        if(currentWeapon != null)
+        {
+            records.WeaponScoreBonus += (int)(currentWeapon.scoreBonus * score);
+            score += (int)(currentWeapon.scoreBonus * score);
+        }
         records.Scores += score;
         UIManager.Instance.UpdateScoreText(records.Scores);
         //显示分数
@@ -242,7 +277,7 @@ public class GameManager : MonoBehaviour
             {
                 shieldValue -= demage;
                 curQurShildValue -= demage;
-                if(curQurShildValue <= 0)
+                if (curQurShildValue <= 0)
                 {
                     UIManager.Instance.UpdateShieldStatu();
                     curQurShildValue = qurShieldValue;
@@ -309,7 +344,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if(Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
+        if (Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
         {
             Player.CurrentPlayer.AddPlayRecord(records);
         }
@@ -346,10 +381,10 @@ public class GameManager : MonoBehaviour
     /// <param name="evt"></param>
     void OnGetMedKit(LTEvent evt)
     {
-        if(evt.data != null)
+        if (evt.data != null)
         {
             float addedValue = 0.0f;
-            if(float.TryParse(evt.data.ToString(),out addedValue))
+            if (float.TryParse(evt.data.ToString(), out addedValue))
             {
                 playerCurrentHP += addedValue;
                 UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
@@ -366,8 +401,8 @@ public class GameManager : MonoBehaviour
     /// <param name="obj"></param>
     private void OnGetShield(LTEvent evt)
     {
-       // throw new NotImplementedException();
-       if(evt.data != null)
+        // throw new NotImplementedException();
+        if (evt.data != null)
         {
             float addedVal = 0.0f;
             if (float.TryParse(evt.data.ToString(), out addedVal))

@@ -110,9 +110,11 @@ public class GAFEnemy : MonoBehaviour {
     {
         Vector3 to = (firePlace.transform.position - target.transform.position).normalized;
         GameObject blt = (GameObject)Instantiate(bullet, firePlace.transform.position, Quaternion.FromToRotation(Vector3.right, to));
-        Vector3 pso = (target.transform.position);
-        iTween.MoveTo(blt, iTween.Hash("position", pso, "time", 0.1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
-
+        blt.transform.parent = firePlace;
+        Vector3 scale = blt.transform.localScale;
+        blt.transform.localScale = Vector3.zero;
+        iTween.MoveTo(blt, iTween.Hash("position", target.transform.position, "time",1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
+        iTween.ScaleTo(blt, scale, 0.2f);
     }
     // 子弹自动销毁
     void OnBulletMoveComplete(System.Object obj) {
@@ -173,7 +175,7 @@ public class GAFEnemy : MonoBehaviour {
             anim.SetTrigger("dead");
             //float length = anim.GetCurrentAnimatorClipInfo(0).Length;
         }
-        Destroy(gameObject, 2);
+        Destroy(gameObject, 1);
         PlayDeathAudio();
 
         //通知GameManager死亡

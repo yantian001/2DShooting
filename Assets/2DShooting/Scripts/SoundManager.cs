@@ -163,7 +163,7 @@ public class SoundManager : MonoBehaviour {
         {
             PlaySound(SoundType.HeadShot);
         }
-        if(combo > 1)
+        else if(combo > 1)
         {
             if(combo == 2)
             {

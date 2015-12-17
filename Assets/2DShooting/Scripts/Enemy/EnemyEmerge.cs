@@ -8,7 +8,8 @@ public class EnemyEmerge : MonoBehaviour
     public enum EmergeType
     {
         Runin,
-        Dropdown
+        Dropdown,
+        Roll,
     }
     //进入的方式
     public EmergeType emergeType;
@@ -79,7 +80,10 @@ public class EnemyEmerge : MonoBehaviour
                 RunAction("isWalking");
                 break;
             case EmergeType.Dropdown:
-                RunAction("isDroping");
+                RunDrop();
+                break;
+            case EmergeType.Roll:
+                RunAction("isRolling");
                 break;
         }
     }
@@ -99,6 +103,36 @@ public class EnemyEmerge : MonoBehaviour
             anim.SetBool(paramName, true);
         }
     }
+    /// <summary>
+    /// 跳入
+    /// </summary>
+    void RunDrop()
+    {
+        Vector3 pos = gameObject.transform.localPosition + emergeValue;
+        pos = gameObject.transform.parent.InverseTransformVector(pos);
+        iTween.MoveTo(gameObject, iTween.Hash("position", pos, "time", emergeTime, "easetype", "linear", "oncomplete", "OnRunDropComplete", "islocal", true, "oncompletetarget", gameObject));
+        if (emergeValue.z != 0)
+        {
+            Vector3 scale = new Vector3(emergeValue.z, emergeValue.z, emergeValue.z);
+            iTween.ScaleTo(gameObject, scale, emergeTime);
+        }
+    }
+    /// <summary>
+    /// 跳入完成
+    /// </summary>
+    void OnRunDropComplete()
+    {
+        if (enemy)
+        {
+            enemy.ReadyFroShoot = true;
+        }
+        if (anim != null)
+        {
+            anim.SetTrigger("isDroping");
+        }
+        isFinish = true;
+    }
+
     void OnEmergeComplete(System.Object param)
     {
         if (enemy)

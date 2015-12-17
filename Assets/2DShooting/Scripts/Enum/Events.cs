@@ -38,6 +38,10 @@ public enum Events
     /// <summary>
     /// 排行榜更新了
     /// </summary>
-    LEARDBOARDUPDATED
+    LEARDBOARDUPDATED,
+    /// <summary>
+    /// 更换了武器
+    /// </summary>
+    WEAPONCHANGED
 
 }
