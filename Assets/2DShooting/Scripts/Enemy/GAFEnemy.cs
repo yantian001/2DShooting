@@ -8,7 +8,30 @@ public class GAFEnemy : MonoBehaviour {
     public float _HP = 1.0f;
     //敌人的射击间隔
     public float shootInterval = 1.0f;
+    /// <summary>
+    /// 每次攻击的射击次数
+    /// </summary>
+    [Tooltip("每次攻击的射击次数")]
+    public int shootCountPerTime = 1;
+    /// <summary>
+    /// 是否随机射击次数
+    /// </summary>
+    [Tooltip("是否随机射击次数")]
+    public bool randomShootCount = false;
+    /// <summary>
+    /// 随机射击次数的随机值
+    /// </summary>
+    [Tooltip("随机射击次数的随机值")]
+    public int randomShootCountValue = 1;
+    /// <summary>
+    /// 连续射击的间隔时间
+    /// </summary>
+    [Tooltip("连续射击的间隔时间")]
+    public float comboShootInterval = 0.15f;
 
+    /// <summary>
+    /// 攻击值
+    /// </summary>
     public float attack = 1.0f;
     //枪口位置
     public Transform firePlace;
@@ -31,6 +54,8 @@ public class GAFEnemy : MonoBehaviour {
     float timeFromShoot = 0f;
     bool _readyForShoot = true;
 
+    bool firstShoot = true;
+
     //是否可以准备好射击
     public bool ReadyFroShoot
     {
@@ -43,8 +68,10 @@ public class GAFEnemy : MonoBehaviour {
     public Animator anim;
     BoxCollider2D collider2d;
     Collider2D[] coliders;
+    public bool Injuring { get; set; }
 
     void Start() {
+        
         timeFromShoot = 0.0f;
         if(anim == null)
         {
@@ -71,22 +98,73 @@ public class GAFEnemy : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        timeFromShoot += Time.deltaTime;
+        if (ReadyFroShoot)
+        {
+            timeFromShoot += Time.deltaTime;
+        }
         if (CanShoot()) {
-            Shoot();
-            timeFromShoot = 0;
+
+            int attackCount = shootCountPerTime;
+            if(randomShootCount)
+            {
+                attackCount += Random.Range(-randomShootCountValue, randomShootCountValue);
+            }
+            StartCoroutine(CoroutineShoot(attackCount));
+            firstShoot = false;
+            timeFromShoot -= shootInterval;
         }
 
     }
 
-    bool CanShoot() {
-        bool canShoot = true;
-        if (timeFromShoot < shootInterval || target == null || isDead || !ReadyFroShoot || !GameManager.Instance.IsInGame()) {
-            canShoot = false;
+    IEnumerator CoroutineShoot(int t)
+    {
+        // int count = int.Parse(t.ToString());
+        ReadyFroShoot = false;
+        for(int i=0;i<t;i++)
+        {
+            if(CanBrokenShoot())
+            {
+                break;
+            }
+            Shoot();
+            yield return new WaitForSeconds(0.1f);
+
         }
+        ReadyFroShoot = true;
+    }
+
+   
+
+    /// <summary>
+    /// 判断是否能打断射击
+    /// </summary>
+    /// <returns></returns>
+    bool CanBrokenShoot()
+    {
+        if (isDead || Injuring)
+            return true;
+        return false;
+    }
+  /// <summary>
+  /// 是否可以射击
+  /// </summary>
+  /// <returns></returns>
+    bool CanShoot() {
+        bool canShoot = false;
+        if(CanBrokenShoot())
+        {
+            return false;
+        }
+        //if(ReadyFroShoot &&)
+        if (((timeFromShoot >= shootInterval) || firstShoot) && !(target == null || isDead || !ReadyFroShoot || !GameManager.Instance.IsInGame())) {
+            canShoot = true;
+        }
+        
         return canShoot;
     }
-
+    /// <summary>
+    /// 射击
+    /// </summary>
     void Shoot() {
         //Debug.Log ("shooting:");
         PlayFireAnimation();
@@ -156,6 +234,13 @@ public class GAFEnemy : MonoBehaviour {
         }
         if (_HP <= 0.0f) {
             Die(isHeadShot);
+        }
+        else
+        {
+            if(anim != null)
+            {
+                anim.SetTrigger("injured");
+            }
         }
     }
 
