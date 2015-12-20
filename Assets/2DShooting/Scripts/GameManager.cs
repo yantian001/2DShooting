@@ -197,16 +197,33 @@ public class GameManager : MonoBehaviour
     {
         //if(gameData == null)
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
-        gameData = Resources.Load<GameData>(levelPath);
-        playerCurrentHP = gameData.playerHealth;
+        gameData = Instantiate( Resources.Load<GameData>(levelPath));
+        
         if (gameData == null)
         {
             Debug.LogError("Init level gamedata error");
         }
+        playerCurrentHP = gameData.playerHealth;
         if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Time))
         {
             curMissionCount = gameData.missionCount;
         }
+
+        if(gameData.autoEnhance)
+        {
+            StartCoroutine(GameEnhance());
+        }
+    }
+
+    IEnumerator GameEnhance()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(gameData.enhanceAfterSeconds);
+            if(IsInGame())
+                gameData.AutoEnhanment();
+        }
+       
     }
 
     /// <summary>

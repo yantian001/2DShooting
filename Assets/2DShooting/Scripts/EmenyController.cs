@@ -33,7 +33,7 @@ public class EmenyController : MonoBehaviour {
 
 	void Update(){
 		timeSinceSpwan += Time.deltaTime;
-
+        Debug.Log(gameData.maxEnemyCount);
 		//判断能否产生敌人
 		if (CanSpwanEnemy ()) {
 			Transform spwanTransform = getSpwanPosition();

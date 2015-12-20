@@ -2,12 +2,13 @@
 using System.Collections;
 
 [SerializeField]
-public class GameData : ScriptableObject {
+public class GameData : ScriptableObject
+{
 
     //游戏类型
-	public enum GameType
+    public enum GameType
     {
-        Count ,
+        Count,
         Time,
         Infinity
     }
@@ -34,7 +35,7 @@ public class GameData : ScriptableObject {
     //伤害随机值
     public float emenyAttackRandomVal = 1.0f;
     //敌人命中率
-    [Range(1,100)]
+    [Range(1, 100)]
     public float emenyHitRatio = 60f;
     //敌人血量
     public float emenyHP = 1;
@@ -46,5 +47,35 @@ public class GameData : ScriptableObject {
     public int maxEnemyCount = 1;
     //同一地点最多的人数
     public int maxEnemyPerPosition = 1;
-    
+    /// <summary>
+    /// 是否随时间增强
+    /// </summary>
+    public bool autoEnhance = true;
+    /// <summary>
+    /// 每次增强间隔时间
+    /// </summary>
+    public float enhanceAfterSeconds = 60f;
+    /// <summary>
+    /// 每次增强的数值
+    /// </summary>
+    [Range(0, 1)]
+    public float valuePerEnhance = 0.05f;
+    /// <summary>
+    /// 已增强的次数
+    /// </summary>
+  public  int enhanceTime = 0;
+
+    public void AutoEnhanment()
+    {
+        enhanceTime++;
+        emenySpwanInterval *= (1 - valuePerEnhance);
+        emenyShootInterval *= (1 - valuePerEnhance);
+        emenyAttack *= (1 + valuePerEnhance);
+        emenyAttackRandomVal *= (1 + valuePerEnhance);
+        emenyHitRatio *= (1 + valuePerEnhance);
+        emenyHP *= (1 + valuePerEnhance);
+        emenyHPRandomVal *= (1 + valuePerEnhance);
+        maxEnemyCount = maxEnemyCount  + enhanceTime / 2;
+       
+    }
 }
