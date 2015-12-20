@@ -8,6 +8,8 @@ public class Weapon : MonoBehaviour
     /// 武器的ID
     /// </summary>
     public int ID = 0;
+
+    public string Name = "";
     //是否可以连续开枪
     public bool canComboFire = true;
     //枪支的攻击力

@@ -38,6 +38,18 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     [Tooltip("我的排名的显示区域")]
     public Transform myRankInfo;
+    /// <summary>
+    /// 武器选择区域
+    /// </summary>
+    public GameObject weaponSelect;
+    /// <summary>
+    /// 排行版区域
+    /// </summary>
+    public GameObject highScore;
+    /// <summary>
+    /// 武器信息
+    /// </summary>
+    public Transform weaponInfo;
 
     /// <summary>
     /// 开始按钮
@@ -45,6 +57,7 @@ public class LevelMapManager : MonoBehaviour
     public Button playButton;
 
     private int selectScene = -1;
+    private int selectWeaponId = -1;
     private GameDifficulty selectDifficulty = GameDifficulty.Normal;
     /// <summary>
     /// 当前选中的场景对象
@@ -54,6 +67,8 @@ public class LevelMapManager : MonoBehaviour
     /// 现有排名对象
     /// </summary>
     private List<GameObject> rankItems;
+
+    private int action = 0;
 
     #endregion
 
@@ -85,13 +100,37 @@ public class LevelMapManager : MonoBehaviour
                 }
             }
         }
+        
+        //显示武器现在
+        if(weaponSelect != null)
+        {
+            Transform content = weaponSelect.transform.FindChild("WeaponList/WeaponContent");
+            if(content != null)
+            {
+               Toggle[] weapons = content.GetComponentsInChildren<Toggle>();
+                if(weapons != null && weapons.Length > 0)
+                {
+                    for(int i= 0;i<weapons.Length;i++)
+                    {
+                        Toggle weapon = weapons[i];
+                        weapon.onValueChanged.AddListener(b => {
+                            OnSelectWeaponChanged(b, weapon.GetComponent<LevelMapWeaponObject>());
+                        });
+                        if(weapon.isOn)
+                        {
+                            OnSelectWeaponChanged(true, weapon.GetComponent<LevelMapWeaponObject>());
+                        }
+                    }
+                }
+            }
+        }
 
         //开始按钮点击事件
         if (playButton != null)
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
-
+        ChangeUIDisplay(action);
         //添加事件监听
         AddEventListener();
     }
@@ -128,12 +167,22 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     void OnPlayButtonClicked()
     {
-        if (selectScene != -1)
+        if(action == 0)
         {
-            GameGlobalValue.s_CurrentScene = selectScene;
-            GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
-            GameLogic.Instance.Loading();
+            action = 1;
+            ChangeUIDisplay(action);
         }
+        else
+        {
+            if (selectScene != -1 && selectWeaponId != -1)
+            {
+                GameGlobalValue.s_CurrentScene = selectScene;
+                GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
+                GameGlobalValue.s_currentWeaponId = selectWeaponId;
+                GameLogic.Instance.Loading();
+            }
+        }
+       
     }
 
     void OnToggleValueChange(bool selected, LevelMapObject mapObj)
@@ -152,6 +201,50 @@ public class LevelMapManager : MonoBehaviour
         {
             selectScene = -1;
             //playButton.enabled = false;
+        }
+    }
+
+
+    void OnSelectWeaponChanged(bool isOn , LevelMapWeaponObject weaponObject)
+    {
+        if(isOn && weaponObject)
+        {
+            Weapon weapon = weaponObject.GetWeapon();
+            if(weapon)
+            {
+                selectWeaponId = weapon.ID;
+                if(weaponInfo != null)
+                {
+                    //设置名字
+                    SetChildText(weaponInfo, "SelectedWeaponName", weapon.Name);
+
+                    //设置武器攻击值
+                    SetChildSliderValue(weaponInfo, "Pwoer", weapon.attack / GameGlobalValue.s_MaxWeaponAttack);
+                    //设置攻击次数
+                    SetChildSliderValue(weaponInfo, "FireRate", (1.0f/weapon.shootInterval) / GameGlobalValue.s_MaxFireRatePerSeconds);
+                    
+                    //准确度
+                    float stab = 1.0f;
+                    if (weapon.randomShooting)
+                    {
+                        stab -= weapon.randomShootingSize.x / GameGlobalValue.s_MaxShakeDistance;
+                    }
+
+                    SetChildSliderValue(weaponInfo, "Stability", stab);
+
+                    //弹夹
+                    SetChildSliderValue(weaponInfo, "Magazine", (float)weapon.BulletCount / GameGlobalValue.s_MaxMagazineSize);
+
+                    //移动速度
+                    SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
+                    //得分能力
+                    SetChildSliderValue(weaponInfo, "ScoreBouns", weapon.scoreBonus / GameGlobalValue.s_MaxSocreBonus);
+                }
+            }
+        }
+        else
+        {
+            selectWeaponId = -1;
         }
     }
     #endregion
@@ -238,6 +331,21 @@ public class LevelMapManager : MonoBehaviour
         // if(score)
     }
 
+    public void ChangeUIDisplay(int action)
+    {
+        //显示排行榜
+        if(action == 0)
+        {
+            highScore.SetActive(true);
+            weaponSelect.SetActive(false);
+        }
+        else if(action == 1)
+        {
+            highScore.SetActive(false);
+            weaponSelect.SetActive(true);
+        }
+    }
+
     /// <summary>
     /// 设置子对象的文本值
     /// </summary>
@@ -253,6 +361,24 @@ public class LevelMapManager : MonoBehaviour
             if (childText)
             {
                 childText.text = value;
+            }
+        }
+    }
+    /// <summary>
+    /// 设置子对象的Slider值
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="child"></param>
+    /// <param name="value"></param>
+    void SetChildSliderValue(Transform parent ,string child , float value)
+    {
+        Transform childTran = parent.FindChild(child);
+        if(childTran)
+        {
+            Slider slider = childTran.GetComponentInChildren<Slider>();
+            if(slider)
+            {
+                slider.value = value;
             }
         }
     }

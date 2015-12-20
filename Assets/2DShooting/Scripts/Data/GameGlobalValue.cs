@@ -88,5 +88,33 @@ public class GameGlobalValue
     /// <summary>
     /// 当前武器ID
     /// </summary>
-    public static int s_currentWeaponId = 0;
+    public static int s_currentWeaponId = 1;
+
+
+    #region 武器相关
+    /// <summary>
+    /// 最大攻击值
+    /// </summary>
+    public static float s_MaxWeaponAttack = 100;
+    /// <summary>
+    /// 每秒最大攻击次数
+    /// </summary>
+    public static float s_MaxFireRatePerSeconds =  20;
+    /// <summary>
+    /// 最大晃动距离
+    /// </summary>
+    public static float s_MaxShakeDistance = 1.0f;
+    /// <summary>
+    /// 最大的弹夹数量
+    /// </summary>
+    public static int s_MaxMagazineSize = 100;
+    /// <summary>
+    /// 最大引动速度
+    /// </summary>
+    public static int s_MaxMobility = 5;
+    /// <summary>
+    /// 最大得分奖励
+    /// </summary>
+    public static int s_MaxSocreBonus = 2;
+    #endregion
 }
