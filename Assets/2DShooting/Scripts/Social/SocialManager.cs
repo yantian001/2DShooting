@@ -229,11 +229,15 @@ public class SocialManager
         return manger;
     }
 
+    void Awake()
+    {
+       Init();
+    }
 
     void Init()
     {
 #if UNITY_ANDROID
-        GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
+        GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = false;
         GooglePlayGames.PlayGamesPlatform.Activate();
 #endif
 #if UNITY_IPHONE

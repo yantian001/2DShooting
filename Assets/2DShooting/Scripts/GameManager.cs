@@ -13,7 +13,8 @@ public class GameManager : MonoBehaviour
         InGame,
         GamePaused,
         GameSuccessed,
-        GameFailed
+        GameFailed,
+        ShowContinuVedio
     }
 
     private GameStatu _statu;
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour
     /// 盾值的4分之一
     /// </summary>
     float qurShieldValue = 0.0f;
-
+    
     float curQurShildValue = 0.0f;
     //游戏记录
     public GameRecords records = null;
@@ -107,6 +108,19 @@ public class GameManager : MonoBehaviour
     private Weapon currentWeapon = null;
 
     private int currentWeaponId = 1;
+    /// <summary>
+    /// 是否显示过广告
+    /// </summary>
+    bool alreadyShowVedio = false;
+    /// <summary>
+    /// 视频广告等待时间
+    /// </summary>
+    [Range(1,10)]
+    public int timeWaitVideo = 5;
+    /// <summary>
+    /// 视频广告奖励
+    /// </summary>
+    bool videoRewarded = false;
     void Init()
     {
         level = GameGlobalValue.s_CurrentScene;
@@ -328,6 +342,7 @@ public class GameManager : MonoBehaviour
     void PlayerDead()
     {
         isPlayerDie = true;
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.PlayerDie);
     }
 
     /// <summary>
@@ -337,9 +352,18 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerDie)
         {
-            Statu = GameStatu.GameFailed;
-            SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
-            LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
+            if((!alreadyShowVedio)&& (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
+            {
+                Statu = GameStatu.ShowContinuVedio;
+                UIManager.Instance.ShowVedioUI();
+                LeanTween.addListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
+                StartCoroutine(VideoCountDown(timeWaitVideo));
+            }
+            else
+            {
+                GameFinish();
+            }
+           
         }
 
         if (gameData.gameType == GameData.GameType.Count)
@@ -361,10 +385,110 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        
+    }
+
+    /// <summary>
+    /// 点击了观看按钮
+    /// </summary>
+    /// <param name="evt"></param>
+    void OnWatchVideoClicked(LTEvent evt)
+    {
+        //停止倒计时
+        //StopCoroutine(VideoCountDown(timeWaitVideo));
+        StopCoroutine("VideoCountDown");
+        ChartboostUtil.Instance.ShowGameOverVideo();
+        //移除监听
+        LeanTween.removeListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
+
+        LeanTween.addListener((int)Events.VIDEOREWARD, OnVideoRewarded);
+        LeanTween.addListener((int)Events.VIDEOCLOSED, OnVideoClosed);
+    }
+
+    /// <summary>
+    /// 获得了奖励
+    /// </summary>
+    /// <param name="evt"></param>
+    void OnVideoRewarded(LTEvent evt)
+    {
+        Debug.Log("Get Rewards!");
+        videoRewarded = true;
+    }
+
+    void OnVideoClosed(LTEvent evt)
+    {
+        LeanTween.removeListener((int)Events.VIDEOREWARD, OnVideoRewarded);
+        LeanTween.removeListener((int)Events.VIDEOCLOSED, OnVideoClosed);
+        if(videoRewarded)
+        {
+            GameContinue();
+        }
+        else
+        {
+            GameFinish();
+        }
+    }
+
+
+    void GameReward()
+    {
+        playerCurrentHP += 50;
+        GameContinue();
+    }
+
+    void GameContinue()
+    {
+        Statu = GameStatu.InGame;
+    }
+
+    /// <summary>
+    /// 游戏结束
+    /// </summary>
+    void GameFinish()
+    {
+        
+        Statu = GameStatu.GameFailed;
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
+        LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
         if (Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
         {
             Player.CurrentPlayer.AddPlayRecord(records);
         }
+        //显示广告
+        if(GoogleAdsUtil.Instance.HasInterstital())
+        {
+            GoogleAdsUtil.Instance.ShowInterstital();
+        }
+       else if(ChartboostUtil.Instance.HasInterstitialOnDefault())
+        {
+            ChartboostUtil.Instance.ShowInterstitialOnDefault();
+        }
+    }
+
+    /// <summary>
+    /// 倒计时结束
+    /// </summary>
+    void VideoCountDownFinish()
+    {
+        UIManager.Instance.HideVedioUI();
+        //移除监听
+        LeanTween.removeListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
+        GameFinish();
+    }
+    /// <summary>
+    /// 倒计时
+    /// </summary>
+    /// <param name="total"></param>
+    /// <returns></returns>
+    IEnumerator VideoCountDown(int total)
+    {
+        while(total >=0)
+        {
+            UIManager.Instance.UpdateVideoCountDownText(total);
+            yield return new WaitForSeconds(1.0f);
+            total--;
+        }
+        VideoCountDownFinish();
     }
 
     /// <summary>

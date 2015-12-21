@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using GAFInternal.Objects;
+using GAF.Core;
 
 public class EmenyController : MonoBehaviour {
 
@@ -33,7 +34,7 @@ public class EmenyController : MonoBehaviour {
 
 	void Update(){
 		timeSinceSpwan += Time.deltaTime;
-        Debug.Log(gameData.maxEnemyCount);
+        //Debug.Log(gameData.maxEnemyCount);
 		//判断能否产生敌人
 		if (CanSpwanEnemy ()) {
 			Transform spwanTransform = getSpwanPosition();
@@ -134,7 +135,10 @@ public class EmenyController : MonoBehaviour {
             if (sl != null && sl.layerName != "")
             {
                 SpriteRenderer render = swpanObj.GetComponent<SpriteRenderer>();
-                if(render != null)
+                var sortlayer = swpanObj.AddComponent<GAFSortLayer>();
+                sortlayer.sortLayerName = sl.layerName;
+                //gafAnimator.settings.spriteLayerName = sl.layerName;
+                if (render != null)
                 {
                     render.sortingLayerName = sl.layerName;
                 }

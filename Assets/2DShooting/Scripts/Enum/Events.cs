@@ -42,6 +42,18 @@ public enum Events
     /// <summary>
     /// 更换了武器
     /// </summary>
-    WEAPONCHANGED
+    WEAPONCHANGED,
+    /// <summary>
+    /// 观看视频广告
+    /// </summary>
+    WATCHVIDEOCLICKED,
+    /// <summary>
+    /// 视频广告获得奖励
+    /// </summary>
+    VIDEOREWARD,
+    /// <summary>
+    /// 视频广告关闭
+    /// </summary>
+    VIDEOCLOSED,
 
 }

@@ -503,6 +503,60 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    #region 视频广告
+
+    public GameObject _UIVedio;
+    /// <summary>
+    /// 是否有vedio的UI
+    /// </summary>
+    /// <returns></returns>
+    public bool HasVedioUI()
+    {
+        if (_UIVedio != null)
+            return true;
+        return false;
+    }
+
+    /// <summary>
+    /// 显示Vedio界面
+    /// </summary>
+    public void ShowVedioUI()
+    {
+        _UIVedio.SetActive(true);
+
+        var watchVedioButton = _UIVedio.transform.FindChild("BtnWatchVideo").GetComponent<Button>();
+        if(watchVedioButton)
+        {
+            watchVedioButton.onClick.AddListener(() => {
+                HideVedioUI();
+                LeanTween.dispatchEvent((int)Events.WATCHVIDEOCLICKED);
+            });
+        }
+
+    }
+
+    /// <summary>
+    /// 更新倒计时
+    /// </summary>
+    /// <param name="countdown"></param>
+    public void UpdateVideoCountDownText(int countdown)
+    {
+        var countDownText =_UIVedio.transform.FindChild("TextCountdown").GetComponent<Text>();
+        if (countDownText)
+            countDownText.text = countdown.ToString();
+    }
+
+    /// <summary>
+    /// 隐藏Video界面
+    /// </summary>
+    public void HideVedioUI()
+    {
+        _UIVedio.SetActive(false);
+    }
+
+
+    #endregion
+
     public void OnEnable()
     {
 

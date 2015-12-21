@@ -216,7 +216,7 @@ public class LevelMapManager : MonoBehaviour
                 if(weaponInfo != null)
                 {
                     //设置名字
-                    SetChildText(weaponInfo, "SelectedWeaponName", weapon.Name);
+                    SetChildText(weaponSelect.GetComponent<RectTransform>(), "SelectedWeaponName", weapon.Name);
 
                     //设置武器攻击值
                     SetChildSliderValue(weaponInfo, "Pwoer", weapon.attack / GameGlobalValue.s_MaxWeaponAttack);
@@ -292,7 +292,8 @@ public class LevelMapManager : MonoBehaviour
                         SetChildText(item.transform, "TextRank", social.Rank.ToString());
                         SetChildText(item.transform, "TextUserName", social.UserName);
                         SetChildText(item.transform, "TexBestScore", social.Score);
-                        item.transform.parent = rankZone.transform;
+                        //item.transform.parent = rankZone.transform;
+                        item.transform.SetParent(rankZone.transform);
                     }
                 }
                 if (itemCount > 5)

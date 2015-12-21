@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using ChartboostSDK;
-public class ChartboostUtil : MonoBehaviour {
+public class ChartboostUtil  {
 
     static ChartboostUtil _instance = null;
 
@@ -11,13 +11,7 @@ public class ChartboostUtil : MonoBehaviour {
         {
             if(_instance == null)
             {
-                _instance = FindObjectOfType<ChartboostUtil>();
-                if(_instance == null)
-                {
-                    GameObject gameObject = new GameObject();
-                    gameObject.name = "ChartboostUtilContainer";
-                    _instance = gameObject.AddComponent<ChartboostUtil>();
-                }
+                _instance = CreateInstance();
             }
             return _instance;
         }
@@ -27,45 +21,44 @@ public class ChartboostUtil : MonoBehaviour {
         }
     }
     
-    void Awake()
-    {
-        if(_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    //void Awake()
+    //{
+    //    if(_instance == null)
+    //    {
+    //        _instance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 
 	// Use this for initialization
+
+    static ChartboostUtil CreateInstance()
+    {
+        ChartboostUtil rest = new ChartboostUtil();
+        rest.Start();
+        return rest;
+    }
 	void Start () {
         
-        Chartboost.cacheInterstitial(CBLocation.HomeScreen);
-        Chartboost.cacheInterstitial(CBLocation.GameOver);
-        Chartboost.cacheRewardedVideo(CBLocation.GameOver);
+        Chartboost.cacheInterstitial(CBLocation.Default);
+        Chartboost.cacheRewardedVideo(CBLocation.Default);
 
         Chartboost.didDismissRewardedVideo += Chartboost_didDismissRewardedVideo;
         Chartboost.didCompleteRewardedVideo += Chartboost_didCompleteRewardedVideo;
         Chartboost.didFailToLoadRewardedVideo += Chartboost_didFailToLoadRewardedVideo;
-        Chartboost.shouldDisplayRewardedVideo += Chartboost_shouldDisplayRewardedVideo;
-        Chartboost.shouldDisplayInterstitial += Chartboost_shouldDisplayInterstitial;
+        Chartboost.didDisplayRewardedVideo += Chartboost_didDisplayRewardedVideo;
+        // Chartboost.showInterstitial(CBLocation.HomeScreen);
+        //Chartboost.showRewardedVideo(CBLocation.Default);
 	}
 
-    private bool Chartboost_shouldDisplayInterstitial(CBLocation arg1)
+    private void Chartboost_didDisplayRewardedVideo(CBLocation obj)
     {
         //throw new System.NotImplementedException();
-        Chartboost.showInterstitial(arg1);
-        return true;
-    }
-
-    private bool Chartboost_shouldDisplayRewardedVideo(CBLocation arg1)
-    {
-        // throw new System.NotImplementedException();
-         Chartboost.showRewardedVideo(arg1);
-        return true;
+        Debug.Log("Show video ads at :" + obj);
     }
 
     private void Chartboost_didFailToLoadRewardedVideo(CBLocation arg1, CBImpressionError arg2)
@@ -77,7 +70,9 @@ public class ChartboostUtil : MonoBehaviour {
 
     private void Chartboost_didCompleteRewardedVideo(CBLocation arg1, int arg2)
     {
+
         Debug.Log("Chartboost_didCompleteRewardedVideo");
+        LeanTween.dispatchEvent((int)Events.VIDEOREWARD);
     }
 
     /// <summary>
@@ -87,6 +82,7 @@ public class ChartboostUtil : MonoBehaviour {
     private void Chartboost_didDismissRewardedVideo(CBLocation obj)
     {
         Debug.Log("Chartboost_didDismissRewardedVideo");
+        LeanTween.dispatchEvent((int)Events.VIDEOCLOSED);
     }
 
     /// <summary>
@@ -95,22 +91,32 @@ public class ChartboostUtil : MonoBehaviour {
     /// <returns></returns>
     public bool HasGameOverVideo()
     {
-        return Chartboost.hasRewardedVideo(CBLocation.GameOver);
+        return Chartboost.hasRewardedVideo(CBLocation.Default);
     }
     /// <summary>
     /// 显示游戏结束时的奖励视频广告
     /// </summary>
     public void ShowGameOverVideo()
     {
-        if(Chartboost.hasRewardedVideo(CBLocation.GameOver))
+        if(Chartboost.hasRewardedVideo(CBLocation.Default))
         {
-            Chartboost.showRewardedVideo(CBLocation.GameOver);
+            Chartboost.showRewardedVideo(CBLocation.Default);
         }
 
     }
 
-	// Update is called once per frame
-	void Update () {
+    public bool HasInterstitialOnDefault()
+    {
+        return Chartboost.hasInterstitial(CBLocation.Default);
+    }
+
+    public void ShowInterstitialOnDefault()
+    {
+        Chartboost.showInterstitial(CBLocation.Default);
+    }
+
+    // Update is called once per frame
+    void Update () {
 	
 	}
 }
