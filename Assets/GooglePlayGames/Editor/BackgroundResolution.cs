@@ -68,6 +68,9 @@ namespace GooglePlayGames
             svcSupport.DependOn("com.android.support",
                 "appcompat-v7",
                 "22.0.0+");
+            svcSupport.DependOn("com.google.android.gms", 
+                "play-services-ads", 
+                PluginVersion.PlayServicesVersionConstraint);
         }
 
 #if UNITY_5

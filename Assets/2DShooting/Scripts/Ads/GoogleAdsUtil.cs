@@ -2,7 +2,8 @@
 using System.Collections;
 using GoogleMobileAds.Api;
 
-public class GoogleAdsUtil : MonoBehaviour {
+public class GoogleAdsUtil : MonoBehaviour
+{
 
     public string androidUnitId = "ca-app-pub-8295605020027148/3214523116";
 
@@ -12,10 +13,10 @@ public class GoogleAdsUtil : MonoBehaviour {
     {
         get
         {
-            if(_instance == null)
+            if (_instance == null)
             {
                 _instance = FindObjectOfType<GoogleAdsUtil>();
-                if(_instance == null)
+                if (_instance == null)
                 {
                     GameObject container = new GameObject();
                     container.name = "Google Ads Container";
@@ -36,7 +37,7 @@ public class GoogleAdsUtil : MonoBehaviour {
 
     public void Awake()
     {
-        if(_instance == null )
+        if (_instance == null)
         {
             _instance = this;
             DontDestroyOnLoad(gameObject);
@@ -47,9 +48,10 @@ public class GoogleAdsUtil : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
-	void Start () {
-
+    // Use this for initialization
+    void Start()
+    {
+        RequestInterstitial();
     }
 
 
@@ -60,12 +62,19 @@ public class GoogleAdsUtil : MonoBehaviour {
 #elif UNITY_IPHONE
         string adUnitID = iOSUnitId;
 #endif
-
+        Debug.Log("Start Interstitial");
         intersititial = new InterstitialAd(adUnitID);
         AdRequest request = new AdRequest.Builder().Build();
         intersititial.AdClosed += Intersititial_AdClosed;
         intersititial.AdLoaded += Intersititial_AdLoaded;
+        intersititial.AdFailedToLoad += Intersititial_AdFailedToLoad;
         intersititial.LoadAd(request);
+    }
+
+    private void Intersititial_AdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        //throw new System.NotImplementedException();
+        Debug.Log("Load google ads failed :"+ e.Message);
     }
 
     private void Intersititial_AdLoaded(object sender, System.EventArgs e)
@@ -77,7 +86,7 @@ public class GoogleAdsUtil : MonoBehaviour {
     private void Intersititial_AdClosed(object sender, System.EventArgs e)
     {
         //throw new System.NotImplementedException();
-        if(intersititial != null)
+        if (intersititial != null)
         {
             intersititial.Destroy();
         }
@@ -99,7 +108,8 @@ public class GoogleAdsUtil : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }
