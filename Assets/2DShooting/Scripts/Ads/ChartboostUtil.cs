@@ -50,6 +50,7 @@ public class ChartboostUtil :MonoBehaviour {
         
         Chartboost.cacheInterstitial(CBLocation.Default);
         Chartboost.cacheRewardedVideo(CBLocation.Default);
+        Chartboost.cacheMoreApps(CBLocation.Default);
 
         Chartboost.didDismissRewardedVideo += Chartboost_didDismissRewardedVideo;
         Chartboost.didCompleteRewardedVideo += Chartboost_didCompleteRewardedVideo;
@@ -117,6 +118,23 @@ public class ChartboostUtil :MonoBehaviour {
     public void ShowInterstitialOnDefault()
     {
         Chartboost.showInterstitial(CBLocation.Default);
+    }
+
+    public bool HasMoreAppOnDefault()
+    {
+        if(Chartboost.hasMoreApps(CBLocation.Default))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void ShowMoreAppOnDefault()
+    {
+        if(HasMoreAppOnDefault())
+        {
+            Chartboost.showMoreApps(CBLocation.Default);
+        }
     }
 
     // Update is called once per frame

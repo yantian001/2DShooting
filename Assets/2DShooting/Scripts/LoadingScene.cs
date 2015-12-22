@@ -18,6 +18,7 @@ public class LoadingScene : MonoBehaviour {
     float totalTime;
 	// Use this for initialization
 	void Start () {
+        GoogleAdsUtil.Instance.ShowTopBannerView();
         nowProcess = 0;
         totalTime = 0;
         StartCoroutine(LoadScene());
@@ -53,6 +54,7 @@ public class LoadingScene : MonoBehaviour {
         }
         if(totalTime>=waitSconds && totalProcess == 100)
         {
+            GoogleAdsUtil.Instance.HideTopBannerView();
             async.allowSceneActivation = true;
         }
 	}

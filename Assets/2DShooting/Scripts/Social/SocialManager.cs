@@ -222,6 +222,14 @@ public class SocialManager
         return rst;
     }
 
+    /// <summary>
+    /// 显示排行榜
+    /// </summary>
+    public void ShowLeardBoardUI()
+    {
+        Social.ShowLeaderboardUI();
+    }
+
     static SocialManager CreateInstance()
     {
         SocialManager manger = new SocialManager();

@@ -9,6 +9,10 @@ public class GoogleAdsUtil : MonoBehaviour
 
     public string iOSUnitId = "ca-app-pub-8295605020027148/7644722719";
 
+    public string androidBannerUnitId = "ca-app-pub-8295605020027148/5886957911";
+
+    public string iOSBannerUnitId = "ca-app-pub-8295605020027148/7363691119";
+
     public static GoogleAdsUtil Instance
     {
         get
@@ -34,7 +38,7 @@ public class GoogleAdsUtil : MonoBehaviour
     private static GoogleAdsUtil _instance;
 
     InterstitialAd intersititial = null;
-
+    BannerView banner = null;
     public void Awake()
     {
         if (_instance == null)
@@ -54,7 +58,36 @@ public class GoogleAdsUtil : MonoBehaviour
         RequestInterstitial();
     }
 
+    void RequestTopBannerView()
+    {
+#if UNITY_ANDROID
+        string adUnitID = androidBannerUnitId;
+#elif UNITY_IPHONE
+        string adUnitID = iOSBannerUnitId;
+#endif
+        banner = new BannerView(adUnitID,AdSize.MediumRectangle,AdPosition.Top);
+        AdRequest request = new AdRequest.Builder().Build();
+        banner.LoadAd(request);
+        banner.Hide();
 
+    }
+
+   public void ShowTopBannerView()
+    {
+        if(banner != null)
+        {
+            banner.Show();
+        }
+    }
+
+
+    public void HideTopBannerView()
+    {
+        if (banner != null)
+        {
+            banner.Hide();
+        }
+    }
     void RequestInterstitial()
     {
 #if UNITY_ANDROID
@@ -62,7 +95,7 @@ public class GoogleAdsUtil : MonoBehaviour
 #elif UNITY_IPHONE
         string adUnitID = iOSUnitId;
 #endif
-        Debug.Log("Start Interstitial");
+       // Debug.Log("Start Interstitial");
         intersititial = new InterstitialAd(adUnitID);
         AdRequest request = new AdRequest.Builder().Build();
         intersititial.AdClosed += Intersititial_AdClosed;
