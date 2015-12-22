@@ -24,6 +24,9 @@
 
 public static class CPGIDs
 {
-        public const string leaderboard_1 = "CgkImsCF9cIaEAIQAA"; // <GPGSID>
+        public const string leaderboard_level_2_highscores = "CgkImsCF9cIaEAIQAw"; // <GPGSID>
+        public const string leaderboard_level_1_highscores = "CgkImsCF9cIaEAIQAA"; // <GPGSID>
+        public const string leaderboard_level_3_highscores = "CgkImsCF9cIaEAIQBA"; // <GPGSID>
+
 }
 

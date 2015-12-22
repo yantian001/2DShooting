@@ -16,10 +16,10 @@ public class JoystickBackgroundMovment : MonoBehaviour
 
     public float nearInteval = 0.06f;
     //资源宽度单位
-    float textureWidthUnit;
+    public float textureWidthUnit = 2250;
     //资源高度单位
-    float textureHightUnit;
-
+    public float textureHightUnit = 1600;
+    public float pixelPerUnit = 100;
     float minWidth;
     float MaxWidth;
     float minHight;
@@ -59,10 +59,24 @@ public class JoystickBackgroundMovment : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Sprite sprite = this.GetComponent<SpriteRenderer>().sprite;
-        float pixelPerUnit = sprite.pixelsPerUnit;
-        textureWidthUnit = (float)sprite.texture.width / pixelPerUnit;
-        textureHightUnit = (float)sprite.texture.height / pixelPerUnit;
+        float pixelPerUnit = 100;
+        Sprite sprite = null;
+        if (this.GetComponent<SpriteRenderer>())
+        {
+             sprite = this.GetComponent<SpriteRenderer>().sprite;
+        }
+        
+        if (sprite != null)
+        {
+            pixelPerUnit = sprite.pixelsPerUnit;
+            textureWidthUnit = (float)sprite.texture.width / pixelPerUnit;
+            textureHightUnit = (float)sprite.texture.height / pixelPerUnit;
+        }
+       else
+        {
+            textureWidthUnit = textureWidthUnit / pixelPerUnit;
+            textureHightUnit = textureHightUnit / pixelPerUnit;
+        }
         float aspectRatio = Camera.main.aspect;
         float cameraHight = 0f;
         float cameraWidth = 0f;

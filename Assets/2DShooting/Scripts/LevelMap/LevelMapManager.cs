@@ -100,30 +100,9 @@ public class LevelMapManager : MonoBehaviour
                 }
             }
         }
-        
+
         //显示武器现在
-        if(weaponSelect != null)
-        {
-            Transform content = weaponSelect.transform.FindChild("WeaponList/WeaponContent");
-            if(content != null)
-            {
-               Toggle[] weapons = content.GetComponentsInChildren<Toggle>();
-                if(weapons != null && weapons.Length > 0)
-                {
-                    for(int i= 0;i<weapons.Length;i++)
-                    {
-                        Toggle weapon = weapons[i];
-                        weapon.onValueChanged.AddListener(b => {
-                            OnSelectWeaponChanged(b, weapon.GetComponent<LevelMapWeaponObject>());
-                        });
-                        if(weapon.isOn)
-                        {
-                            OnSelectWeaponChanged(true, weapon.GetComponent<LevelMapWeaponObject>());
-                        }
-                    }
-                }
-            }
-        }
+        AddWeaponEvent();
 
         //开始按钮点击事件
         if (playButton != null)
@@ -138,6 +117,34 @@ public class LevelMapManager : MonoBehaviour
     {
         RemoveEventListener();
     }
+
+    public void AddWeaponEvent()
+    {
+        if (weaponSelect != null)
+        {
+            Transform content = weaponSelect.transform.FindChild("WeaponList/WeaponContent");
+            if (content != null)
+            {
+                Toggle[] weapons = content.GetComponentsInChildren<Toggle>();
+                if (weapons != null && weapons.Length > 0)
+                {
+                    for (int i = 0; i < weapons.Length; i++)
+                    {
+                        Toggle weapon = weapons[i];
+                        weapon.onValueChanged.AddListener(b => {
+                            OnSelectWeaponChanged(b, weapon.GetComponent<LevelMapWeaponObject>());
+                        });
+                        if (weapon.isOn)
+                        {
+                            OnSelectWeaponChanged(true, weapon.GetComponent<LevelMapWeaponObject>());
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     #endregion
 
     #region Events
@@ -189,6 +196,7 @@ public class LevelMapManager : MonoBehaviour
     {
         if (selected)
         {
+            ChangeUIDisplay(0);
             if (mapObj)
             {
                 currentMapObject = mapObj;
@@ -332,8 +340,9 @@ public class LevelMapManager : MonoBehaviour
         // if(score)
     }
 
-    public void ChangeUIDisplay(int action)
+    public void ChangeUIDisplay(int _action)
     {
+        action = _action;
         //显示排行榜
         if(action == 0)
         {
@@ -344,6 +353,7 @@ public class LevelMapManager : MonoBehaviour
         {
             highScore.SetActive(false);
             weaponSelect.SetActive(true);
+            AddWeaponEvent();
         }
     }
 

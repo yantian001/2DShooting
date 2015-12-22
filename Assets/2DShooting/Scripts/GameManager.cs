@@ -122,6 +122,8 @@ public class GameManager : MonoBehaviour
     /// 视频广告奖励
     /// </summary>
     bool videoRewarded = false;
+
+    Coroutine vedioCountDownCorotuine = null;
     void Init()
     {
         Statu = GameStatu.Init;
@@ -357,7 +359,7 @@ public class GameManager : MonoBehaviour
                 Statu = GameStatu.ShowContinuVedio;
                 UIManager.Instance.ShowVedioUI();
                 LeanTween.addListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
-                StartCoroutine(VideoCountDown(timeWaitVideo));
+               vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
             }
             else
             {
@@ -394,9 +396,14 @@ public class GameManager : MonoBehaviour
     /// <param name="evt"></param>
     void OnWatchVideoClicked(LTEvent evt)
     {
+        alreadyShowVedio = true;
         //停止倒计时
         //StopCoroutine(VideoCountDown(timeWaitVideo));
-        StopCoroutine("VideoCountDown");
+        //StopCoroutine();
+        if(vedioCountDownCorotuine != null )
+        {
+            StopCoroutine(vedioCountDownCorotuine);
+        }
         ChartboostUtil.Instance.ShowGameOverVideo();
         //移除监听
         LeanTween.removeListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
@@ -434,6 +441,7 @@ public class GameManager : MonoBehaviour
     void GameReward()
     {
         AddLife(50);
+        videoRewarded = false;
         GameContinue();
     }
 
@@ -490,6 +498,7 @@ public class GameManager : MonoBehaviour
             total--;
         }
         VideoCountDownFinish();
+        vedioCountDownCorotuine = null;
     }
 
     /// <summary>
@@ -587,6 +596,7 @@ public class GameManager : MonoBehaviour
         }
         UIManager.Instance.HideCountDown();
         Statu = GameStatu.InGame;
+        //Debug.Log(Statu);
     }
 
     #region MonoBehaviour Method

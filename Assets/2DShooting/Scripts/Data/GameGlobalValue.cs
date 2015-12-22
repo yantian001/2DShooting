@@ -13,7 +13,7 @@ public class GameGlobalValue
     public static float hit6Score = .6f;
     public static float headShotScore = 1f;
 
-    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkImsCF9cIaEAIQAA" } };
+    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkImsCF9cIaEAIQAA" } , { 2, "CgkImsCF9cIaEAIQAw" }, { 3, "CgkImsCF9cIaEAIQBA" } };
 
     public static int GetLevelIdByBoardId(string id)
     {
