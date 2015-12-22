@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public enum GameStatu
     {
         OnTutorial,
+        Init,
         InGame,
         GamePaused,
         GameSuccessed,
@@ -123,6 +124,7 @@ public class GameManager : MonoBehaviour
     bool videoRewarded = false;
     void Init()
     {
+        Statu = GameStatu.Init;
         level = GameGlobalValue.s_CurrentScene;
         gameDifficulty = GameGlobalValue.s_CurrentDifficulty;
         currentWeaponId = GameGlobalValue.s_currentWeaponId;
@@ -138,8 +140,6 @@ public class GameManager : MonoBehaviour
         InitUI();
         //初始化武器
         InitWeapon();
-
-        Statu = GameStatu.InGame;
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
         //PlayerPrefs.DeleteAll();
@@ -421,7 +421,8 @@ public class GameManager : MonoBehaviour
         LeanTween.removeListener((int)Events.VIDEOCLOSED, OnVideoClosed);
         if(videoRewarded)
         {
-            GameContinue();
+            // GameContinue();
+            GameReward();
         }
         else
         {
@@ -432,13 +433,13 @@ public class GameManager : MonoBehaviour
 
     void GameReward()
     {
-        playerCurrentHP += 50;
+        AddLife(50);
         GameContinue();
     }
 
     void GameContinue()
     {
-        Statu = GameStatu.InGame;
+        StartCountDown();
     }
 
     /// <summary>
@@ -509,6 +510,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 是否在游戏中
+    /// </summary>
+    /// <returns></returns>
     public bool IsInGame()
     {
         return Statu == GameStatu.InGame;
@@ -527,14 +532,21 @@ public class GameManager : MonoBehaviour
             float addedValue = 0.0f;
             if (float.TryParse(evt.data.ToString(), out addedValue))
             {
-                playerCurrentHP += addedValue;
-                UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+                AddLife(addedValue);
             }
-            SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
+            //SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
         }
     }
-
-
+    /// <summary>
+    /// 增加生命
+    /// </summary>
+    /// <param name="value"></param>
+    void AddLife(float value)
+    { 
+        playerCurrentHP += value;
+        UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
+    }
 
     /// <summary>
     /// 获得盾牌道具
@@ -558,6 +570,25 @@ public class GameManager : MonoBehaviour
     }
 
 
+    void StartCountDown()
+    {
+        StartCoroutine(CountDown());
+    }
+
+    IEnumerator CountDown()
+    {
+        UIManager.Instance.ShowCountDown();
+        int total = 3;
+        while (total > 0)
+        {
+            UIManager.Instance.UpdateCountDownText(total);
+            yield return new WaitForSeconds(1f);
+            total--;
+        }
+        UIManager.Instance.HideCountDown();
+        Statu = GameStatu.InGame;
+    }
+
     #region MonoBehaviour Method
 
     public void OnEnable()
@@ -574,6 +605,7 @@ public class GameManager : MonoBehaviour
     {
         // Debug.Log("Start");
         Init();
+        GameContinue();
     }
 
 
@@ -584,6 +616,10 @@ public class GameManager : MonoBehaviour
             if (playerCurrentHP <= 0)
             {
                 PlayerDead();
+            }
+            else
+            {
+                isPlayerDie = false;
             }
 
             CheckGameStatu();

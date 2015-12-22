@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using ChartboostSDK;
-public class ChartboostUtil  {
+public class ChartboostUtil :MonoBehaviour {
 
     static ChartboostUtil _instance = null;
 
@@ -11,7 +11,13 @@ public class ChartboostUtil  {
         {
             if(_instance == null)
             {
-                _instance = CreateInstance();
+                _instance = FindObjectOfType<ChartboostUtil>();
+                if(_instance == null)
+                {
+                    GameObject signton = new GameObject();
+                    signton.name = "Chartboost Container";
+                    _instance = signton.AddComponent<ChartboostUtil>();
+                }
             }
             return _instance;
         }
@@ -20,29 +26,27 @@ public class ChartboostUtil  {
             _instance = value;
         }
     }
-    
-    //void Awake()
-    //{
-    //    if(_instance == null)
-    //    {
-    //        _instance = this;
-    //        DontDestroyOnLoad(gameObject);
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //}
 
-	// Use this for initialization
-
-    static ChartboostUtil CreateInstance()
+    void Awake()
     {
-        ChartboostUtil rest = new ChartboostUtil();
-        rest.Start();
-        return rest;
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
+
+    // Use this for initialization
+
+    
 	void Start () {
+
+        Chartboost.setAutoCacheAds(true);
+        
         
         Chartboost.cacheInterstitial(CBLocation.Default);
         Chartboost.cacheRewardedVideo(CBLocation.Default);

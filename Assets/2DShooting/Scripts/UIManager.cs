@@ -392,9 +392,9 @@ public class UIManager : MonoBehaviour
 
                 //加成分数
                 Text txtBounsScore = bgRect.FindChild("BonusSocreText").GetComponent<Text>();
-                if(txtBounsScore)
+                if (txtBounsScore)
                 {
-                    txtBounsScore.text = string.Format(txtBounsScore.text,record.WeaponScoreBonus.ToString());
+                    txtBounsScore.text = string.Format(txtBounsScore.text, record.WeaponScoreBonus.ToString());
                 }
 
                 //重新开始按钮
@@ -525,9 +525,10 @@ public class UIManager : MonoBehaviour
         _UIVedio.SetActive(true);
 
         var watchVedioButton = _UIVedio.transform.FindChild("BtnWatchVideo").GetComponent<Button>();
-        if(watchVedioButton)
+        if (watchVedioButton)
         {
-            watchVedioButton.onClick.AddListener(() => {
+            watchVedioButton.onClick.AddListener(() =>
+            {
                 HideVedioUI();
                 LeanTween.dispatchEvent((int)Events.WATCHVIDEOCLICKED);
             });
@@ -541,7 +542,7 @@ public class UIManager : MonoBehaviour
     /// <param name="countdown"></param>
     public void UpdateVideoCountDownText(int countdown)
     {
-        var countDownText =_UIVedio.transform.FindChild("TextCountdown").GetComponent<Text>();
+        var countDownText = _UIVedio.transform.FindChild("TextCountdown").GetComponent<Text>();
         if (countDownText)
             countDownText.text = countdown.ToString();
     }
@@ -554,6 +555,48 @@ public class UIManager : MonoBehaviour
         _UIVedio.SetActive(false);
     }
 
+
+    #endregion
+
+    #region 倒计时
+
+    public GameObject UICountDown;
+
+    /// <summary>
+    /// 显示倒计时界面
+    /// </summary>
+    public void ShowCountDown()
+    {
+        if (UICountDown != null)
+        {
+            UICountDown.SetActive(true);
+        }
+    }
+    /// <summary>
+    /// 更新倒计时显示
+    /// </summary>
+    /// <param name="value"></param>
+    public void UpdateCountDownText(int value)
+    {
+        if (UICountDown && UICountDown.activeInHierarchy)
+        {
+            var txt = UICountDown.GetComponentInChildren<Text>();
+            if (txt)
+            {
+                txt.text = value.ToString();
+            }
+        }
+    }
+    /// <summary>
+    /// 隐藏倒计时
+    /// </summary>
+    public void HideCountDown()
+    {
+        if(UICountDown)
+        {
+            UICountDown.SetActive(false);
+        }
+    }
 
     #endregion
 
