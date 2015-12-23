@@ -45,7 +45,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
     //    Weapon weapon = evt.data as Weapon;
     //    if(weapon)
     //    {
-            
+
     //    }
     //}
 
@@ -63,16 +63,16 @@ public class JoystickBackgroundMovment : MonoBehaviour
         Sprite sprite = null;
         if (this.GetComponent<SpriteRenderer>())
         {
-             sprite = this.GetComponent<SpriteRenderer>().sprite;
+            sprite = this.GetComponent<SpriteRenderer>().sprite;
         }
-        
+
         if (sprite != null)
         {
             pixelPerUnit = sprite.pixelsPerUnit;
             textureWidthUnit = (float)sprite.texture.width / pixelPerUnit;
             textureHightUnit = (float)sprite.texture.height / pixelPerUnit;
         }
-       else
+        else
         {
             textureWidthUnit = textureWidthUnit / pixelPerUnit;
             textureHightUnit = textureHightUnit / pixelPerUnit;
@@ -99,7 +99,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
         minHight = transform.position.y - (textureHightUnit / 2) + cameraHight;
         maxHight = transform.position.y + (textureHightUnit / 2) - cameraHight;
 
-        if(signTran == null)
+        if (signTran == null)
         {
             signTran = GameObject.Find("Sign").transform;
         }
@@ -111,8 +111,10 @@ public class JoystickBackgroundMovment : MonoBehaviour
     {
         float horazital = CrossPlatformInputManager.GetAxis("JoyStickX");
         float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
-        CrossPlatformInputManager.SetAxisZero("JoyStickX");
-        CrossPlatformInputManager.SetAxisZero("JoyStickY");
+
+        Debug.Log("horazital :" + horazital + ", vertical :" + vertical);
+        //  CrossPlatformInputManager.SetAxisZero("JoyStickX");
+        // CrossPlatformInputManager.SetAxisZero("JoyStickY");
         float smooth = smoothRatio;
         if (checkNearTarget && signTran != null)
         {
@@ -121,7 +123,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
             // Gizmos.DrawCube(tr)
             if (signTran != null)
             {
-                RaycastHit2D[] raycasts = Physics2D.BoxCastAll(signTran.position, new Vector2(1, 1), 0f, Vector2.zero);
+                RaycastHit2D[] raycasts = Physics2D.BoxCastAll(signTran.position, new Vector2(0.1f,0.1f), 0f, Vector2.zero);
                 if (raycasts != null && raycasts.Length > 0)
                 {
                     for (int i = 0; i < raycasts.Length; i++)
@@ -137,7 +139,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
             if (hasTarget)
             {
                 smooth = nearSmoothRatio;
-                //  Debug.Log("near target");
+                Debug.Log("near target");
             }
 
         }
@@ -153,7 +155,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
         //transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * (smoothRatio > 100 ? smoothRatio /100 : 1));
 
         //  transform.position = Vector3.Lerp(transform.position, newPos,updateInterval / interval);
-        transform.position = Vector3.Lerp(transform.position, newPos, updateInterval * smoothRatio);
+        transform.position = Vector3.Lerp(transform.position, newPos, updateInterval * smooth);
         //transform.position = newPos;
         //iTween.MoveTo(gameObject, newPos, updateInterval);
     }

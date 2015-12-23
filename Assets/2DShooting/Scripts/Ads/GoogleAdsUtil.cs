@@ -39,6 +39,7 @@ public class GoogleAdsUtil : MonoBehaviour
 
     InterstitialAd intersititial = null;
     BannerView banner = null;
+    BannerView bannerPause = null;
     public void Awake()
     {
         if (_instance == null)
@@ -57,6 +58,7 @@ public class GoogleAdsUtil : MonoBehaviour
     {
         RequestInterstitial();
         RequestTopBannerView();
+        RequestPauseBannerView();
     }
 
     void RequestTopBannerView()
@@ -66,13 +68,51 @@ public class GoogleAdsUtil : MonoBehaviour
 #elif UNITY_IPHONE
         string adUnitID = iOSBannerUnitId;
 #endif
-        AdSize size = new AdSize(900, 300);
-        banner = new BannerView(adUnitID, size, AdPosition.Top);
+        //AdSize size = new AdSize(900, 300);
+        banner = new BannerView(adUnitID, AdSize.Leaderboard, AdPosition.Top);
         AdRequest request = new AdRequest.Builder().Build();
         banner.LoadAd(request);
         banner.AdFailedToLoad += Banner_AdFailedToLoad;
         banner.Hide();
 
+    }
+
+    /// <summary>
+    /// 显示暂停banner
+    /// </summary>
+    public void ShowPauseBanner()
+    {
+        if(bannerPause != null)
+        {
+            bannerPause.Show();
+        }
+    }
+
+    /// <summary>
+    /// 隐藏banner
+    /// </summary>
+    public void HidePauseBanner()
+    {
+        if (bannerPause != null)
+        {
+            bannerPause.Hide();
+        }
+    }
+
+
+    void RequestPauseBannerView()
+    {
+#if UNITY_ANDROID
+        string adUnitID = androidBannerUnitId;
+#elif UNITY_IPHONE
+        string adUnitID = iOSBannerUnitId;
+#endif
+        //AdSize size = new AdSize(900, 300);
+        bannerPause = new BannerView(adUnitID, AdSize.SmartBanner, AdPosition.Bottom);
+        AdRequest request = new AdRequest.Builder().Build();
+        bannerPause.LoadAd(request);
+        bannerPause.AdFailedToLoad += Banner_AdFailedToLoad;
+        bannerPause.Hide();
     }
 
     private void Banner_AdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
@@ -97,6 +137,8 @@ public class GoogleAdsUtil : MonoBehaviour
             banner.Hide();
         }
     }
+
+
     void RequestInterstitial()
     {
 #if UNITY_ANDROID

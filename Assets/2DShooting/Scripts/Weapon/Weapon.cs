@@ -61,6 +61,11 @@ public class Weapon : MonoBehaviour
     /// </summary>
     public float scoreBonus = 0.0f;
 
+    /// <summary>
+    /// 武器的icon
+    /// </summary>
+    public Texture2D WeaponIcon;
+
     bool canShoot = false;
     float deltaTime = 0.0f;
     Animator anim;

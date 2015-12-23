@@ -4,9 +4,7 @@ using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
-
-
-
+    
     #region 连杀UI
     public RectTransform Combo;
     public Text comboText;
@@ -503,6 +501,22 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    #region 武器Icon
+
+    public RawImage weaponIcon;
+    
+
+    public void ChangeWeaponIcon(Texture2D texture)
+    {
+        if(weaponIcon != null && texture != null)
+        {
+            weaponIcon.texture = texture;
+           // weaponIcon = Sprite.Create(texture, weaponIcon.textureRect, weaponIcon.pivot);
+        }
+    }
+
+    #endregion
+
     #region 视频广告
 
     public GameObject _UIVedio;
@@ -595,6 +609,33 @@ public class UIManager : MonoBehaviour
         if(UICountDown)
         {
             UICountDown.SetActive(false);
+        }
+    }
+
+    #endregion
+
+    #region 暂停
+
+    public GameObject uiPause;
+    /// <summary>
+    /// 显示暂停
+    /// </summary>
+    public void ShowPauseUI()
+    {
+        if(uiPause != null)
+        {
+            uiPause.SetActive(true);
+        }
+
+    }
+    /// <summary>
+    /// 隐藏暂停
+    /// </summary>
+    public void HidePauseUI()
+    {
+        if(uiPause != null)
+        {
+            uiPause.SetActive(false);
         }
     }
 

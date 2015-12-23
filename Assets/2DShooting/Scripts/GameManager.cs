@@ -167,6 +167,8 @@ public class GameManager : MonoBehaviour
         }
 
         currentWeapon.gameObject.transform.parent.gameObject.SetActive( true);
+
+        UIManager.Instance.ChangeWeaponIcon(currentWeapon.WeaponIcon);
     }
 
     Weapon GetWeapon(int weaponId)
@@ -598,6 +600,49 @@ public class GameManager : MonoBehaviour
         Statu = GameStatu.InGame;
         //Debug.Log(Statu);
     }
+
+    #region Click Event
+    /// <summary>
+    /// 暂停按钮点击事件
+    /// </summary>
+    public void OnPauseClicked()
+    {
+        Statu = GameStatu.GamePaused;
+        UIManager.Instance.ShowPauseUI();
+        GoogleAdsUtil.Instance.ShowPauseBanner();
+    }
+    /// <summary>
+    /// 继续按钮点击事件
+    /// </summary>
+    public void OnContinueClicked()
+    {
+        
+        GoogleAdsUtil.Instance.HidePauseBanner();
+        UIManager.Instance.HidePauseUI();
+        GameContinue();
+        
+    }
+    /// <summary>
+    /// 重新开始点击事件
+    /// </summary>
+    public void OnRestartClicked()
+    {
+
+        GoogleAdsUtil.Instance.HidePauseBanner();
+        UIManager.Instance.HidePauseUI();
+        LeanTween.dispatchEvent((int)Events.GAMERESTART);
+    }
+    /// <summary>
+    /// 退出点击事件
+    /// </summary>
+    public void OnBackClicked()
+    {
+        GoogleAdsUtil.Instance.HidePauseBanner();
+        UIManager.Instance.HidePauseUI();
+        LeanTween.dispatchEvent((int)Events.MAINMENU);
+    }
+
+    #endregion
 
     #region MonoBehaviour Method
 

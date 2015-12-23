@@ -111,7 +111,7 @@ public class GAFEnemy : MonoBehaviour {
             }
             StartCoroutine(CoroutineShoot(attackCount));
             firstShoot = false;
-            timeFromShoot -= shootInterval;
+            timeFromShoot = 0f;
         }
 
     }
