@@ -112,6 +112,9 @@ public class LevelMapManager : MonoBehaviour
         ChangeUIDisplay(action);
         //添加事件监听
         AddEventListener();
+
+        //显示广告
+        ChartboostUtil.Instance.ShowInterstitialOnHomescreen();
     }
     public void OnDisable()
     {

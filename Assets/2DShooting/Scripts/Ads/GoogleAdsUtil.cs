@@ -56,6 +56,7 @@ public class GoogleAdsUtil : MonoBehaviour
     void Start()
     {
         RequestInterstitial();
+        RequestTopBannerView();
     }
 
     void RequestTopBannerView()
@@ -65,14 +66,22 @@ public class GoogleAdsUtil : MonoBehaviour
 #elif UNITY_IPHONE
         string adUnitID = iOSBannerUnitId;
 #endif
-        banner = new BannerView(adUnitID,AdSize.MediumRectangle,AdPosition.Top);
+        AdSize size = new AdSize(900, 300);
+        banner = new BannerView(adUnitID, size, AdPosition.Top);
         AdRequest request = new AdRequest.Builder().Build();
         banner.LoadAd(request);
+        banner.AdFailedToLoad += Banner_AdFailedToLoad;
         banner.Hide();
 
     }
 
-   public void ShowTopBannerView()
+    private void Banner_AdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        // throw new System.NotImplementedException();
+        Debug.Log("Fail to load banner :" + e.Message);
+    }
+
+    public void ShowTopBannerView()
     {
         if(banner != null)
         {

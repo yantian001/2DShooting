@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using ChartboostSDK;
-public class ChartboostUtil :MonoBehaviour {
+public class ChartboostUtil : MonoBehaviour
+{
 
     static ChartboostUtil _instance = null;
 
@@ -9,10 +10,10 @@ public class ChartboostUtil :MonoBehaviour {
     {
         get
         {
-            if(_instance == null)
+            if (_instance == null)
             {
                 _instance = FindObjectOfType<ChartboostUtil>();
-                if(_instance == null)
+                if (_instance == null)
                 {
                     GameObject signton = new GameObject();
                     signton.name = "Chartboost Container";
@@ -42,13 +43,15 @@ public class ChartboostUtil :MonoBehaviour {
 
     // Use this for initialization
 
-    
-	void Start () {
+
+    void Start()
+    {
 
         Chartboost.setAutoCacheAds(true);
-        
-        
+
+
         Chartboost.cacheInterstitial(CBLocation.Default);
+        Chartboost.cacheInterstitial(CBLocation.HomeScreen);
         Chartboost.cacheRewardedVideo(CBLocation.Default);
         Chartboost.cacheMoreApps(CBLocation.Default);
 
@@ -56,9 +59,23 @@ public class ChartboostUtil :MonoBehaviour {
         Chartboost.didCompleteRewardedVideo += Chartboost_didCompleteRewardedVideo;
         Chartboost.didFailToLoadRewardedVideo += Chartboost_didFailToLoadRewardedVideo;
         Chartboost.didDisplayRewardedVideo += Chartboost_didDisplayRewardedVideo;
+        Chartboost.didFailToLoadMoreApps += Chartboost_didFailToLoadMoreApps;
+        Chartboost.didCacheMoreApps += Chartboost_didCacheMoreApps;
         // Chartboost.showInterstitial(CBLocation.HomeScreen);
         //Chartboost.showRewardedVideo(CBLocation.Default);
-	}
+    }
+
+    private void Chartboost_didCacheMoreApps(CBLocation obj)
+    {
+        // throw new System.NotImplementedException();
+        Debug.Log("More app cached ");
+    }
+
+    private void Chartboost_didFailToLoadMoreApps(CBLocation arg1, CBImpressionError arg2)
+    {
+        //throw new System.NotImplementedException();
+        Debug.Log("Load more apps failed :" + arg2);
+    }
 
     private void Chartboost_didDisplayRewardedVideo(CBLocation obj)
     {
@@ -103,7 +120,7 @@ public class ChartboostUtil :MonoBehaviour {
     /// </summary>
     public void ShowGameOverVideo()
     {
-        if(Chartboost.hasRewardedVideo(CBLocation.Default))
+        if (Chartboost.hasRewardedVideo(CBLocation.Default))
         {
             Chartboost.showRewardedVideo(CBLocation.Default);
         }
@@ -120,9 +137,21 @@ public class ChartboostUtil :MonoBehaviour {
         Chartboost.showInterstitial(CBLocation.Default);
     }
 
+    public bool HasInterstitialOnHomescreen()
+    {
+        return Chartboost.hasInterstitial(CBLocation.HomeScreen);
+
+    }
+
+    public void ShowInterstitialOnHomescreen()
+    {
+        if (HasInterstitialOnHomescreen())
+            Chartboost.showInterstitial(CBLocation.HomeScreen);
+    }
+
     public bool HasMoreAppOnDefault()
     {
-        if(Chartboost.hasMoreApps(CBLocation.Default))
+        if (Chartboost.hasMoreApps(CBLocation.Default))
         {
             return true;
         }
@@ -131,14 +160,15 @@ public class ChartboostUtil :MonoBehaviour {
 
     public void ShowMoreAppOnDefault()
     {
-        if(HasMoreAppOnDefault())
+        if (HasMoreAppOnDefault())
         {
             Chartboost.showMoreApps(CBLocation.Default);
         }
     }
 
     // Update is called once per frame
-    void Update () {
-	
-	}
+    void Update()
+    {
+
+    }
 }
