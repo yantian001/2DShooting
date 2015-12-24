@@ -40,6 +40,7 @@ public class GoogleAdsUtil : MonoBehaviour
     InterstitialAd intersititial = null;
     BannerView banner = null;
     BannerView bannerPause = null;
+    BannerView bannerHome = null;
     public void Awake()
     {
         if (_instance == null)
@@ -61,6 +62,35 @@ public class GoogleAdsUtil : MonoBehaviour
         RequestPauseBannerView();
     }
 
+    void RequestHomeBannerView()
+    {
+#if UNITY_ANDROID
+        string adUnitID = androidBannerUnitId;
+#elif UNITY_IPHONE
+        string adUnitID = iOSBannerUnitId;
+#endif
+        //AdSize size = new AdSize(900, 300);
+        bannerHome = new BannerView(adUnitID, AdSize.Banner, AdPosition.BottomLeft);
+        AdRequest request = new AdRequest.Builder().Build();
+        bannerHome.LoadAd(request);
+        bannerHome.AdFailedToLoad += Banner_AdFailedToLoad;
+        bannerHome.Hide();
+
+    }
+
+    public void ShowHomeBannerView()
+    {
+        if (bannerHome != null)
+            bannerHome.Show();
+    }
+
+    public void HideHomeBannerView()
+    {
+        if (bannerHome != null)
+            bannerHome.Hide();
+    }
+
+
     void RequestTopBannerView()
     {
 #if UNITY_ANDROID
@@ -69,7 +99,7 @@ public class GoogleAdsUtil : MonoBehaviour
         string adUnitID = iOSBannerUnitId;
 #endif
         //AdSize size = new AdSize(900, 300);
-        banner = new BannerView(adUnitID, AdSize.Leaderboard, AdPosition.Top);
+        banner = new BannerView(adUnitID, AdSize.Banner, AdPosition.Top);
         AdRequest request = new AdRequest.Builder().Build();
         banner.LoadAd(request);
         banner.AdFailedToLoad += Banner_AdFailedToLoad;
@@ -108,7 +138,7 @@ public class GoogleAdsUtil : MonoBehaviour
         string adUnitID = iOSBannerUnitId;
 #endif
         //AdSize size = new AdSize(900, 300);
-        bannerPause = new BannerView(adUnitID, AdSize.SmartBanner, AdPosition.Bottom);
+        bannerPause = new BannerView(adUnitID, AdSize.Banner, AdPosition.Bottom);
         AdRequest request = new AdRequest.Builder().Build();
         bannerPause.LoadAd(request);
         bannerPause.AdFailedToLoad += Banner_AdFailedToLoad;

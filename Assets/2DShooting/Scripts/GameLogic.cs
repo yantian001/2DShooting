@@ -41,6 +41,7 @@ public class GameLogic : MonoBehaviour
 
             LeanTween.addListener((int)Events.GAMERESTART, OnGameRestart);
             LeanTween.addListener((int)Events.MAINMENU, OnGameMainMenu);
+            LeanTween.addListener((int)Events.BACKTOSTART, BackToStart);
         }
         else
         {
@@ -74,5 +75,12 @@ public class GameLogic : MonoBehaviour
     public  void Loading()
     {
         Application.LoadLevel(s_LoadingSceneId);
+    }
+
+
+    public void BackToStart(LTEvent evt)
+    {
+        GameGlobalValue.s_CurrentScene = 0;
+        Loading();
     }
 }
