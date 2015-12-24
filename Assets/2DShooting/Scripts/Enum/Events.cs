@@ -55,5 +55,8 @@ public enum Events
     /// 视频广告关闭
     /// </summary>
     VIDEOCLOSED,
-
+    /// <summary>
+    /// 返回主页
+    /// </summary>
+    BACKTOSTART
 }

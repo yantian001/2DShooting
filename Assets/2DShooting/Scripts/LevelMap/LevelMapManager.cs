@@ -56,6 +56,11 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     public Button playButton;
 
+    /// <summary>
+    /// 返回按钮
+    /// </summary>
+    public Button backButton;
+
     private int selectScene = -1;
     private int selectWeaponId = -1;
     private GameDifficulty selectDifficulty = GameDifficulty.Normal;
@@ -110,12 +115,25 @@ public class LevelMapManager : MonoBehaviour
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
         ChangeUIDisplay(action);
+
+        if(backButton != null )
+        {
+            backButton.onClick.AddListener(OnBackButtonClicked);
+        }
+
         //添加事件监听
         AddEventListener();
 
         //显示广告
         ChartboostUtil.Instance.ShowInterstitialOnHomescreen();
     }
+
+    void OnBackButtonClicked()
+    {
+        Debug.Log("back clicked");
+        LeanTween.dispatchEvent((int)Events.BACKTOSTART);
+    }
+
     public void OnDisable()
     {
         RemoveEventListener();
