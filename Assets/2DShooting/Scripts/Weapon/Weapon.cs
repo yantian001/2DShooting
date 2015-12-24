@@ -80,6 +80,10 @@ public class Weapon : MonoBehaviour
 
     public void OnEnable()
     {
+        if(background == null)
+        {
+            background = GameObject.FindGameObjectWithTag("Background");
+        }
         if (signTransform == null)
         {
             signTransform = GameObject.Find("Sign").transform;
@@ -104,9 +108,9 @@ public class Weapon : MonoBehaviour
                 joystickMovement.signTran = signTransform;
                 if (overrideMovement)
                 {
-                    joystickMovement.smoothRatio = moveSpeed / 10;
+                    joystickMovement.smoothRatio = moveSpeed ;
                     joystickMovement.checkNearTarget = checkNearTarget;
-                    joystickMovement.nearSmoothRatio = nearTargetMoveSpeed / 10;
+                    joystickMovement.nearSmoothRatio = nearTargetMoveSpeed;
                 }
             }
         }
@@ -311,7 +315,11 @@ public class Weapon : MonoBehaviour
     void ShakeBackground()
     {
         //iTween.ShakePosition(background, new Vector3(.05f, .05f, 0), 0.05f);
-        iTween.ShakePosition(Camera.main.gameObject, new Vector3(.015f, .015f, 0), 0.01f);
+        if(background != null)
+        {
+            iTween.ShakePosition(background, new Vector3(0.025f, 0.025f, 0), 0.01f);
+        }
+        //iTween.ShakePosition(Camera.main.gameObject, new Vector3(.015f, .015f, 0), 0.01f);
 
     }
 

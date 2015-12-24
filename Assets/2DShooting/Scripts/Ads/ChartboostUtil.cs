@@ -52,8 +52,10 @@ public class ChartboostUtil : MonoBehaviour
 
         Chartboost.cacheInterstitial(CBLocation.Default);
         Chartboost.cacheInterstitial(CBLocation.HomeScreen);
+        Chartboost.cacheInterstitial(CBLocation.Quit);
         Chartboost.cacheRewardedVideo(CBLocation.Default);
         Chartboost.cacheMoreApps(CBLocation.Default);
+        Chartboost.cacheMoreApps(CBLocation.Settings);
 
         Chartboost.didDismissRewardedVideo += Chartboost_didDismissRewardedVideo;
         Chartboost.didCompleteRewardedVideo += Chartboost_didCompleteRewardedVideo;
@@ -61,8 +63,16 @@ public class ChartboostUtil : MonoBehaviour
         Chartboost.didDisplayRewardedVideo += Chartboost_didDisplayRewardedVideo;
         Chartboost.didFailToLoadMoreApps += Chartboost_didFailToLoadMoreApps;
         Chartboost.didCacheMoreApps += Chartboost_didCacheMoreApps;
+
+        Chartboost.didCloseInterstitial += Chartboost_didCloseInterstitial;
         // Chartboost.showInterstitial(CBLocation.HomeScreen);
         //Chartboost.showRewardedVideo(CBLocation.Default);
+    }
+
+    private void Chartboost_didCloseInterstitial(CBLocation obj)
+    {
+        //throw new System.NotImplementedException();
+        LeanTween.dispatchEvent((int)Events.INTERSTITIALCLOSED);
     }
 
     private void Chartboost_didCacheMoreApps(CBLocation obj)
@@ -127,6 +137,27 @@ public class ChartboostUtil : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 是否有退出广告
+    /// </summary>
+    /// <returns></returns>
+    public bool HasQuitInterstitial()
+    {
+        return Chartboost.hasInterstitial(CBLocation.Quit);
+
+    }
+
+    /// <summary>
+    /// 显示退出广告
+    /// </summary>
+    public void ShowQuitInterstitial()
+    {
+        if(HasQuitInterstitial())
+        {
+            Chartboost.showInterstitial(CBLocation.Quit);
+        }
+    }
+
     public bool HasInterstitialOnDefault()
     {
         return Chartboost.hasInterstitial(CBLocation.Default);
@@ -148,6 +179,21 @@ public class ChartboostUtil : MonoBehaviour
         if (HasInterstitialOnHomescreen())
             Chartboost.showInterstitial(CBLocation.HomeScreen);
     }
+
+
+    public bool HasMoreAppOnLoading()
+    {
+        return Chartboost.hasMoreApps(CBLocation.Settings);
+    }
+
+    public void ShowMoreAppOnLoading()
+    {
+        if(HasMoreAppOnLoading())
+        {
+            Chartboost.showMoreApps(CBLocation.Settings);
+        }
+    }
+
 
     public bool HasMoreAppOnDefault()
     {

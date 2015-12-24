@@ -58,4 +58,10 @@ public class LoadingScene : MonoBehaviour {
             async.allowSceneActivation = true;
         }
 	}
+
+    public void OnMoreAppClicked()
+    {
+        // if(ChartboostUtil.Instance.HasMoreAppOnDefault)
+        ChartboostUtil.Instance.ShowMoreAppOnLoading();
+    }
 }

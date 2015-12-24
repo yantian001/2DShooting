@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class GameLogic : MonoBehaviour
 {
@@ -83,4 +84,47 @@ public class GameLogic : MonoBehaviour
         GameGlobalValue.s_CurrentScene = 0;
         Loading();
     }
+
+    void Update()
+    {
+        int levelIndex = Application.loadedLevel;
+        if(Input.GetKeyUp(KeyCode.Escape))
+        {
+            if (levelIndex == 0)
+            {
+                if(ChartboostUtil.Instance.HasQuitInterstitial())
+                {
+                    ChartboostUtil.Instance.ShowQuitInterstitial();
+                    LeanTween.addListener((int)Events.INTERSTITIALCLOSED, OnInterstitialClosed);
+                }
+                else if(GoogleAdsUtil.Instance.HasInterstital())
+                {
+                    GoogleAdsUtil.Instance.ShowInterstital();
+                    LeanTween.addListener((int)Events.INTERSTITIALCLOSED, OnInterstitialClosed);
+                }
+                else {
+                    Application.Quit();
+                }
+                
+            }
+            else if(levelIndex == s_MainMenuSceneId)
+            {
+                BackToStart(null);
+            }
+            else if(levelIndex == s_LoadingSceneId)
+            {
+
+            }
+            else
+            {
+                GameManager.Instance.OnPauseClicked();
+            }
+        }
+    }
+
+    public void OnInterstitialClosed(LTEvent evt)
+    {
+        Application.Quit();
+    }
+
 }

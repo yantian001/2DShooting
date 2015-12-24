@@ -58,5 +58,9 @@ public enum Events
     /// <summary>
     /// 返回主页
     /// </summary>
-    BACKTOSTART
+    BACKTOSTART,
+    /// <summary>
+    /// 广告页关闭
+    /// </summary>
+    INTERSTITIALCLOSED
 }

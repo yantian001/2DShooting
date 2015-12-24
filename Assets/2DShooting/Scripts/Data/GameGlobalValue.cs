@@ -111,7 +111,7 @@ public class GameGlobalValue
     /// <summary>
     /// 最大引动速度
     /// </summary>
-    public static int s_MaxMobility = 5;
+    public static int s_MaxMobility = 20;
     /// <summary>
     /// 最大得分奖励
     /// </summary>

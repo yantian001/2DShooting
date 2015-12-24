@@ -60,14 +60,15 @@ public class GoogleAdsUtil : MonoBehaviour
         RequestInterstitial();
         RequestTopBannerView();
         RequestPauseBannerView();
+        RequestHomeBannerView();
     }
 
     void RequestHomeBannerView()
     {
 #if UNITY_ANDROID
-        string adUnitID = androidBannerUnitId;
+        string adUnitID = "ca-app-pub-8295605020027148/9425520318";
 #elif UNITY_IPHONE
-        string adUnitID = iOSBannerUnitId;
+        string adUnitID = "ca-app-pub-8295605020027148/4855719914";
 #endif
         //AdSize size = new AdSize(900, 300);
         bannerHome = new BannerView(adUnitID, AdSize.Banner, AdPosition.BottomLeft);
@@ -99,7 +100,7 @@ public class GoogleAdsUtil : MonoBehaviour
         string adUnitID = iOSBannerUnitId;
 #endif
         //AdSize size = new AdSize(900, 300);
-        banner = new BannerView(adUnitID, AdSize.Banner, AdPosition.Top);
+        banner = new BannerView(adUnitID, AdSize.Leaderboard, AdPosition.Top);
         AdRequest request = new AdRequest.Builder().Build();
         banner.LoadAd(request);
         banner.AdFailedToLoad += Banner_AdFailedToLoad;
@@ -133,9 +134,9 @@ public class GoogleAdsUtil : MonoBehaviour
     void RequestPauseBannerView()
     {
 #if UNITY_ANDROID
-        string adUnitID = androidBannerUnitId;
+        string adUnitID = "ca-app-pub-8295605020027148/3378986710";
 #elif UNITY_IPHONE
-        string adUnitID = iOSBannerUnitId;
+        string adUnitID = ""ca-app-pub-8295605020027148/6332453116;
 #endif
         //AdSize size = new AdSize(900, 300);
         bannerPause = new BannerView(adUnitID, AdSize.Banner, AdPosition.Bottom);
@@ -203,6 +204,7 @@ public class GoogleAdsUtil : MonoBehaviour
         if (intersititial != null)
         {
             intersititial.Destroy();
+            LeanTween.dispatchEvent((int)Events.INTERSTITIALCLOSED);
         }
 
         RequestInterstitial();
