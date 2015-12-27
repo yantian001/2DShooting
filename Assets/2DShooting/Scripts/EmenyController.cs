@@ -101,12 +101,23 @@ public class EmenyController : MonoBehaviour {
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.localScale;
             swpanObj.transform.parent = parent.transform;
-            EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
-            if (ee != null)
+            
+
+            var path = parent.GetComponent<iTweenPath>();
+            if (path != null)
             {
-                EnemyEmerge enew = swpanObj.AddComponent<EnemyEmerge>();
-                enew.CopyFrom(ee);
-                enew.RunEmerge();
+               // iTween.EaseType.
+                iTween.MoveTo(swpanObj, iTween.Hash("path", path.nodes.ToArray(), "easetype", "linear", "time", 1.6f));
+            }
+            else
+            {
+                EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
+                if (ee != null)
+                {
+                    EnemyEmerge enew = swpanObj.AddComponent<EnemyEmerge>();
+                    enew.CopyFrom(ee);
+                    enew.RunEmerge();
+                }
             }
 
             //敌人的属性
