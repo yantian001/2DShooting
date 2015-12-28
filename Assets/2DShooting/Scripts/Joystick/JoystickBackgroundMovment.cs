@@ -112,7 +112,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
         float horazital = CrossPlatformInputManager.GetAxis("JoyStickX");
         float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
 
-        Debug.Log("horazital :" + horazital + ", vertical :" + vertical);
+       // Debug.Log("horazital :" + horazital + ", vertical :" + vertical);
         //  CrossPlatformInputManager.SetAxisZero("JoyStickX");
         // CrossPlatformInputManager.SetAxisZero("JoyStickY");
         float smooth = smoothRatio;

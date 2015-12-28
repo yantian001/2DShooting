@@ -100,7 +100,7 @@ public class GoogleAdsUtil : MonoBehaviour
         string adUnitID = iOSBannerUnitId;
 #endif
         //AdSize size = new AdSize(900, 300);
-        banner = new BannerView(adUnitID, AdSize.Leaderboard, AdPosition.Top);
+        banner = new BannerView(adUnitID, AdSize.Banner, AdPosition.Top);
         AdRequest request = new AdRequest.Builder().Build();
         banner.LoadAd(request);
         banner.AdFailedToLoad += Banner_AdFailedToLoad;
