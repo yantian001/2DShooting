@@ -529,7 +529,22 @@ public class GameManager : MonoBehaviour
     {
         return Statu == GameStatu.InGame;
     }
-
+    /// <summary>
+    /// 游戏是否暂停
+    /// </summary>
+    /// <returns></returns>
+    public bool IsGamePaused()
+    {
+        return Statu == GameStatu.GamePaused;
+    }
+    /// <summary>
+    /// 是否游戏结束
+    /// </summary>
+    /// <returns></returns>
+    public bool IsGameFinished()
+    {
+        return Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed;
+    }
 
 
     /// <summary>

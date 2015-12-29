@@ -139,7 +139,7 @@ public class JoystickBackgroundMovment : MonoBehaviour
             if (hasTarget)
             {
                 smooth = nearSmoothRatio;
-                Debug.Log("near target");
+                //Debug.Log("near target");
             }
 
         }
