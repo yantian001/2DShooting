@@ -650,7 +650,7 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-        Debug.Log("UIManager Inited");
+       // Debug.Log("UIManager Inited");
 
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);

@@ -134,7 +134,7 @@ public class Weapon : MonoBehaviour
         //监听换弹夹事件
         LeanTween.addListener(gameObject, (int)Events.RELOAD, Reload);
         UpdateBulletDisplay();
-        Debug.Log("Weapon enabled!");
+        //Debug.Log("Weapon enabled!");
     }
 
     public void OnDisable()
@@ -244,7 +244,7 @@ public class Weapon : MonoBehaviour
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
         if (rayhit.collider != null)
         {
-            Debug.Log(rayhit.collider.name);
+           // Debug.Log(rayhit.collider.name);
 
             //是否击中了敌人
             Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
@@ -267,7 +267,7 @@ public class Weapon : MonoBehaviour
             if (gafEnemy != null)
             {
 
-                Debug.Log(gafEnemy.name);
+               // Debug.Log(gafEnemy.name);
                 //Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
