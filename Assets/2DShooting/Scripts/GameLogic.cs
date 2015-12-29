@@ -5,13 +5,13 @@ using UnityStandardAssets.CrossPlatformInput;
 public class GameLogic : MonoBehaviour
 {
 
-   
+
     /// <summary>
     /// Loading界面
     /// </summary>
-    public  int s_LoadingSceneId = 2;
-    public  int s_MainMenuSceneId = 0;
-    
+    public int s_LoadingSceneId = 2;
+    public int s_MainMenuSceneId = 0;
+
 
     private static GameLogic _logic = null;
 
@@ -19,10 +19,10 @@ public class GameLogic : MonoBehaviour
     {
         get
         {
-            if(_logic == null)
+            if (_logic == null)
             {
                 _logic = FindObjectOfType<GameLogic>();
-                if(_logic == null)
+                if (_logic == null)
                 {
                     GameObject logicContainer = new GameObject();
                     logicContainer.name = "GameLogicContainer";
@@ -35,7 +35,7 @@ public class GameLogic : MonoBehaviour
 
     void Awake()
     {
-        if(_logic == null)
+        if (_logic == null)
         {
             _logic = this;
             DontDestroyOnLoad(gameObject);
@@ -64,7 +64,7 @@ public class GameLogic : MonoBehaviour
     // Update is called once per frame
     public void OnDestroy()
     {
-       // Debug.Log("OnDestroy");
+        // Debug.Log("OnDestroy");
     }
 
     public void OnDisable()
@@ -73,7 +73,7 @@ public class GameLogic : MonoBehaviour
         LeanTween.removeListener((int)Events.GAMERESTART, OnGameRestart);
     }
 
-    public  void Loading()
+    public void Loading()
     {
         Application.LoadLevel(s_LoadingSceneId);
     }
@@ -88,36 +88,46 @@ public class GameLogic : MonoBehaviour
     void Update()
     {
         int levelIndex = Application.loadedLevel;
-        if(Input.GetKeyUp(KeyCode.Escape))
+        if (Input.GetKeyUp(KeyCode.Escape))
         {
             if (levelIndex == 0)
             {
-                if(ChartboostUtil.Instance.HasQuitInterstitial())
+                if (ChartboostUtil.Instance.HasQuitInterstitial())
                 {
                     ChartboostUtil.Instance.ShowQuitInterstitial();
                     LeanTween.addListener((int)Events.INTERSTITIALCLOSED, OnInterstitialClosed);
                 }
-                else if(GoogleAdsUtil.Instance.HasInterstital())
+                else if (GoogleAdsUtil.Instance.HasInterstital())
                 {
                     GoogleAdsUtil.Instance.ShowInterstital();
                     LeanTween.addListener((int)Events.INTERSTITIALCLOSED, OnInterstitialClosed);
                 }
-                else {
+                else
+                {
                     Application.Quit();
                 }
-                
+
             }
-            else if(levelIndex == s_MainMenuSceneId)
+            else if (levelIndex == s_MainMenuSceneId)
             {
                 BackToStart(null);
             }
-            else if(levelIndex == s_LoadingSceneId)
+            else if (levelIndex == s_LoadingSceneId)
             {
 
             }
             else
             {
-                GameManager.Instance.OnPauseClicked();
+                if (GameManager.Instance.IsInGame())
+                    GameManager.Instance.OnPauseClicked();
+                else if (GameManager.Instance.IsGamePaused())
+                {
+                    GameManager.Instance.OnContinueClicked();
+                }
+                else if(GameManager.Instance.IsGameFinished())
+                {
+                    OnGameMainMenu(null);
+                }
             }
         }
     }

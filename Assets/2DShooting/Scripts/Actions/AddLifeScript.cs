@@ -17,6 +17,10 @@ public class AddLifeScript : MonoBehaviour {
     {
         if(particle)
         {
+            if(particle.isPlaying)
+            {
+                particle.Pause();
+            }
             particle.Play();
         }
     }
