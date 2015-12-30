@@ -11,6 +11,15 @@ public class EmenyController : MonoBehaviour {
 	//敌人产生的位置
 	public List<GameObject> enemySpwanPosition;
 
+    /// <summary>
+    /// 敌人x轴上可移动的最大范围
+    /// </summary>
+    public static float maxMovemontX = 5.3f;
+    /// <summary>
+    /// 敌人x轴上可移动的最小范围
+    /// </summary>
+    public static float maxMovementY = -5.3f;
+
     //敌人产生的间隔
     public float spwanInterval = 5f;
     //同时存在的敌人的最大量
