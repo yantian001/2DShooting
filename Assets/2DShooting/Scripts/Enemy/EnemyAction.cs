@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyWander : MonoBehaviour {
+public class EnemyAction : MonoBehaviour {
 
     /// <summary>
     /// 动画控制器
@@ -20,9 +20,9 @@ public class EnemyWander : MonoBehaviour {
     /// </summary>
     public AnimatorParameterType animParamType;
     /// <summary>
-    /// 运行速度
+    /// 动作的权重
     /// </summary>
-    public float speed = 1.0f;
+    public int weight = 1;
 
     #region MonoBehaviour Function
     public virtual void Start()
@@ -47,7 +47,7 @@ public class EnemyWander : MonoBehaviour {
     /// <summary>
     /// 运行漫游
     /// </summary>
-    public virtual void Run(Vector3 to)
+    public virtual void Run()
     {
 
     }
@@ -60,28 +60,39 @@ public class EnemyWander : MonoBehaviour {
     /// <param name="val"></param>
     public void SetParamValue(object val = null)
     {
+        SetParamValue(this.animParamName, this.animParamType, val);
+    }
+
+    /// <summary>
+    /// 设置动画的变量值
+    /// </summary>
+    /// <param name="paramName"></param>
+    /// <param name="type"></param>
+    /// <param name="val"></param>
+    public void SetParamValue(string paramName , AnimatorParameterType type ,object val = null)
+    {
         if (animator == null)
             return;
-        if(animParamType != AnimatorParameterType.Trigger)
+        if (type != AnimatorParameterType.Trigger)
         {
             if (val == null)
                 return;
         }
-        switch (animParamType)
+        switch (type)
         {
             case AnimatorParameterType.Bool:
-                animator.SetBool(animParamName, ConvertUtil.ToBool(val));
+                animator.SetBool(paramName, ConvertUtil.ToBool(val));
                 break;
             case AnimatorParameterType.Float:
-                animator.SetFloat(animParamName, ConvertUtil.ToFloat(val));
+                animator.SetFloat(paramName, ConvertUtil.ToFloat(val));
                 break;
             case AnimatorParameterType.Int:
-                animator.SetInteger(animParamName, ConvertUtil.ToInt32(val));
+                animator.SetInteger(paramName, ConvertUtil.ToInt32(val));
                 break;
             case AnimatorParameterType.Trigger:
-                animator.SetTrigger(animParamName);
+                animator.SetTrigger(paramName);
                 break;
-            default:break;
+            default: break;
         }
 
     }

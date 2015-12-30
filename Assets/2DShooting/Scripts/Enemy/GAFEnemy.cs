@@ -109,11 +109,39 @@ public class GAFEnemy : MonoBehaviour {
             {
                 attackCount += Random.Range(-randomShootCountValue, randomShootCountValue);
             }
-            StartCoroutine(CoroutineShoot(attackCount));
+            //StartCoroutine(CoroutineShoot(attackCount));
+            DoAction();
             firstShoot = false;
             timeFromShoot = 0f;
         }
 
+    }
+
+    public void DoAction()
+    {
+        EnemyAction[] actions = GetComponents<EnemyAction>();
+        if(actions != null && actions.Length > 0)
+        {
+            //根据权重
+            int totalWight = 0;
+            int i = 0;
+            for(;i<actions.Length;i++)
+            {
+                totalWight += actions[i].weight;
+            }
+            int actionIndex = 0;
+            int randomWight = Random.Range(0, totalWight + 1);
+            for(i=0;i<actions.Length;i++)
+            {
+                randomWight -= actions[i].weight;
+                if(randomWight <= 0)
+                {
+                    actionIndex = i;
+                    break;
+                }
+            }
+            actions[actionIndex].Run();
+        }
     }
 
     IEnumerator CoroutineShoot(int t)
