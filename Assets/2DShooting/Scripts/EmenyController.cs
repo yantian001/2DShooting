@@ -18,7 +18,7 @@ public class EmenyController : MonoBehaviour {
     /// <summary>
     /// 敌人x轴上可移动的最小范围
     /// </summary>
-    public static float maxMovementY = -5.3f;
+    public static float minMovementX = -5.3f;
 
     //敌人产生的间隔
     public float spwanInterval = 5f;
@@ -158,4 +158,10 @@ public class EmenyController : MonoBehaviour {
         } 
 
 	}
+
+
+    public static float ClampMoveX(float x)
+    {
+        return Mathf.Clamp(x, minMovementX, maxMovemontX);
+    }
 }
