@@ -23,6 +23,10 @@ public class EnemyAction : MonoBehaviour {
     /// 动作的权重
     /// </summary>
     public int weight = 1;
+    /// <summary>
+    /// 所属的Enemy类
+    /// </summary>
+    public GAFEnemy enemy = null;
 
     #region MonoBehaviour Function
     public virtual void Start()
@@ -39,13 +43,19 @@ public class EnemyAction : MonoBehaviour {
                 animator = GetComponent<Animator>();
             }
         }
+
+        if(enemy == null)
+        {
+            enemy = GetComponent<GAFEnemy>();
+            //GAFEnemyEvent
+        }
     }
 
     #endregion
 
 
     /// <summary>
-    /// 运行漫游
+    /// 运行动作
     /// </summary>
     public virtual void Run()
     {
@@ -95,5 +105,13 @@ public class EnemyAction : MonoBehaviour {
             default: break;
         }
 
+    }
+
+    public virtual void UpdateActionStatus(bool isRunning)
+    {
+        if(enemy)
+        {
+            enemy.UpdateAction(isRunning, this.GetType().ToString());
+        }
     }
 }

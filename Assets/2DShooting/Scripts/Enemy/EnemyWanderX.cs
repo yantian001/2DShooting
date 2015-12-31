@@ -42,11 +42,14 @@ public class EnemyWanderX : EnemyAction
 
     public virtual void OnMoveStart()
     {
+        //this.GetType.t
+        UpdateActionStatus(true);
         SetParamValue(true);
     }
 
     public virtual void OnMoveComplete()
     {
+        UpdateActionStatus(false);
         SetParamValue(false);
     }
 }

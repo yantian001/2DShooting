@@ -55,6 +55,12 @@ public class GAFEnemy : MonoBehaviour {
     bool _readyForShoot = true;
 
     bool firstShoot = true;
+    /// <summary>
+    /// 
+    /// </summary>
+    bool actioning = false;
+
+    string currentActionName = "";
 
     //是否可以准备好射击
     public bool ReadyFroShoot
@@ -70,6 +76,7 @@ public class GAFEnemy : MonoBehaviour {
     Collider2D[] coliders;
     public bool Injuring { get; set; }
 
+    #region monobahavior 
     void Start() {
         
         timeFromShoot = 0.0f;
@@ -116,9 +123,28 @@ public class GAFEnemy : MonoBehaviour {
         }
 
     }
+    #endregion
 
+
+    /// <summary>
+    /// 更新动画状态
+    /// </summary>
+    /// <param name="isActioning"></param>
+    /// <param name="actionName"></param>
+    public void UpdateAction(bool isActioning , string actionName = "")
+    {
+        actioning = isActioning;
+        currentActionName = actionName;
+    }
+
+    /// <summary>
+    /// 运行动作
+    /// </summary>
     public void DoAction()
     {
+
+        if (actioning)
+            return;
         EnemyAction[] actions = GetComponents<EnemyAction>();
         if(actions != null && actions.Length > 0)
         {
@@ -143,6 +169,8 @@ public class GAFEnemy : MonoBehaviour {
             actions[actionIndex].Run();
         }
     }
+
+
 
     IEnumerator CoroutineShoot(int t)
     {
