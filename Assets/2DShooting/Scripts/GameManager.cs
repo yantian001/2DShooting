@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
     /// 盾值的4分之一
     /// </summary>
     float qurShieldValue = 0.0f;
-    
+
     float curQurShildValue = 0.0f;
     //游戏记录
     public GameRecords records = null;
@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 视频广告等待时间
     /// </summary>
-    [Range(1,10)]
+    [Range(1, 10)]
     public int timeWaitVideo = 5;
     /// <summary>
     /// 视频广告奖励
@@ -161,12 +161,12 @@ public class GameManager : MonoBehaviour
         }
         currentWeapon = GetWeapon(currentWeaponId);
 
-        if(currentWeapon == null)
+        if (currentWeapon == null)
         {
             Debug.LogError("Current weapon error!");
         }
 
-        currentWeapon.gameObject.transform.parent.gameObject.SetActive( true);
+        currentWeapon.gameObject.transform.parent.gameObject.SetActive(true);
 
         UIManager.Instance.ChangeWeaponIcon(currentWeapon.WeaponIcon);
     }
@@ -215,8 +215,8 @@ public class GameManager : MonoBehaviour
     {
         //if(gameData == null)
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
-        gameData = Instantiate( Resources.Load<GameData>(levelPath));
-        
+        gameData = Instantiate(Resources.Load<GameData>(levelPath));
+
         if (gameData == null)
         {
             Debug.LogError("Init level gamedata error");
@@ -227,7 +227,7 @@ public class GameManager : MonoBehaviour
             curMissionCount = gameData.missionCount;
         }
 
-        if(gameData.autoEnhance)
+        if (gameData.autoEnhance)
         {
             StartCoroutine(GameEnhance());
         }
@@ -235,13 +235,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameEnhance()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(gameData.enhanceAfterSeconds);
-            if(IsInGame())
+            if (IsInGame())
                 gameData.AutoEnhanment();
         }
-       
+
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public class GameManager : MonoBehaviour
             records.HitAddAcores += addScore;
 
         //计算武器加成
-        if(currentWeapon != null)
+        if (currentWeapon != null)
         {
             records.WeaponScoreBonus += (int)(currentWeapon.scoreBonus * score);
             score += (int)(currentWeapon.scoreBonus * score);
@@ -356,18 +356,18 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerDie)
         {
-            if((!alreadyShowVedio)&& (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
+            if ((!alreadyShowVedio) && (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
             {
                 Statu = GameStatu.ShowContinuVedio;
                 UIManager.Instance.ShowVedioUI();
                 LeanTween.addListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
-               vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
+                vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
             }
             else
             {
                 GameFinish();
             }
-           
+
         }
 
         if (gameData.gameType == GameData.GameType.Count)
@@ -389,7 +389,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        
+
     }
 
     /// <summary>
@@ -402,7 +402,7 @@ public class GameManager : MonoBehaviour
         //停止倒计时
         //StopCoroutine(VideoCountDown(timeWaitVideo));
         //StopCoroutine();
-        if(vedioCountDownCorotuine != null )
+        if (vedioCountDownCorotuine != null)
         {
             StopCoroutine(vedioCountDownCorotuine);
         }
@@ -428,7 +428,7 @@ public class GameManager : MonoBehaviour
     {
         LeanTween.removeListener((int)Events.VIDEOREWARD, OnVideoRewarded);
         LeanTween.removeListener((int)Events.VIDEOCLOSED, OnVideoClosed);
-        if(videoRewarded)
+        if (videoRewarded)
         {
             // GameContinue();
             GameReward();
@@ -457,7 +457,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void GameFinish()
     {
-        
+
         Statu = GameStatu.GameFailed;
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
         LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
@@ -466,14 +466,15 @@ public class GameManager : MonoBehaviour
             Player.CurrentPlayer.AddPlayRecord(records);
         }
         //显示广告
-        if(GoogleAdsUtil.Instance.HasInterstital())
-        {
-            GoogleAdsUtil.Instance.ShowInterstital();
-        }
-       else if(ChartboostUtil.Instance.HasInterstitialOnDefault())
+        if (ChartboostUtil.Instance.HasInterstitialOnDefault())
         {
             ChartboostUtil.Instance.ShowInterstitialOnDefault();
         }
+        else if (GoogleAdsUtil.Instance.HasInterstital())
+        {
+            GoogleAdsUtil.Instance.ShowInterstital();
+        }
+
     }
 
     /// <summary>
@@ -493,7 +494,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator VideoCountDown(int total)
     {
-        while(total >=0)
+        while (total >= 0)
         {
             UIManager.Instance.UpdateVideoCountDownText(total);
             yield return new WaitForSeconds(1.0f);
@@ -568,7 +569,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="value"></param>
     void AddLife(float value)
-    { 
+    {
         playerCurrentHP += value;
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
@@ -631,11 +632,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnContinueClicked()
     {
-        
+
         GoogleAdsUtil.Instance.HidePauseBanner();
         UIManager.Instance.HidePauseUI();
         GameContinue();
-        
+
     }
     /// <summary>
     /// 重新开始点击事件

@@ -66,7 +66,7 @@ public class GoogleAdsUtil : MonoBehaviour
     void RequestHomeBannerView()
     {
 #if UNITY_ANDROID
-        string adUnitID = "ca-app-pub-8295605020027148/9425520318";
+        string adUnitID = "ca-app-pub-8295605020027148/4775531117";
 #elif UNITY_IPHONE
         string adUnitID = "ca-app-pub-8295605020027148/4855719914";
 #endif
