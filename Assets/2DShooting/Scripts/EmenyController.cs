@@ -162,24 +162,30 @@ public class EmenyController : MonoBehaviour
     {
         GameObject swpanObj = null;
 
-        if(spwanPostionType == EnemySpwanPosition.FixedPosition)
+        var posProperty = parent.GetComponent<PositionProperty>();
+        if(posProperty == null)
+        {
+            return;
+        }
+
+        if(posProperty.positionType == EnemySpwanPosition.FixedPosition)
         {
             swpanObj = (GameObject)Instantiate(obj, parent.position, parent.rotation);
             swpanObj.transform.parent = parent.transform;
         }
-        else if(spwanPostionType == EnemySpwanPosition.RandomPosition)
+        else if(posProperty.positionType == EnemySpwanPosition.RandomPosition)
         {
-            Vector3 postion = new Vector3(Random.Range(minMovementX, maxMovemontX), parent.position.y, parent.position.z);
+            Vector3 postion = new Vector3(posProperty.GetRandomX(), parent.position.y, parent.position.z);
             swpanObj = (GameObject)Instantiate(obj);
             swpanObj.transform.SetParent(parent.parent);
             swpanObj.transform.localPosition = postion;
         }
-
         if (swpanObj != null)
         {
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.localScale;
-           
+            
+
             EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
             if (ee != null)
             {
@@ -197,11 +203,11 @@ public class EmenyController : MonoBehaviour
             }
 
             e.shootInterval = gameData.emenyShootInterval;
-            e.attack = gameData.emenyAttack;
-            if (gameData.useRondomAttack)
-            {
-                e.attack += Random.Range(-gameData.emenyAttackRandomVal, gameData.emenyAttackRandomVal);
-            }
+            //e.attack = gameData.emenyAttack;
+            //if (gameData.useRondomAttack)
+            //{
+            //    e.attack += Random.Range(-gameData.emenyAttackRandomVal, gameData.emenyAttackRandomVal);
+            //}
             e._HP = gameData.emenyHP;
             if (gameData.useRandomHP)
             {
@@ -222,6 +228,20 @@ public class EmenyController : MonoBehaviour
                     render.sortingLayerName = sl.layerName;
                 }
             }
+            //是否能够横向漫游
+            EnemyWanderX[] wanders = swpanObj.GetComponents<EnemyWanderX>();
+            if(wanders!=null && wanders.Length > 0)
+            {
+                for(int i =0;i<wanders.Length;i++)
+                {
+                    wanders[i].enabled = posProperty.allowWanderX;
+                    
+                    wanders[i].minMovementX = posProperty.minMovementX;
+                    wanders[i].maxMovementX = posProperty.maxMovementX;
+                }
+            }
+
+
 
             //通知GameManager ，产生了敌人
             GameManager.Instance.SpawnedEnemy();

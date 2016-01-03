@@ -15,8 +15,8 @@ public class EnemyWanderRollX : EnemyWanderX {
         base.OnMoveStart();
     }
 
-    public override void Run()
+    public override bool Run()
     {
-        base.Run();
+       return base.Run();
     }
 }

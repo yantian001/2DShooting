@@ -17,27 +17,40 @@ public class EnemyWanderX : EnemyAction
     /// 移动的距离
     /// </summary>
     public float distance = 0.0f;
+    /// <summary>
+    /// 最小横向可移动
+    /// </summary>
+    public float minMovementX = -5.3f;
+    /// <summary>
+    /// 最大横向可移动
+    /// </summary>
+    public float maxMovementX = 5.3f;
 
     public override void Start()
     {
         base.Start();
     }
 
-    public override void Run()
+    public override bool Run()
     {
-        base.Run();
-        distance = Random.Range(-maxMoveDistance, maxMoveDistance);
-        float to = transform.localPosition.x + distance;
-        to = EmenyController.Instance.ClampMoveX(to);
-        distance = to - transform.localPosition.x;
-        float time = Mathf.Abs(distance) / speed;
+        bool ret = false;
+        do
+        {
+            if (!base.Run())
+                break;
+            distance = Random.Range(-maxMoveDistance, maxMoveDistance);
+            float to = transform.localPosition.x + distance;
+            to = this.ClampMovementX(to);
+            distance = to - transform.localPosition.x;
+            float time = Mathf.Abs(distance) / speed;
+            LeanTween.moveLocalX(gameObject, to, time)
+                .setOnStart(OnMoveStart)
+                .setOnComplete(OnMoveComplete);
 
-        // bool isWalkLeft = distance < 0;
-        //run
-        //LeanTween.moveX()
-        LeanTween.moveLocalX(gameObject, to, time)
-            .setOnStart(OnMoveStart)
-            .setOnComplete(OnMoveComplete);
+            ret = true;
+        }
+        while (false);
+        return ret;
     }
 
     public virtual void OnMoveStart()
@@ -51,5 +64,10 @@ public class EnemyWanderX : EnemyAction
     {
         UpdateActionStatus(false);
         SetParamValue(false);
+    }
+
+    public float ClampMovementX(float x)
+    {
+        return Mathf.Clamp(x, minMovementX, maxMovementX);
     }
 }
