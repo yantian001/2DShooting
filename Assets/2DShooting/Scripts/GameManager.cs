@@ -60,6 +60,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public JoystickControl controlModule = JoystickControl.Background;
+
     //EnemyController
     private EmenyController emenyController;
 
@@ -165,9 +167,43 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("Current weapon error!");
         }
-
+        
         currentWeapon.gameObject.transform.parent.gameObject.SetActive( true);
 
+        //设置相关属性
+        if(controlModule == JoystickControl.Background)
+        {
+            var background = GameObject.FindGameObjectWithTag("Background");
+            //设置移动速度
+            if (background != null)
+            {
+                var joystickMovement = background.GetComponent<JoystickBackgroundMovment>();
+                if (joystickMovement != null)
+                {
+                    joystickMovement.signTran = currentWeapon.signTransform;
+                    if (currentWeapon.overrideMovement)
+                    {
+                        joystickMovement.smoothRatio = currentWeapon.moveSpeed;
+                        joystickMovement.checkNearTarget = currentWeapon.checkNearTarget;
+                        joystickMovement.nearSmoothRatio = currentWeapon.nearTargetMoveSpeed;
+                    }
+                }
+            }
+        }
+        else if(controlModule == JoystickControl.Camera)
+        {
+            var joystickCamera = FindObjectOfType<JoystickCameraMovment>();
+            if(joystickCamera != null )
+            {
+                joystickCamera.signTran = currentWeapon.signTransform;
+                if (currentWeapon.overrideMovement)
+                {
+                    joystickCamera.smoothRatio = currentWeapon.moveSpeed;
+                    joystickCamera.checkNearTarget = currentWeapon.checkNearTarget;
+                    joystickCamera.nearSmoothRatio = currentWeapon.nearTargetMoveSpeed;
+                }
+            }
+        }
         UIManager.Instance.ChangeWeaponIcon(currentWeapon.WeaponIcon);
     }
 

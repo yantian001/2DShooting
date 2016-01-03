@@ -57,9 +57,9 @@ public class EnemyAction : MonoBehaviour {
     /// <summary>
     /// 运行动作
     /// </summary>
-    public virtual void Run()
+    public virtual bool Run()
     {
-
+        return enabled;
     }
 
     /// <summary>

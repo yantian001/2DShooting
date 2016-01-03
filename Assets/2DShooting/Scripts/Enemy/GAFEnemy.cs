@@ -2,8 +2,9 @@
 using System.Collections;
 
 
-public class GAFEnemy : MonoBehaviour {
-
+public class GAFEnemy : MonoBehaviour
+{
+    public int id = 1;
     //敌人的生命值
     public float _HP = 1.0f;
     //敌人的射击间隔
@@ -29,32 +30,20 @@ public class GAFEnemy : MonoBehaviour {
     [Tooltip("连续射击的间隔时间")]
     public float comboShootInterval = 0.15f;
 
-    /// <summary>
-    /// 攻击值
-    /// </summary>
-    public float attack = 1.0f;
-    //枪口位置
-    public Transform firePlace;
-    //子弹
-    public GameObject bullet;
-    //射击目标（主角）
-    public GameObject target;
-    //枪口效果
-    public GameObject muzzleEffect;
-    //死亡音效
     public AudioClip deathAduio;
 
-    //开枪音效
-    public AudioClip fireAudio;
+
     /// <summary>
     /// 死亡得分
     /// </summary>
     [Tooltip("死亡得分")]
     public int score = 0;
+
+    float currentActionInterval;
     float timeFromShoot = 0f;
     bool _readyForShoot = true;
 
-    bool firstShoot = true;
+    bool firstShoot = false;
     /// <summary>
     /// 
     /// </summary>
@@ -72,19 +61,21 @@ public class GAFEnemy : MonoBehaviour {
     bool isDead = false;
     [Tooltip("动画控制器")]
     public Animator anim;
+
     BoxCollider2D collider2d;
     Collider2D[] coliders;
     public bool Injuring { get; set; }
 
     #region monobahavior 
-    void Start() {
-        
+    void Start()
+    {
+        currentActionInterval = GetActionInterval();
         timeFromShoot = 0.0f;
-        if(anim == null)
+        if (anim == null)
         {
             anim = GetComponentInChildren<Animator>();
         }
-        
+
 
         ////物理对象
         //coliders = GetComponents<Collider2D>();
@@ -95,30 +86,44 @@ public class GAFEnemy : MonoBehaviour {
         //}
 
         //获得射击对象 
-        if (target == null) {
-            target = GameObject.FindWithTag("Player");
-            if (target == null) {
-                target = GameObject.FindWithTag("Player");
-            }
-        }
+        //if (target == null) {
+        //    target = GameObject.FindWithTag("Player");
+        //    if (target == null) {
+        //        target = GameObject.FindWithTag("Player");
+        //    }
+        //}
     }
 
+    /// <summary>
+    /// 计算随机值
+    /// </summary>
+    /// <returns></returns>
+    float GetActionInterval()
+    {
+        float randomFloat = Random.Range(-0.1f, 0.1f);
+        return shootInterval + shootInterval * randomFloat;
+    }
+
+
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
         if (ReadyFroShoot)
         {
             timeFromShoot += Time.deltaTime;
         }
-        if (CanShoot()) {
+        if (CanShoot())
+        {
 
-            int attackCount = shootCountPerTime;
-            if(randomShootCount)
-            {
-                attackCount += Random.Range(-randomShootCountValue, randomShootCountValue);
-            }
+            //int attackCount = shootCountPerTime;
+            //if(randomShootCount)
+            //{
+            //    attackCount += Random.Range(-randomShootCountValue, randomShootCountValue);
+            //}
             //StartCoroutine(CoroutineShoot(attackCount));
             DoAction();
             firstShoot = false;
+            currentActionInterval = GetActionInterval();
             timeFromShoot = 0f;
         }
 
@@ -131,7 +136,7 @@ public class GAFEnemy : MonoBehaviour {
     /// </summary>
     /// <param name="isActioning"></param>
     /// <param name="actionName"></param>
-    public void UpdateAction(bool isActioning , string actionName = "")
+    public void UpdateAction(bool isActioning, string actionName = "")
     {
         actioning = isActioning;
         currentActionName = actionName;
@@ -146,25 +151,30 @@ public class GAFEnemy : MonoBehaviour {
         if (actioning)
             return;
         EnemyAction[] actions = GetComponents<EnemyAction>();
-        if(actions != null && actions.Length > 0)
+
+
+        if (actions != null && actions.Length > 0)
         {
             //根据权重
             int totalWight = 0;
             int i = 0;
-            for(;i<actions.Length;i++)
+            for (; i < actions.Length; i++)
             {
                 totalWight += actions[i].weight;
             }
             int actionIndex = 0;
             int randomWight = Random.Range(0, totalWight + 1);
-            for(i=0;i<actions.Length;i++)
+            for (i = 0; i < actions.Length; i++)
             {
-                randomWight -= actions[i].weight;
-                if(randomWight <= 0)
-                {
-                    actionIndex = i;
-                    break;
-                }
+                //if (actions[i].enabled)
+                //{
+                    randomWight -= actions[i].weight;
+                    if (randomWight <= 0)
+                    {
+                        actionIndex = i;
+                        break;
+                    }
+                //}
             }
             actions[actionIndex].Run();
         }
@@ -172,24 +182,24 @@ public class GAFEnemy : MonoBehaviour {
 
 
 
-    IEnumerator CoroutineShoot(int t)
-    {
-        // int count = int.Parse(t.ToString());
-        ReadyFroShoot = false;
-        for(int i=0;i<t;i++)
-        {
-            if(CanBrokenShoot())
-            {
-                break;
-            }
-            Shoot();
-            yield return new WaitForSeconds(0.1f);
+    //IEnumerator CoroutineShoot(int t)
+    //{
+    //    // int count = int.Parse(t.ToString());
+    //    ReadyFroShoot = false;
+    //    for(int i=0;i<t;i++)
+    //    {
+    //        if(CanBrokenShoot())
+    //        {
+    //            break;
+    //        }
+    //        Shoot();
+    //        yield return new WaitForSeconds(0.1f);
 
-        }
-        ReadyFroShoot = true;
-    }
+    //    }
+    //    ReadyFroShoot = true;
+    //}
 
-   
+
 
     /// <summary>
     /// 判断是否能打断射击
@@ -201,83 +211,32 @@ public class GAFEnemy : MonoBehaviour {
             return true;
         return false;
     }
-  /// <summary>
-  /// 是否可以射击
-  /// </summary>
-  /// <returns></returns>
-    bool CanShoot() {
+    /// <summary>
+    /// 是否可以射击
+    /// </summary>
+    /// <returns></returns>
+    bool CanShoot()
+    {
         bool canShoot = false;
-        if(CanBrokenShoot())
+        if (CanBrokenShoot())
         {
             return false;
         }
         //if(ReadyFroShoot &&)
-        if (((timeFromShoot >= shootInterval) || firstShoot) && !(target == null || isDead || !ReadyFroShoot || !GameManager.Instance.IsInGame())) {
+        if (((timeFromShoot >= currentActionInterval) || firstShoot) && !(isDead || !ReadyFroShoot || !GameManager.Instance.IsInGame()))
+        {
             canShoot = true;
         }
-        
+
         return canShoot;
     }
-    /// <summary>
-    /// 射击
-    /// </summary>
-    void Shoot() {
-        //Debug.Log ("shooting:");
-        PlayFireAnimation();
-        PlayMuzzleEffect(firePlace);
-        ShowBullet();
-        PlayFireAudio();
-        GameManager.Instance.PlayerInjured(attack);
-    }
 
-    //播放开枪音效
-    void PlayFireAudio()
+
+    public void TakeDamage(float damageVal, bool isHeadShot = false)
     {
-        if(fireAudio != null)
-        {
-            iTween.Stab(gameObject, fireAudio, 0f);
-        }
-    }
-
-    //显示射击子弹
-    void ShowBullet()
-    {
-        Vector3 to = (firePlace.transform.position - target.transform.position).normalized;
-        GameObject blt = (GameObject)Instantiate(bullet, firePlace.transform.position, Quaternion.FromToRotation(Vector3.right, to));
-        blt.transform.parent = firePlace;
-        Vector3 scale = blt.transform.localScale;
-        blt.transform.localScale = Vector3.zero;
-        iTween.MoveTo(blt, iTween.Hash("position", target.transform.position, "time",1, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", blt));
-        iTween.ScaleTo(blt, scale, 0.2f);
-    }
-    // 子弹自动销毁
-    void OnBulletMoveComplete(System.Object obj) {
-        Destroy((GameObject)obj);
-    }
-
-    void PlayMuzzleEffect(Transform tran)
-    {
-        if (muzzleEffect != null)
-        {
-            GameObject muzzle = Instantiate(muzzleEffect);
-            muzzle.transform.position = tran.position;
-            muzzle.transform.localScale = transform.lossyScale;
-            muzzle.transform.parent = tran;
-        }
-    }
-
-    //播放人物射击动画
-    void PlayFireAnimation()
-    {
-        //if (anim != null)
-        //{
-        //    anim.SetTrigger("shoot");
-        //}
-    }
-
-    public void TakeDamage(float damageVal,bool isHeadShot = false) {
         //Debug.Log("Take damage :" + damageVal);
-        if (isDead) {
+        if (isDead)
+        {
             return;
         }
         if (isHeadShot)
@@ -288,19 +247,21 @@ public class GAFEnemy : MonoBehaviour {
         {
             _HP -= damageVal;
         }
-        if (_HP <= 0.0f) {
+        if (_HP <= 0.0f)
+        {
             Die(isHeadShot);
         }
         else
         {
-            if(anim != null)
+            if (anim != null)
             {
                 anim.SetTrigger("injured");
             }
         }
     }
 
-    void Die(bool isHeadShot = false) {
+    void Die(bool isHeadShot = false)
+    {
         //play die animation
         isDead = true;
 
@@ -312,15 +273,19 @@ public class GAFEnemy : MonoBehaviour {
             }
         }
 
-        if (anim != null) {
+        if (anim != null)
+        {
             anim.SetTrigger("dead");
             //float length = anim.GetCurrentAnimatorClipInfo(0).Length;
         }
+
+        //取消所有动作
+        LeanTween.cancel(gameObject);
         Destroy(gameObject, 1);
         PlayDeathAudio();
 
         //通知GameManager死亡
-        GameManager.Instance.EmenyDead(score,isHeadShot);
+        GameManager.Instance.EmenyDead(score, isHeadShot);
     }
 
     /// <summary>

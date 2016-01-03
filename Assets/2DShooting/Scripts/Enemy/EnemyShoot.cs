@@ -110,9 +110,10 @@ public class EnemyShoot : EnemyAction
         return rst;
     }
 
-    public override void Run()
+    public override bool Run()
     {
-        //base.Run();
+        if (!base.Run())
+            return false;
 
         if(target == null || randomTarget)
         {
@@ -120,7 +121,7 @@ public class EnemyShoot : EnemyAction
         }
 
         if (target == null)
-            return;
+            return false;
 
         //播放动画
         PlayFireAnimation();
@@ -128,6 +129,8 @@ public class EnemyShoot : EnemyAction
         ShowBullet();
         PlayFireAudio();
         PlayerInjure();
+
+        return true;
     }
 
 
