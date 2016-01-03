@@ -28,7 +28,7 @@ public class EnemyWanderX : EnemyAction
         base.Run();
         distance = Random.Range(-maxMoveDistance, maxMoveDistance);
         float to = transform.localPosition.x + distance;
-        to = EmenyController.ClampMoveX(to);
+        to = EmenyController.Instance.ClampMoveX(to);
         distance = to - transform.localPosition.x;
         float time = Mathf.Abs(distance) / speed;
 
