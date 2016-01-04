@@ -168,12 +168,12 @@ public class GAFEnemy : MonoBehaviour
             {
                 //if (actions[i].enabled)
                 //{
-                    randomWight -= actions[i].weight;
-                    if (randomWight <= 0)
-                    {
-                        actionIndex = i;
-                        break;
-                    }
+                randomWight -= actions[i].weight;
+                if (randomWight <= 0)
+                {
+                    actionIndex = i;
+                    break;
+                }
                 //}
             }
             actions[actionIndex].Run();
@@ -255,7 +255,8 @@ public class GAFEnemy : MonoBehaviour
         {
             if (anim != null)
             {
-                anim.SetTrigger("injured");
+                if (!actioning)
+                    anim.SetTrigger("injured");
             }
         }
     }

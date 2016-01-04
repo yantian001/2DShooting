@@ -7,6 +7,12 @@ public class PositionProperty : MonoBehaviour {
     /// 位置的类型
     /// </summary>
     public EnemySpwanPosition positionType = EnemySpwanPosition.FixedPosition;
+
+    /// <summary>
+    /// 最大敌人数
+    /// </summary>
+    public int maxEnemyCount = 1;
+
     /// <summary>
     /// 最大的可移动x
     /// </summary>

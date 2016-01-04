@@ -39,10 +39,12 @@ public class EnemyWanderX : EnemyAction
             if (!base.Run())
                 break;
             distance = Random.Range(-maxMoveDistance, maxMoveDistance);
-            float to = transform.localPosition.x + distance;
-            to = this.ClampMovementX(to);
-            distance = to - transform.localPosition.x;
+            //float to = transform.localPosition.x + distance;
+            float worldx =transform.TransformPoint(transform.localPosition).x;
+            float to = this.ClampMovementX(worldx + distance);
+            distance = to - worldx;
             float time = Mathf.Abs(distance) / speed;
+            to = transform.localPosition.x + distance;
             LeanTween.moveLocalX(gameObject, to, time)
                 .setOnStart(OnMoveStart)
                 .setOnComplete(OnMoveComplete);

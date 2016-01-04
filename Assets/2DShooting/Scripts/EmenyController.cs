@@ -139,7 +139,22 @@ public class EmenyController : MonoBehaviour
         Transform rst = null;
         List<GameObject> lstCanSpwan = enemySpwanPosition.FindAll(p =>
         {
-            return p.transform.childCount < gameData.maxEnemyPerPosition;
+            var prop =p.GetComponent<PositionProperty>();
+            if(prop == null)
+            {
+                return false;
+            }
+            else
+            {
+                if(prop.maxEnemyCount == -1)
+                {
+                    return true;
+                }
+                else
+                {
+                   return p.transform.childCount < prop.maxEnemyCount;
+                }
+            }
         });
 
         if (lstCanSpwan != null && lstCanSpwan.Count > 0)
@@ -177,7 +192,7 @@ public class EmenyController : MonoBehaviour
         {
             Vector3 postion = new Vector3(posProperty.GetRandomX(), parent.position.y, parent.position.z);
             swpanObj = (GameObject)Instantiate(obj);
-            swpanObj.transform.SetParent(parent.parent);
+            swpanObj.transform.SetParent(parent);
             swpanObj.transform.localPosition = postion;
         }
         if (swpanObj != null)
