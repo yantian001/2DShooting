@@ -13,7 +13,7 @@ public class StartScript : MonoBehaviour {
     /// </summary>
    public void OnStartButtonClicked()
     {
-        LeanTween.dispatchEvent((int)Events.MAINMENU);
+        LeanTween.dispatchEvent((int)Events.MAINMENU,false);
     }
 
     public void OnHighScoreClicked()

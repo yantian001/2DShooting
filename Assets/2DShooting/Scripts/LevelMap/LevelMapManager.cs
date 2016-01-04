@@ -325,11 +325,11 @@ public class LevelMapManager : MonoBehaviour
                         item.transform.SetParent(rankZone.transform);
                     }
                 }
-                if (itemCount > 5)
-                {
-                    float itemHight = rankZone.GetComponent<GridLayoutGroup>().cellSize.y;
+                //if (itemCount > 5)
+                //{
+                //    float itemHight = rankZone.GetComponent<VerticalLayoutGroup>().cellSize.y;
 
-                }
+                //}
             }
             rankZone.sizeDelta = new Vector2(rankZone.sizeDelta.x, itemCount * rankItemHight);
         }
