@@ -57,8 +57,14 @@ public class GameLogic : MonoBehaviour
 
     void OnGameMainMenu(LTEvent evt)
     {
+
         GameGlobalValue.s_CurrentScene = s_MainMenuSceneId;
-        Loading();
+        //bool isShowLoading = true;
+        //if(evt.data != null)
+        //{
+        //    bool.TryParse(evt.data.ToString(), out isShowLoading);
+        //}
+        Loading(false);
     }
 
     // Update is called once per frame
@@ -73,16 +79,19 @@ public class GameLogic : MonoBehaviour
         LeanTween.removeListener((int)Events.GAMERESTART, OnGameRestart);
     }
 
-    public void Loading()
+    public void Loading(bool showLoading = true)
     {
-        Application.LoadLevel(s_LoadingSceneId);
+        if (showLoading)
+            Application.LoadLevel(s_LoadingSceneId);
+        else
+            Application.LoadLevel(GameGlobalValue.s_CurrentScene);
     }
 
 
     public void BackToStart(LTEvent evt)
     {
         GameGlobalValue.s_CurrentScene = 0;
-        Loading();
+        Loading(false);
     }
 
     void Update()
@@ -124,7 +133,7 @@ public class GameLogic : MonoBehaviour
                 {
                     GameManager.Instance.OnContinueClicked();
                 }
-                else if(GameManager.Instance.IsGameFinished())
+                else if (GameManager.Instance.IsGameFinished())
                 {
                     OnGameMainMenu(null);
                 }

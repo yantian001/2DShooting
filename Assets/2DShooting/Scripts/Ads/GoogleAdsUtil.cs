@@ -58,9 +58,9 @@ public class GoogleAdsUtil : MonoBehaviour
     void Start()
     {
         RequestInterstitial();
-        RequestTopBannerView();
+        //RequestTopBannerView();
         RequestPauseBannerView();
-        RequestHomeBannerView();
+        //RequestHomeBannerView();
     }
 
     void RequestHomeBannerView()
