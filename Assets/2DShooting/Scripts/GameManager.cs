@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     {
         OnTutorial,
         Init,
+        WaitWaveStart,
         InGame,
         GamePaused,
         GameSuccessed,
@@ -126,12 +127,20 @@ public class GameManager : MonoBehaviour
     bool videoRewarded = false;
 
     Coroutine vedioCountDownCorotuine = null;
+
+    int currentWave = 1;
+
+    int currentTurns = 1;
+
     void Init()
     {
         Statu = GameStatu.Init;
         level = GameGlobalValue.s_CurrentScene;
         gameDifficulty = GameGlobalValue.s_CurrentDifficulty;
         currentWeaponId = GameGlobalValue.s_currentWeaponId;
+
+        currentWave = 1;
+        currentTurns = 1;
         if (records == null)
         {
             records = new GameRecords(level, (int)gameDifficulty);
@@ -245,6 +254,20 @@ public class GameManager : MonoBehaviour
             Debug.Log("Init EmenyController error!!");
         }
         emenyController.gameData = gameData;
+
+        //emenyController.SetWave(gameData.waves[0]);
+        SetWave();
+    }
+
+    void SetWave()
+    {
+        int waves = gameData.waves.Length;
+
+        int waveIndex = (currentWave -1) % waves;
+
+        currentTurns = currentWave / waves;
+
+        emenyController.SetWave(gameData.waves[waveIndex]);
     }
 
     void InitGameData()
@@ -729,10 +752,36 @@ public class GameManager : MonoBehaviour
             }
 
             CheckGameStatu();
+
+            CheckWave();
+
         }
         //更新连击
         UpdateCombo();
         //InvokeRepeating()
+    }
+
+    /// <summary>
+    /// 检查波数
+    /// </summary>
+    void CheckWave()
+    {
+        if (emenyController == null)
+            return;
+        if(emenyController.IsWaveCompleted())
+        {
+            OnWaveCompleted();
+        }
+    }
+
+    void OnWaveCompleted()
+    {
+        Statu = GameStatu.WaitWaveStart;
+
+        currentWave += 1;
+        SetWave();
+
+        GameContinue();
     }
     public void OnDisable()
     {

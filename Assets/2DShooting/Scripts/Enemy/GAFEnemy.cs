@@ -287,6 +287,8 @@ public class GAFEnemy : MonoBehaviour
 
         //通知GameManager死亡
         GameManager.Instance.EmenyDead(score, isHeadShot);
+
+        LeanTween.dispatchEvent((int)Events.EMENYDIE);
     }
 
     /// <summary>

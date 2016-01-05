@@ -25,6 +25,7 @@ public class GameData : ScriptableObject
     [Tooltip("任务总数")]
     public float missionCount;
 
+    //public AnimationCurve cure;
     ///// <summary>
     ///// 是否随时间自动增强属性
     ///// </summary>
@@ -103,6 +104,8 @@ public class GameData : ScriptableObject
     /// </summary>
     [HideInInspector]
     public int enhanceTime = 0;
+
+    public WaveData[] waves;
 
     /// <summary>
     /// 增强属性

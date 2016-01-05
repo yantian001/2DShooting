@@ -25,7 +25,10 @@ public class PositionProperty : MonoBehaviour {
     /// 允许横向漫游
     /// </summary>
     public bool allowWanderX = true;
-
+    /// <summary>
+    /// 允许的敌人种类
+    /// </summary>
+    public GameObject[] allowedEmenys;
     /// <summary>
     /// 获取随机位置
     /// </summary>
