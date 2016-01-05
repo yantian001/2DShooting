@@ -284,7 +284,7 @@ public class EmenyController : MonoBehaviour
             Vector3 postion = new Vector3(posProperty.GetRandomX(), parent.position.y, parent.position.z);
             swpanObj = (GameObject)Instantiate(obj);
             swpanObj.transform.SetParent(parent);
-            swpanObj.transform.localPosition = postion;
+            swpanObj.transform.position = postion;
         }
         if (swpanObj != null)
         {

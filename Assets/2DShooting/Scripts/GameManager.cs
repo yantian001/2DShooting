@@ -302,20 +302,7 @@ public class GameManager : MonoBehaviour
         }
        
     }
-
-    /// <summary>
-    /// 产生怪物
-    /// </summary>
-    /// <param name="count">产生怪物的数量</param>
-    public void SpawnedEnemy(int count = 1)
-    {
-        //if (gameData.gameType == GameData.GameType.Count)
-        //{
-        //    curMissionCount -= count;
-        //    UIManager.Instance.UpdateMissionRemain((int)curMissionCount);
-        //}
-    }
-
+    
     /// <summary>
     /// 敌人死亡
     /// </summary>

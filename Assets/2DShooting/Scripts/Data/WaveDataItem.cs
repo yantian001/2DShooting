@@ -54,14 +54,7 @@ public struct WaveDataItem
     /// <returns></returns>
     public bool Cleared()
     {
-        //bool burstCleared = true;
-        //if(bursts!= null && bursts.Length > 0)
-        //{
-        //    for(int i= 0;i <bursts.Length; i++)
-        //    {
-        //        bursts[i].
-        //    }
-        //}
+        
         return emenyCount <= createdEmenyCount;
     }
 
@@ -73,6 +66,10 @@ public struct WaveDataItem
     public int CanCreateAtTime(float time)
     {
         int createCount = 0;
+        if(Cleared())
+        {
+            return createCount;
+        }
         if (rate >= 0 && time -lastCreatedTime >= rate)
         {
             createCount += 1;
@@ -88,7 +85,12 @@ public struct WaveDataItem
                 {
                     if(time >=bursts[i].time)
                     {
-                        createCount += bursts[i].count;
+                        if (emenyCount - createdEmenyCount - createCount >= bursts[i].count)
+                        {
+                            createCount += bursts[i].count;
+                        }
+                        else
+                            createCount += emenyCount - createdEmenyCount - createCount;
                         bursts[i].isFinish = true;
                     }
                 }
