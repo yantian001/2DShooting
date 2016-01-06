@@ -284,6 +284,11 @@ public class Weapon : MonoBehaviour
 
             }
 
+            Shootable shootable = rayhit.collider.GetComponent<Shootable>();
+            if(shootable != null)
+            {
+                shootable.TakeDemage(attack);
+            }
 
             //判断是否击中了箱子
             GameItem item = rayhit.collider.GetComponent<GameItem>();
