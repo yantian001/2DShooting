@@ -81,6 +81,8 @@ public class GameManager : MonoBehaviour
 
     private bool isCombo = false;
 
+    public int waveStartCount = 5;
+
     /// <summary>
     /// 玩家当前血量
     /// </summary>
@@ -134,7 +136,7 @@ public class GameManager : MonoBehaviour
 
     void Init()
     {
-        Statu = GameStatu.Init;
+        this.ChangeGameStatu(GameStatu.Init);
         level = GameGlobalValue.s_CurrentScene;
         gameDifficulty = GameGlobalValue.s_CurrentDifficulty;
         currentWeaponId = GameGlobalValue.s_currentWeaponId;
@@ -147,12 +149,14 @@ public class GameManager : MonoBehaviour
         }
         //初始化游戏数据
         InitGameData();
-        //初始 emenyController
-        InitEmenyController();
+       
+       
         //初始化UI
         InitUI();
         //初始化武器
         InitWeapon();
+        //初始 emenyController
+        InitEmenyController();
         //播放开始音效
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameStart);
         //PlayerPrefs.DeleteAll();
@@ -267,8 +271,12 @@ public class GameManager : MonoBehaviour
 
         currentTurns = currentWave / waves;
 
-        emenyController.SetWave(gameData.waves[waveIndex]);
+        emenyController.SetWave(gameData.waves[waveIndex],currentTurns);
+
+        StartCoroutine(WaveStartCountDown());
     }
+
+
 
     void InitGameData()
     {
@@ -404,7 +412,7 @@ public class GameManager : MonoBehaviour
         {
             if((!alreadyShowVedio)&& (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
             {
-                Statu = GameStatu.ShowContinuVedio;
+                ChangeGameStatu(GameStatu.ShowContinuVedio);
                 UIManager.Instance.ShowVedioUI();
                 LeanTween.addListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
                vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
@@ -420,7 +428,7 @@ public class GameManager : MonoBehaviour
         {
             if (curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
             {
-                Statu = GameStatu.GameSuccessed;
+                ChangeGameStatu(GameStatu.GameSuccessed);
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
@@ -429,7 +437,7 @@ public class GameManager : MonoBehaviour
         {
             if (curMissionCount <= 0)
             {
-                Statu = GameStatu.GameSuccessed;
+                ChangeGameStatu(GameStatu.GameSuccessed);
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
                 LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
             }
@@ -503,8 +511,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void GameFinish()
     {
-        
-        Statu = GameStatu.GameFailed;
+
+        ChangeGameStatu(GameStatu.GameFailed);
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
         LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
         if (Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
@@ -658,7 +666,7 @@ public class GameManager : MonoBehaviour
             total--;
         }
         UIManager.Instance.HideCountDown();
-        Statu = GameStatu.InGame;
+        ChangeGameStatu(GameStatu.InGame);
         //Debug.Log(Statu);
     }
 
@@ -668,7 +676,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnPauseClicked()
     {
-        Statu = GameStatu.GamePaused;
+        ChangeGameStatu(GameStatu.GamePaused);
         UIManager.Instance.ShowPauseUI();
         GoogleAdsUtil.Instance.ShowPauseBanner();
     }
@@ -721,7 +729,7 @@ public class GameManager : MonoBehaviour
     {
         // Debug.Log("Start");
         Init();
-        GameContinue();
+        //GameContinue();
     }
 
 
@@ -763,13 +771,34 @@ public class GameManager : MonoBehaviour
 
     void OnWaveCompleted()
     {
-        Statu = GameStatu.WaitWaveStart;
 
+        ChangeGameStatu(GameStatu.WaitWaveStart);
         currentWave += 1;
         SetWave();
 
-        GameContinue();
+        //GameContinue();
     }
+
+    IEnumerator WaveStartCountDown()
+    {
+        int countDown = waveStartCount;
+        UIManager.Instance.ShowWaveCountDown();
+        while(countDown > 0)
+        {
+            UIManager.Instance.UpdateWaveCountDownText(currentWave, countDown);
+            yield return new WaitForSeconds(1f);
+            countDown--;
+        }
+        UIManager.Instance.HideWaveCountDown();
+        ChangeGameStatu(GameStatu.InGame);
+        
+    }
+
+    void ChangeGameStatu(GameStatu statu)
+    {
+        this.Statu = statu;
+    }
+
     public void OnDisable()
     {
         LeanTween.removeListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);

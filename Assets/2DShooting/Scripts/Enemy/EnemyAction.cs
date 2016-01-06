@@ -27,6 +27,10 @@ public class EnemyAction : MonoBehaviour {
     /// 所属的Enemy类
     /// </summary>
     public GAFEnemy enemy = null;
+    /// <summary>
+    /// 是否主要动作?主动作的权重会随圈数增强
+    /// </summary>
+    public bool isMainAction = false;
 
     #region MonoBehaviour Function
     public virtual void Start()

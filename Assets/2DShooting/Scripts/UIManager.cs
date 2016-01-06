@@ -634,7 +634,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void HideWaveCountDownText()
+    public void HideWaveCountDown()
     {
         if(waveCountDownText != null)
         {

@@ -14,14 +14,13 @@ public class EmenyController : MonoBehaviour
 
     //敌人产生的间隔
     public float spwanInterval = 0.5f;
-    //同时存在的敌人的最大量
-    public int maxEnemyCount = 1;
 
-    public int maxEnemyPerPosition = 1;
-
+    [HideInInspector]
     public GameData gameData { get; set; }
-
-    
+    /// <summary>
+    /// 每圈增强系数
+    /// </summary>
+    public float enhancePerTurn = 0.2f;
 
     /// <summary>
     /// 当前波数信息
@@ -29,6 +28,7 @@ public class EmenyController : MonoBehaviour
     [HideInInspector]
     public WaveData waveData = null;
 
+    int currentTurn = 1;
     /// <summary>
     /// 当前敌人数
     /// </summary>
@@ -307,14 +307,14 @@ public class EmenyController : MonoBehaviour
                 e = swpanObj.AddComponent<GAFEnemy>();
             }
 
-            e.shootInterval = gameData.emenyShootInterval;
-            e._HP = gameData.emenyHP;
-            if (gameData.useRandomHP)
-            {
-                e._HP += Random.Range(-gameData.emenyHPRandomVal, gameData.emenyHPRandomVal);
-            }
+            e.EnhanceByTurn(1 + currentTurn * enhancePerTurn);
 
-
+            //e.shootInterval = gameData.emenyShootInterval;
+            //e._HP = e._HP * (1 + enhancePerTurn);
+            //if (gameData.useRandomHP)
+            //{
+            //    e._HP += Random.Range(-gameData.emenyHPRandomVal, gameData.emenyHPRandomVal);
+            //}
             //更改显示SortingLayer
             SortLayer sl = parent.GetComponent<SortLayer>();
             if (sl != null && sl.layerName != "")
@@ -364,10 +364,18 @@ public class EmenyController : MonoBehaviour
         }
     }
 
-    public void SetWave(WaveData data)
+    /// <summary>
+    /// 设置波数
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="turn"></param>
+    public void SetWave(WaveData data,int turn)
     {
         waveData = data;
 
+        currentTurn = turn;
         Reset();
     }
+
+    
 }

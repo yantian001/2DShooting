@@ -179,28 +179,7 @@ public class GAFEnemy : MonoBehaviour
             actions[actionIndex].Run();
         }
     }
-
-
-
-    //IEnumerator CoroutineShoot(int t)
-    //{
-    //    // int count = int.Parse(t.ToString());
-    //    ReadyFroShoot = false;
-    //    for(int i=0;i<t;i++)
-    //    {
-    //        if(CanBrokenShoot())
-    //        {
-    //            break;
-    //        }
-    //        Shoot();
-    //        yield return new WaitForSeconds(0.1f);
-
-    //    }
-    //    ReadyFroShoot = true;
-    //}
-
-
-
+    
     /// <summary>
     /// 判断是否能打断射击
     /// </summary>
@@ -299,6 +278,24 @@ public class GAFEnemy : MonoBehaviour
         if (deathAduio != null)
         {
             iTween.Stab(gameObject, deathAduio, 0f);
+        }
+    }
+
+    public void EnhanceByTurn(float value)
+    {
+        _HP = _HP * value;
+
+        EnemyAction[] actions = GetComponents<EnemyAction>();
+
+        if(actions != null && actions.Length > 0)
+        {
+            for(int i = 0;i<actions.Length;i++)
+            {
+                if(actions[i].isMainAction)
+                {
+                    actions[i].weight =Mathf.CeilToInt( actions[i].weight * value);
+                }
+            }
         }
     }
 }

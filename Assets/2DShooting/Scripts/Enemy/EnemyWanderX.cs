@@ -40,7 +40,7 @@ public class EnemyWanderX : EnemyAction
                 break;
             distance = Random.Range(-maxMoveDistance, maxMoveDistance);
             //float to = transform.localPosition.x + distance;
-            float worldx =transform.TransformPoint(transform.localPosition).x;
+            float worldx =transform.parent.TransformPoint(transform.localPosition).x;
             float to = this.ClampMovementX(worldx + distance);
             distance = to - worldx;
             float time = Mathf.Abs(distance) / speed;
