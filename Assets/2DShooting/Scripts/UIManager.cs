@@ -672,7 +672,7 @@ public class UIManager : MonoBehaviour
 
     public void OnEnable()
     {
-
+        //LTBezierPath
     }
 
     public void Awake()
