@@ -276,7 +276,7 @@ public class EmenyController : MonoBehaviour
 
         if (posProperty.positionType == EnemySpwanPosition.FixedPosition)
         {
-            swpanObj = (GameObject)Instantiate(obj, parent.position, parent.rotation);
+            swpanObj = (GameObject)Instantiate(obj,parent.position,parent.rotation);
             swpanObj.transform.parent = parent.transform;
         }
         else if (posProperty.positionType == EnemySpwanPosition.RandomPosition)
@@ -289,7 +289,7 @@ public class EmenyController : MonoBehaviour
         if (swpanObj != null)
         {
             //swpanObj.transform. = parent.transform;
-            swpanObj.transform.localScale = parent.transform.localScale;
+            swpanObj.transform.localScale = parent.transform.lossyScale;
 
             EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
             if (ee != null)
@@ -319,14 +319,22 @@ public class EmenyController : MonoBehaviour
             SortLayer sl = parent.GetComponent<SortLayer>();
             if (sl != null && sl.layerName != "")
             {
-                SpriteRenderer render = swpanObj.GetComponent<SpriteRenderer>();
+                SpriteRenderer[] render = swpanObj.GetComponentsInChildren<SpriteRenderer>();
+                if(render!=null && render.Length > 0)
+                {
+                    for(int i=0;i<render.Length;i++)
+                    {
+                        render[i].sortingLayerName = sl.layerName;
+                    }
+                }
+
                 var sortlayer = swpanObj.AddComponent<GAFSortLayer>();
                 sortlayer.sortLayerName = sl.layerName;
                 //gafAnimator.settings.spriteLayerName = sl.layerName;
-                if (render != null)
-                {
-                    render.sortingLayerName = sl.layerName;
-                }
+                //if (render != null)
+                //{
+                //    render.sortingLayerName = sl.layerName;
+                //}
             }
             //是否能够横向漫游
             EnemyWanderX[] wanders = swpanObj.GetComponents<EnemyWanderX>();

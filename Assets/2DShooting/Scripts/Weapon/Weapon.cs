@@ -205,7 +205,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk && GameManager.Instance.IsInGame())
+        if (canFire && canShoot && isBulltOk )
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);

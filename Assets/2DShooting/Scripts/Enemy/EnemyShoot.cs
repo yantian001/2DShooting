@@ -45,6 +45,10 @@ public class EnemyShoot : EnemyAction
     /// 攻击值
     /// </summary>
     public float attack = 1f;
+    /// <summary>
+    /// 需要目标
+    /// </summary>
+    public bool needTarget = true;
     #region Monobehavior
 
     public override void Start()
@@ -114,14 +118,16 @@ public class EnemyShoot : EnemyAction
     {
         if (!base.Run())
             return false;
-
-        if(target == null || randomTarget)
+        if (needTarget)
         {
-            target = GetTarget();
-        }
+            if (target == null || randomTarget)
+            {
+                target = GetTarget();
+            }
 
-        if (target == null)
-            return false;
+            if (target == null)
+                return false;
+        }
 
         //播放动画
         PlayFireAnimation();
