@@ -29,7 +29,12 @@ public class Handbomb : MonoBehaviour
         //LeanTween.rot(gameObject, new Vector3(0, 0, 180), rotateTime).setRepeat(10); ;
         iTween.RotateBy(gameObject, iTween.Hash("amount", new Vector3(0, 0, 30), "time", rotateTime, "looptype", iTween.LoopType.loop, "easetype", iTween.EaseType.linear));
 
-        LeanTween.scale(gameObject, new Vector3(1f, 1f, 1f), scaleTime);
+        LeanTween.scale(gameObject, new Vector3(1.3f, 1.3f, 1.3f), scaleTime);
+        //Vector3[] pts = new Vector3[3];
+        //pts[2] = transform.position + new Vector3(0, 1, 0);
+        //pts[0] = bombTarget.position;
+        //pts[1] = (pts[0] + pts[2]) / 2;
+        
         LeanTween.move(gameObject, bombTarget.position, scaleTime).setEase(LeanTweenType.easeInExpo).setOnComplete(OnMoveComplete);
     }
 

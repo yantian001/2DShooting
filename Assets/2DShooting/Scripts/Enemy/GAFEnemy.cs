@@ -76,7 +76,7 @@ public class GAFEnemy : MonoBehaviour
             anim = GetComponentInChildren<Animator>();
         }
 
-
+        coliders = GetComponentsInChildren<Collider2D>();
         ////物理对象
         //coliders = GetComponents<Collider2D>();
         //if (coliders == null && coliders.Length <= 0)
