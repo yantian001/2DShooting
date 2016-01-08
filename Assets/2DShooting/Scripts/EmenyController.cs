@@ -7,8 +7,8 @@ using GAF.Core;
 public class EmenyController : MonoBehaviour
 {
 
-    //敌人对象
-    public GameObject[] enemys;
+    ////敌人对象
+    //public GameObject[] enemys;
     //敌人产生的位置
     public List<GameObject> enemySpwanPosition;
 
@@ -21,12 +21,18 @@ public class EmenyController : MonoBehaviour
     /// 每圈增强系数
     /// </summary>
     public float enhancePerTurn = 0.2f;
+    /// <summary>
+    /// 每波增强的系数
+    /// </summary>
+    public float enhancePerWave = 0.1f;
 
     /// <summary>
     /// 当前波数信息
     /// </summary>
     [HideInInspector]
     public WaveData waveData = null;
+
+    int currentWave = 1;
 
     int currentTurn = 1;
     /// <summary>
@@ -87,14 +93,14 @@ public class EmenyController : MonoBehaviour
 
     void Update()
     {
-        if(CanSpwanEnemy())
+        if (CanSpwanEnemy())
         {
-            for(int i=0;i<waveData.dataItems.Length;i++)
+            for (int i = 0; i < waveData.dataItems.Length; i++)
             {
                 int canCreateCount = waveData.dataItems[i].CanCreateAtTime(timeSinceWaveStart);
-                if(canCreateCount > 0)
+                if (canCreateCount > 0)
                 {
-                    StartCoroutine(CreateEnemyCorutine(waveData.dataItems[i].emenyObject, canCreateCount));
+                    StartCoroutine(CreateEnemyCorutine(waveData.dataItems[i], canCreateCount));
                 }
             }
 
@@ -118,20 +124,21 @@ public class EmenyController : MonoBehaviour
     #endregion
 
 
-    IEnumerator CreateEnemyCorutine(GameObject enemy,int count)
+    IEnumerator CreateEnemyCorutine(WaveDataItem dataItem, int count)
     {
         needCreateEnemy += count;
-        while(count > 0)
+        while (count > 0)
         {
-            if(CanSpwanEnemy())
+            if (CanSpwanEnemy())
             {
+                GameObject enemy = dataItem.GetCreateGameObject();
                 Transform spwanTransform = GetSpwanPosition(enemy);
-                SpwanObjectAt(enemy, spwanTransform);
-                count--;
+                if (SpwanObjectAt(enemy, spwanTransform))
+                    count--;
             }
-            yield return new WaitForSeconds(Random.Range(0,spwanInterval));
+            yield return new WaitForSeconds(Random.Range(0, spwanInterval));
         }
-        
+
     }
 
     /// <summary>
@@ -147,29 +154,29 @@ public class EmenyController : MonoBehaviour
     /// 当前波数是否已完成
     /// </summary>
     /// <returns></returns>
-   public bool IsWaveCompleted()
+    public bool IsWaveCompleted()
     {
-        if (waveData == null || (waveData.dataItems ==null || waveData.dataItems.Length == 0))
+        if (waveData == null || (waveData.dataItems == null || waveData.dataItems.Length == 0))
             return true;
 
         bool allWaveCleared = true;
-        for(int i =0;i<waveData.dataItems.Length;i++)
+        for (int i = 0; i < waveData.dataItems.Length; i++)
         {
-            if(!waveData.dataItems[i].Cleared())
+            if (!waveData.dataItems[i].Cleared())
             {
                 allWaveCleared = false;
                 break;
             }
         }
 
-        return aliveEnemyCount <= 0 && needCreateEnemy <= 0 &&allWaveCleared;
+        return aliveEnemyCount <= 0 && needCreateEnemy <= 0 && allWaveCleared;
     }
 
 
     //判断能否可以产生敌人
     bool CanSpwanEnemy()
     {
-       
+
         if (!GameManager.Instance.IsInGame())
         {
             return false;
@@ -179,7 +186,7 @@ public class EmenyController : MonoBehaviour
             return false;
         }
 
-        if(IsWaveCompleted())
+        if (IsWaveCompleted())
         {
             return false;
         }
@@ -226,14 +233,14 @@ public class EmenyController : MonoBehaviour
                         else
                         {
                             bool b = false;
-                            for(int i=0;i<prop.allowedEmenys.Length;i++)
+                            for (int i = 0; i < prop.allowedEmenys.Length; i++)
                             {
                                 if (prop.allowedEmenys[i] == obj)
                                 {
                                     b = true;
                                     break;
                                 }
-                                    
+
                             }
                             return b;
                         }
@@ -259,24 +266,25 @@ public class EmenyController : MonoBehaviour
     /// <returns></returns>
     GameObject GetSpwanEnemy()
     {
-        return enemys[Random.Range(0, enemys.Length)];
+        // return enemys[Random.Range(0, enemys.Length)];
+        return null;
     }
 
-    void SpwanObjectAt(GameObject obj, Transform parent)
+    bool SpwanObjectAt(GameObject obj, Transform parent)
     {
         if (parent == null)
-            return;
+            return false;
         GameObject swpanObj = null;
 
         var posProperty = parent.GetComponent<PositionProperty>();
         if (posProperty == null)
         {
-            return;
+            return false;
         }
 
         if (posProperty.positionType == EnemySpwanPosition.FixedPosition)
         {
-            swpanObj = (GameObject)Instantiate(obj,parent.position,parent.rotation);
+            swpanObj = (GameObject)Instantiate(obj, parent.position, parent.rotation);
             swpanObj.transform.parent = parent.transform;
         }
         else if (posProperty.positionType == EnemySpwanPosition.RandomPosition)
@@ -291,6 +299,12 @@ public class EmenyController : MonoBehaviour
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.lossyScale;
 
+            //disable mask 
+            if(!posProperty.enableMask)
+            {
+                var mask = swpanObj.transform.FindChild("mask");
+                mask.gameObject.SetActive(false);
+            }
             EnemyEmerge ee = parent.GetComponent<EnemyEmerge>();
             if (ee != null)
             {
@@ -307,22 +321,14 @@ public class EmenyController : MonoBehaviour
                 e = swpanObj.AddComponent<GAFEnemy>();
             }
 
-            e.EnhanceByTurn(1 + currentTurn * enhancePerTurn);
-
-            //e.shootInterval = gameData.emenyShootInterval;
-            //e._HP = e._HP * (1 + enhancePerTurn);
-            //if (gameData.useRandomHP)
-            //{
-            //    e._HP += Random.Range(-gameData.emenyHPRandomVal, gameData.emenyHPRandomVal);
-            //}
-            //更改显示SortingLayer
+            e.EnhanceByTurn(1 + currentTurn  * enhancePerTurn + currentWave * enhancePerWave);
             SortLayer sl = parent.GetComponent<SortLayer>();
             if (sl != null && sl.layerName != "")
             {
                 SpriteRenderer[] render = swpanObj.GetComponentsInChildren<SpriteRenderer>();
-                if(render!=null && render.Length > 0)
+                if (render != null && render.Length > 0)
                 {
-                    for(int i=0;i<render.Length;i++)
+                    for (int i = 0; i < render.Length; i++)
                     {
                         render[i].sortingLayerName = sl.layerName;
                     }
@@ -330,11 +336,6 @@ public class EmenyController : MonoBehaviour
 
                 var sortlayer = swpanObj.AddComponent<GAFSortLayer>();
                 sortlayer.sortLayerName = sl.layerName;
-                //gafAnimator.settings.spriteLayerName = sl.layerName;
-                //if (render != null)
-                //{
-                //    render.sortingLayerName = sl.layerName;
-                //}
             }
             //是否能够横向漫游
             EnemyWanderX[] wanders = swpanObj.GetComponents<EnemyWanderX>();
@@ -352,9 +353,9 @@ public class EmenyController : MonoBehaviour
             //通知GameManager ，产生了敌人
             AddAliveEmeny();
             needCreateEnemy--;
-            Debug.Log("need create count :" + needCreateEnemy);
+            return true;
         }
-
+        return false;
     }
 
     /// <summary>
@@ -366,7 +367,7 @@ public class EmenyController : MonoBehaviour
         aliveEnemyCount = 0;
         needCreateEnemy = 0;
 
-        if(waveData != null)
+        if (waveData != null)
         {
             waveData.Initialize();
         }
@@ -377,13 +378,13 @@ public class EmenyController : MonoBehaviour
     /// </summary>
     /// <param name="data"></param>
     /// <param name="turn"></param>
-    public void SetWave(WaveData data,int turn)
+    public void SetWave(WaveData data, int turn,int wave = 1)
     {
         waveData = data;
-
+        currentWave = wave;
         currentTurn = turn;
         Reset();
     }
 
-    
+
 }

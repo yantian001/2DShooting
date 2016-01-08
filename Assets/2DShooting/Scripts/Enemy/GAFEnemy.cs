@@ -114,13 +114,6 @@ public class GAFEnemy : MonoBehaviour
         }
         if (CanShoot())
         {
-
-            //int attackCount = shootCountPerTime;
-            //if(randomShootCount)
-            //{
-            //    attackCount += Random.Range(-randomShootCountValue, randomShootCountValue);
-            //}
-            //StartCoroutine(CoroutineShoot(attackCount));
             DoAction();
             firstShoot = false;
             currentActionInterval = GetActionInterval();

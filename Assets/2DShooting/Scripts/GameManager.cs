@@ -271,8 +271,9 @@ public class GameManager : MonoBehaviour
 
         currentTurns = currentWave / waves;
 
-        emenyController.SetWave(gameData.waves[waveIndex],currentTurns);
+        emenyController.SetWave(gameData.waves[waveIndex],currentTurns,waveIndex);
 
+        
         StartCoroutine(WaveStartCountDown());
     }
 
@@ -583,6 +584,12 @@ public class GameManager : MonoBehaviour
     {
         return Statu == GameStatu.InGame;
     }
+
+    public bool IsGamePauseOrOver()
+    {
+        return Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed;
+
+    }
     /// <summary>
     /// 游戏是否暂停
     /// </summary>
@@ -771,7 +778,7 @@ public class GameManager : MonoBehaviour
 
     void OnWaveCompleted()
     {
-
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.WaveSuccess);
         ChangeGameStatu(GameStatu.WaitWaveStart);
         currentWave += 1;
         SetWave();
@@ -786,6 +793,10 @@ public class GameManager : MonoBehaviour
         while(countDown > 0)
         {
             UIManager.Instance.UpdateWaveCountDownText(currentWave, countDown);
+            if(countDown <= 3)
+            {
+                SoundManager.Instance.PlaySound(SoundManager.SoundType.WaveCountDown);
+            }
             yield return new WaitForSeconds(1f);
             countDown--;
         }

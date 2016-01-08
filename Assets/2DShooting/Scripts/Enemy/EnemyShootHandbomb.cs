@@ -36,6 +36,7 @@ public class EnemyShootHandbomb : EnemyShoot {
         {
             GameObject createbullet = (GameObject)Instantiate(bullet, firePlace.position, Quaternion.identity);
             Handbomb bomb = createbullet.GetComponent<Handbomb>();
+            
             if(bomb != null)
             {
                 bomb.attack = attack; 

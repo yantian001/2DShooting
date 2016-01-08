@@ -14,8 +14,14 @@ public class Missile : MonoBehaviour {
     public float explosionTime = 8f;
 
     private Shootable shootable;
-	// Use this for initialization
-	void Start () {
+
+    public GameObject explosionEffect;
+    /// <summary>
+    /// 爆炸音效
+    /// </summary>
+    public AudioClip explosionAduio;
+    // Use this for initialization
+    void Start () {
         shootable = GetComponent<Shootable>();
         LeanTween.scale(gameObject, new Vector3(1f, 1f, 1f), explosionTime).setOnComplete(()=>
         {
@@ -35,7 +41,20 @@ public class Missile : MonoBehaviour {
 
     void Explosion(bool broken)
     {
-        if(!broken)
+        if (explosionEffect != null)
+        {
+            GameObject effect = Instantiate(explosionEffect);
+            effect.transform.position = transform.position;
+            effect.transform.SetParent(transform.parent);
+            effect.transform.localScale *= transform.lossyScale.x;
+        }
+
+        if(explosionAduio != null)
+        {
+            SoundManager.PlayAduio(SoundManager.Instance.gameObject,explosionAduio, 1f);
+        }
+
+        if (!broken)
         {
             GameManager.Instance.PlayerInjured(attack);
         }

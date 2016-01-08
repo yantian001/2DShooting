@@ -17,7 +17,9 @@ public class SoundManager : MonoBehaviour {
         GameSuccess,
         GameFailed,
         GetLife,
-        PlayerDie
+        PlayerDie,
+        WaveCountDown,
+        WaveSuccess
     }
     /*--
     **/
@@ -33,6 +35,8 @@ public class SoundManager : MonoBehaviour {
     public AudioClip gameFailedAudio;
     public AudioClip getLifeAudio;
     public AudioClip playerDie;
+    public AudioClip waveCountDown;
+    public AudioClip waveSuccess;
 
     public static SoundManager _instance;
 
@@ -143,6 +147,18 @@ public class SoundManager : MonoBehaviour {
                 if(playerDie)
                 {
                     PlaySound(playerDie, volume, delay);
+                }
+                break;
+            case SoundType.WaveSuccess:
+                if(waveSuccess)
+                {
+                    PlaySound(waveSuccess, volume, delay);
+                }
+                break;
+            case SoundType.WaveCountDown:
+                if(waveCountDown)
+                {
+                    PlaySound(waveCountDown, volume, delay);
                 }
                 break;
             default:

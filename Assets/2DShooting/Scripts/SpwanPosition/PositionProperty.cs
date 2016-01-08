@@ -30,6 +30,10 @@ public class PositionProperty : MonoBehaviour {
     /// </summary>
     public GameObject[] allowedEmenys;
     /// <summary>
+    /// 是否有阴影
+    /// </summary>
+    public bool enableMask = true;
+    /// <summary>
     /// 获取随机位置
     /// </summary>
     /// <returns></returns>

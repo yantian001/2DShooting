@@ -148,6 +148,10 @@ public class EnemyEmerge : MonoBehaviour
         if (anim != null)
         {
             anim.SetBool(paramName, true);
+            if(emergeValue.x < 0)
+            {
+                anim.SetBool("isWalkLeft", true);
+            }
         }
     }
     /// <summary>

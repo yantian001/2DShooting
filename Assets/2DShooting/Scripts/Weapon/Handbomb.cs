@@ -15,6 +15,11 @@ public class Handbomb : MonoBehaviour
     public Transform bombTarget;
 
     public GameObject explosionEffect;
+
+    /// <summary>
+    /// 爆炸音效
+    /// </summary>
+    public AudioClip explosionAudio;
     // Use this for initialization
     void Start()
     {
@@ -53,7 +58,10 @@ public class Handbomb : MonoBehaviour
             effect.transform.SetParent(transform.parent);
             effect.transform.localScale *= transform.lossyScale.x;
         }
-
+        if(explosionAudio != null)
+        {
+            SoundManager.PlayAduio(SoundManager.Instance.gameObject, explosionAudio);
+        }
         if (!broken)
         {
             GameManager.Instance.PlayerInjured(attack);

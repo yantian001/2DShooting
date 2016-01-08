@@ -25,7 +25,7 @@ public struct WaveDataItem
     /// 敌人对象
     /// </summary>
     [Tooltip("敌人对象")]
-    public GameObject emenyObject;
+    public GameObject[] emenyObject;
     /// <summary>
     /// 敌人数量
     /// </summary>
@@ -102,6 +102,22 @@ public struct WaveDataItem
         return createCount;
 
     }
+
+    /// <summary>
+    /// 获取随机创建的游戏对象
+    /// </summary>
+    /// <returns></returns>
+    public GameObject GetCreateGameObject()
+    {
+        GameObject rst = null;
+        if(emenyObject != null && emenyObject.Length > 0)
+        {
+            rst = emenyObject[Random.Range(0, emenyObject.Length)];
+
+        }
+        return rst;
+    }
+
 
     /// <summary>
     /// 重置
