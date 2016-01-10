@@ -23,7 +23,7 @@ public class Missile : MonoBehaviour {
     // Use this for initialization
     void Start () {
         shootable = GetComponent<Shootable>();
-        LeanTween.scale(gameObject, new Vector3(1f, 1f, 1f), explosionTime).setOnComplete(()=>
+        LeanTween.scale(gameObject, new Vector3(1.5f, 1.5f, 1f), explosionTime).setOnComplete(()=>
         {
             Explosion(false);
         });

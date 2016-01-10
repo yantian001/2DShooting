@@ -587,7 +587,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsGamePauseOrOver()
     {
-        return Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed;
+        return Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed || Statu == GameStatu.GamePaused;
 
     }
     /// <summary>

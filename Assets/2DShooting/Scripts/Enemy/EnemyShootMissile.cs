@@ -28,6 +28,11 @@ public class EnemyShootMissile : EnemyShootGun {
         
     }
 
+    protected override void PlayFireAudio()
+    {
+        base.PlayFireAudio();
+    }
+
     protected override void ShowBullet()
     {
         if (bullet && firePlace)
