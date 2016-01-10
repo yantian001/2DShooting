@@ -254,6 +254,7 @@ public class GAFEnemy : MonoBehaviour
 
         //取消所有动作
         LeanTween.cancel(gameObject);
+        iTween.Stop(gameObject, true);
         Destroy(gameObject, 1);
         PlayDeathAudio();
 
