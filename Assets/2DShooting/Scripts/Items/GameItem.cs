@@ -130,6 +130,8 @@ public class GameItem : MonoBehaviour
             SoundManager.PlayAduio(gameObject, brokenAc);
         }
 
+        LeanTween.cancel(gameObject);
+
         Destroy(gameObject, 0.1f);
     }
 }

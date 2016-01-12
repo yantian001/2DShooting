@@ -205,7 +205,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk && GameManager.Instance.Statu == GameManager.GameStatu.InGame)
+        if (canFire && canShoot && isBulltOk &&(!GameManager.Instance.IsGamePauseOrOver()) )
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);
@@ -247,23 +247,27 @@ public class Weapon : MonoBehaviour
            // Debug.Log(rayhit.collider.name);
 
             //是否击中了敌人
-            Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
-            if (enemy != null)
-            {
+            //Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
+            //if (enemy != null)
+            //{
 
-                Debug.Log(rayhit.collider.GetType());
-                if (rayhit.collider.GetType() == typeof(CircleCollider2D))
-                {
-                    enemy.TakeDamage(attack, true);
-                }
-                else
-                {
-                    enemy.TakeDamage(attack);
-                }
+            //    Debug.Log(rayhit.collider.GetType());
+            //    if (rayhit.collider.GetType() == typeof(CircleCollider2D))
+            //    {
+            //        enemy.TakeDamage(attack, true);
+            //    }
+            //    else
+            //    {
+            //        enemy.TakeDamage(attack);
+            //    }
 
-            }
+            //}
 
             GAFEnemy gafEnemy = rayhit.collider.gameObject.GetComponentInParent<GAFEnemy>();
+            if(gafEnemy == null)
+            {
+                gafEnemy = rayhit.collider.gameObject.GetComponent<GAFEnemy>();
+            }
             if (gafEnemy != null)
             {
 
@@ -280,6 +284,11 @@ public class Weapon : MonoBehaviour
 
             }
 
+            Shootable shootable = rayhit.collider.GetComponent<Shootable>();
+            if(shootable != null)
+            {
+                shootable.TakeDemage(attack);
+            }
 
             //判断是否击中了箱子
             GameItem item = rayhit.collider.GetComponent<GameItem>();

@@ -614,6 +614,35 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+    #region Wave Count Down
+
+    public Text waveCountDownText;
+
+    public void ShowWaveCountDown()
+    {
+        if(waveCountDownText != null)
+        {
+            waveCountDownText.gameObject.SetActive(true);
+        }
+    }
+
+    public void UpdateWaveCountDownText(int wave ,int time)
+    {
+        if(waveCountDownText != null )
+        {
+            waveCountDownText.text = string.Format("Wave {0} will start after {1} seconds", wave, time);
+        }
+    }
+
+    public void HideWaveCountDown()
+    {
+        if(waveCountDownText != null)
+        {
+            waveCountDownText.gameObject.SetActive(false);
+        }
+    }
+
+    #endregion
     #region 暂停
 
     public GameObject uiPause;
@@ -643,7 +672,7 @@ public class UIManager : MonoBehaviour
 
     public void OnEnable()
     {
-
+        //LTBezierPath
     }
 
     public void Awake()

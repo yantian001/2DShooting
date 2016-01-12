@@ -62,5 +62,13 @@ public enum Events
     /// <summary>
     /// 广告页关闭
     /// </summary>
-    INTERSTITIALCLOSED
+    INTERSTITIALCLOSED,
+    /// <summary>
+    /// 敌人死亡
+    /// </summary>
+    EMENYDIE,
+    /// <summary>
+    /// 镜头晃动
+    /// </summary>
+    SHAKECAMERA,
 }

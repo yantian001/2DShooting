@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: d210e18799da026478112f216bc5bd70
+timeCreated: 1452229571
+licenseType: Pro
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - animator: {instanceID: 0}
+  - enemy: {instanceID: 0}
+  - target: {instanceID: 0}
+  - firePlace: {instanceID: 0}
+  - muzzleEffect: {instanceID: 0}
+  - bullet: {instanceID: 0}
+  - fireAudio: {fileID: 8300000, guid: 905c07d9dc369a345b905455ad7bba2c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

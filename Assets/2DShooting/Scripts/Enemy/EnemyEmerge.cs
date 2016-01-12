@@ -10,6 +10,7 @@ public class EnemyEmerge : MonoBehaviour
         Runin,
         Dropdown,
         Roll,
+        ParaChute
     }
     //进入的方式
     public EmergeType emergeType;
@@ -85,7 +86,53 @@ public class EnemyEmerge : MonoBehaviour
             case EmergeType.Roll:
                 RunAction("isRolling");
                 break;
+            case EmergeType.ParaChute:
+                RunParachute();
+                break;
         }
+    }
+
+    void RunParachute()
+    {
+         var parachute = transform.FindChild("Parachute");
+        if(parachute)
+        {
+            parachute.gameObject.SetActive(true);
+        }
+
+        var mask = transform.FindChild("mask");
+        if (mask)
+            mask.gameObject.SetActive(false);
+
+        Vector3 pos = gameObject.transform.localPosition + emergeValue;
+        pos = gameObject.transform.parent.InverseTransformVector(pos);
+        iTween.MoveTo(gameObject, iTween.Hash("position", pos, "time", emergeTime, "easetype", "linear", "oncomplete", "OnRunParachuteComplete", "islocal", true, "oncompletetarget", gameObject));
+        if (anim != null)
+        {
+            anim.SetBool("parachute", true);
+        }
+    }
+
+
+    void OnRunParachuteComplete()
+    {
+        var parachute = transform.FindChild("Parachute");
+        if (parachute)
+        {
+            parachute.gameObject.SetActive(false);
+        }
+        var mask = transform.FindChild("mask");
+        if (mask)
+            mask.gameObject.SetActive(true);
+        if (enemy)
+        {
+            enemy.ReadyFroShoot = true;
+        }
+        if (anim != null)
+        {
+            anim.SetBool("parachute", false);
+        }
+        isFinish = true;
     }
 
     void RunAction(string paramName)
@@ -101,6 +148,10 @@ public class EnemyEmerge : MonoBehaviour
         if (anim != null)
         {
             anim.SetBool(paramName, true);
+            if(emergeValue.x < 0)
+            {
+                anim.SetBool("isWalkLeft", true);
+            }
         }
     }
     /// <summary>

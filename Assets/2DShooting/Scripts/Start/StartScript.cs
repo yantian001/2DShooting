@@ -3,9 +3,11 @@ using System.Collections;
 
 public class StartScript : MonoBehaviour {
 
+   // public GoogleAnalyticsV3 googleAnalyticsV3;
+
 	// Use this for initialization
 	void Start () {
-	
+        Application.targetFrameRate = 60;
 	}
 
     /// <summary>
