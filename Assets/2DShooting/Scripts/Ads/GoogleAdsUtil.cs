@@ -5,7 +5,7 @@ using GoogleMobileAds.Api;
 public class GoogleAdsUtil : MonoBehaviour
 {
 
-    public string androidUnitId = "ca-app-pub-8295605020027148/3214523116";
+    public string androidUnitId = "ca-app-pub-8295605020027148/4775531117";
 
     public string iOSUnitId = "ca-app-pub-8295605020027148/7644722719";
 

@@ -67,4 +67,8 @@ public enum Events
     /// 敌人死亡
     /// </summary>
     EMENYDIE,
+    /// <summary>
+    /// 镜头晃动
+    /// </summary>
+    SHAKECAMERA,
 }

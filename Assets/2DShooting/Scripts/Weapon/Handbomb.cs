@@ -65,6 +65,7 @@ public class Handbomb : MonoBehaviour
         if (!broken)
         {
             GameManager.Instance.PlayerInjured(attack);
+            LeanTween.dispatchEvent((int)Events.SHAKECAMERA);
         }
         Destroy(gameObject);
     }
