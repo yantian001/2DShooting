@@ -35,7 +35,7 @@ public class Weapon : MonoBehaviour
     public GameObject bullet;
     //子弹数量
     public int BulletCount;
-    
+
     //场景对象
     public GameObject background;
 
@@ -78,9 +78,14 @@ public class Weapon : MonoBehaviour
         UpdateBulletDisplay();
     }
 
+    public void Awake()
+    {
+        Debug.Log("wepon init");
+    }
+
     public void OnEnable()
     {
-        if(background == null)
+        if (background == null)
         {
             background = GameObject.FindGameObjectWithTag("Background");
         }
@@ -108,13 +113,13 @@ public class Weapon : MonoBehaviour
                 joystickMovement.signTran = signTransform;
                 if (overrideMovement)
                 {
-                    joystickMovement.smoothRatio = moveSpeed ;
+                    joystickMovement.smoothRatio = moveSpeed;
                     joystickMovement.checkNearTarget = checkNearTarget;
                     joystickMovement.nearSmoothRatio = nearTargetMoveSpeed;
                 }
             }
         }
-        
+
         //获取随机射击的范围
         if (randomShooting && randomShootingSize == Vector3.zero)
         {
@@ -205,7 +210,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk &&(!GameManager.Instance.IsGamePauseOrOver()) )
+        if (canFire && canShoot && isBulltOk && (!GameManager.Instance.IsGamePauseOrOver()))
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);
@@ -244,7 +249,7 @@ public class Weapon : MonoBehaviour
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
         if (rayhit.collider != null)
         {
-           // Debug.Log(rayhit.collider.name);
+            // Debug.Log(rayhit.collider.name);
 
             //是否击中了敌人
             //Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
@@ -264,14 +269,14 @@ public class Weapon : MonoBehaviour
             //}
 
             GAFEnemy gafEnemy = rayhit.collider.gameObject.GetComponentInParent<GAFEnemy>();
-            if(gafEnemy == null)
+            if (gafEnemy == null)
             {
                 gafEnemy = rayhit.collider.gameObject.GetComponent<GAFEnemy>();
             }
             if (gafEnemy != null)
             {
 
-               // Debug.Log(gafEnemy.name);
+                // Debug.Log(gafEnemy.name);
                 //Debug.Log(rayhit.collider.GetType());
                 if (rayhit.collider.GetType() == typeof(CircleCollider2D))
                 {
@@ -285,7 +290,7 @@ public class Weapon : MonoBehaviour
             }
 
             Shootable shootable = rayhit.collider.GetComponent<Shootable>();
-            if(shootable != null)
+            if (shootable != null)
             {
                 shootable.TakeDemage(attack);
             }
@@ -324,7 +329,7 @@ public class Weapon : MonoBehaviour
     void ShakeBackground()
     {
         //iTween.ShakePosition(background, new Vector3(.05f, .05f, 0), 0.05f);
-        if(background != null)
+        if (background != null)
         {
             iTween.ShakePosition(background, new Vector3(0.025f, 0.025f, 0), 0.01f);
         }

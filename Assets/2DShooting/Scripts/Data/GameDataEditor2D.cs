@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEditor;
 #endif
 
-public class GameDataEditor  {
+public class GameDataEditor2D  {
     #if UNITY_EDITOR
     [MenuItem("2DShooting/Create GameData")]
     public static void Execute()
