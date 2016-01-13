@@ -521,15 +521,14 @@ public class GameManager : MonoBehaviour
             Player.CurrentPlayer.AddPlayRecord(records);
         }
         //显示广告
-        if (ChartboostUtil.Instance.HasInterstitialOnDefault())
-        {
-            ChartboostUtil.Instance.ShowInterstitialOnDefault();
-        }
-        else if(GoogleAdsUtil.Instance.HasInterstital())
+        if(GoogleAdsUtil.Instance.HasInterstital())
         {
             GoogleAdsUtil.Instance.ShowInterstital();
         }
-       
+       else if(ChartboostUtil.Instance.HasInterstitialOnDefault())
+        {
+            ChartboostUtil.Instance.ShowInterstitialOnDefault();
+        }
     }
 
     /// <summary>

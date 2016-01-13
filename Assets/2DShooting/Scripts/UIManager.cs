@@ -4,7 +4,7 @@ using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
-    
+
     #region 连杀UI
     public RectTransform Combo;
     public Text comboText;
@@ -504,14 +504,14 @@ public class UIManager : MonoBehaviour
     #region 武器Icon
 
     public RawImage weaponIcon;
-    
+
 
     public void ChangeWeaponIcon(Texture2D texture)
     {
-        if(weaponIcon != null && texture != null)
+        if (weaponIcon != null && texture != null)
         {
             weaponIcon.texture = texture;
-           // weaponIcon = Sprite.Create(texture, weaponIcon.textureRect, weaponIcon.pivot);
+            // weaponIcon = Sprite.Create(texture, weaponIcon.textureRect, weaponIcon.pivot);
         }
     }
 
@@ -606,7 +606,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void HideCountDown()
     {
-        if(UICountDown)
+        if (UICountDown)
         {
             UICountDown.SetActive(false);
         }
@@ -620,15 +620,15 @@ public class UIManager : MonoBehaviour
 
     public void ShowWaveCountDown()
     {
-        if(waveCountDownText != null)
+        if (waveCountDownText != null)
         {
             waveCountDownText.gameObject.SetActive(true);
         }
     }
 
-    public void UpdateWaveCountDownText(int wave ,int time)
+    public void UpdateWaveCountDownText(int wave, int time)
     {
-        if(waveCountDownText != null )
+        if (waveCountDownText != null)
         {
             waveCountDownText.text = string.Format("Wave {0} will start after {1} seconds", wave, time);
         }
@@ -636,13 +636,16 @@ public class UIManager : MonoBehaviour
 
     public void HideWaveCountDown()
     {
-        if(waveCountDownText != null)
+        if (waveCountDownText != null)
         {
             waveCountDownText.gameObject.SetActive(false);
         }
     }
 
     #endregion
+
+   
+
     #region 暂停
 
     public GameObject uiPause;
@@ -651,7 +654,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ShowPauseUI()
     {
-        if(uiPause != null)
+        if (uiPause != null)
         {
             uiPause.SetActive(true);
         }
@@ -662,13 +665,15 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void HidePauseUI()
     {
-        if(uiPause != null)
+        if (uiPause != null)
         {
             uiPause.SetActive(false);
         }
     }
 
     #endregion
+
+    #region Monobehavior
 
     public void OnEnable()
     {
@@ -679,11 +684,11 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-       // Debug.Log("UIManager Inited");
-
+       
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);
         LeanTween.addListener(gameObject, (int)Events.GAMEFAILED, OnGameFailed);
+       
     }
 
     public void OnDisable()
@@ -704,6 +709,8 @@ public class UIManager : MonoBehaviour
     {
 
     }
+
+    #endregion
 
     /// <summary>
     /// 拷贝UI对象的位置，以及父对象

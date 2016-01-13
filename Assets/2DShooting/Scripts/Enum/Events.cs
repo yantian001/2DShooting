@@ -71,4 +71,8 @@ public enum Events
     /// 镜头晃动
     /// </summary>
     SHAKECAMERA,
+    /// <summary>
+    /// 受到伤害
+    /// </summary>
+    DEMAGE
 }

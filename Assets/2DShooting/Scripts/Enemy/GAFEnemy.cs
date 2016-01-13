@@ -172,7 +172,7 @@ public class GAFEnemy : MonoBehaviour
             actions[actionIndex].Run();
         }
     }
-    
+
     /// <summary>
     /// 判断是否能打断射击
     /// </summary>
@@ -211,14 +211,17 @@ public class GAFEnemy : MonoBehaviour
         {
             return;
         }
+        float val = damageVal;
         if (isHeadShot)
         {
-            _HP -= damageVal * 2;
+            val = damageVal * 2;
         }
-        else
-        {
-            _HP -= damageVal;
-        }
+        _HP -= val;
+        Demage d = new Demage() { isEnemy = true, demageVal = val };
+        d.tran = transform.GetComponentInChildren<Collider>().transform;
+        d.isHeadShot = isHeadShot;
+        if (d.tran != null)
+            LeanTween.dispatchEvent((int)Events.DEMAGE, d);
         if (_HP <= 0.0f)
         {
             Die(isHeadShot);
@@ -281,13 +284,13 @@ public class GAFEnemy : MonoBehaviour
 
         EnemyAction[] actions = GetComponents<EnemyAction>();
 
-        if(actions != null && actions.Length > 0)
+        if (actions != null && actions.Length > 0)
         {
-            for(int i = 0;i<actions.Length;i++)
+            for (int i = 0; i < actions.Length; i++)
             {
-                if(actions[i].isMainAction)
+                if (actions[i].isMainAction)
                 {
-                    actions[i].weight =Mathf.CeilToInt( actions[i].weight * value);
+                    actions[i].weight = Mathf.CeilToInt(actions[i].weight * value);
                 }
             }
         }

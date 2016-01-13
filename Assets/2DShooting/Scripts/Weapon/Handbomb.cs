@@ -14,6 +14,13 @@ public class Handbomb : MonoBehaviour
     public float attack;
     public Transform bombTarget;
 
+    /// <summary>
+    /// 被打掉的爆炸效果
+    /// </summary>
+    public GameObject explosionBrokenEffect;
+    /// <summary>
+    /// 爆炸效果
+    /// </summary>
     public GameObject explosionEffect;
 
     /// <summary>
@@ -51,9 +58,16 @@ public class Handbomb : MonoBehaviour
 
     void Explosion(bool broken)
     {
-        if (explosionEffect != null)
+        if (!broken && explosionEffect != null)
         {
             GameObject effect = Instantiate(explosionEffect);
+            effect.transform.position = transform.position;
+            effect.transform.SetParent(transform.parent);
+            effect.transform.localScale *= transform.lossyScale.x;
+        }
+        else if(broken && explosionBrokenEffect)
+        {
+            GameObject effect = Instantiate(explosionBrokenEffect);
             effect.transform.position = transform.position;
             effect.transform.SetParent(transform.parent);
             effect.transform.localScale *= transform.lossyScale.x;
