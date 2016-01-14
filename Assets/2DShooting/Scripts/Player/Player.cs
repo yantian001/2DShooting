@@ -32,6 +32,10 @@ public class Player
     /// 角色武器
     /// </summary>
     public List< PlayerWeaponInfo>Weapons;
+    /// <summary>
+    /// 角色金钱数
+    /// </summary>
+    public int Money;
 
     #endregion
 

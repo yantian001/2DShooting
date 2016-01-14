@@ -117,4 +117,17 @@ public class GameGlobalValue
     /// </summary>
     public static int s_MaxSocreBonus = 2;
     #endregion
+
+    #region 钱
+    /// <summary>
+    /// 分数转换率
+    /// </summary>
+    public static float s_moneyRate = 0.005f;
+
+    public static int GetMoneyFromRecord(GameRecords record)
+    {
+        return Mathf.CeilToInt(s_moneyRate * record.Scores);
+    }
+
+    #endregion
 }

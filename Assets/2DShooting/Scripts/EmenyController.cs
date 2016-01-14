@@ -296,6 +296,10 @@ public class EmenyController : MonoBehaviour
         }
         if (swpanObj != null)
         {
+            //避免重叠
+            float timeFlag = Time.time / 100000;
+            timeFlag = timeFlag - Mathf.FloorToInt(timeFlag);
+            swpanObj.transform.position += new Vector3(0, 0, -timeFlag);
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.lossyScale;
 

@@ -2,7 +2,8 @@
 using System.Collections;
 
 
-public class WeaponItem  {
+public class WeaponItem
+{
     /// <summary>
     /// 武器ID
     /// </summary>
@@ -27,4 +28,26 @@ public class WeaponItem  {
     /// 武器级别属性
     /// </summary>
     public WeaponProperty[] Levels;
+
+    /// <summary>
+    /// 获取当前武器等级信息
+    /// </summary>
+    /// <returns></returns>
+    public WeaponProperty GetCurrentProperty()
+    {
+        if (Level < Levels.Length)
+            return Levels[Level];
+        return null;
+    }
+    /// <summary>
+    /// 获取武器等级信息
+    /// </summary>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public WeaponProperty GetLevelProperty(int level)
+    {
+        if (level >= 0 && level < Levels.Length)
+            return Levels[level];
+        return null;
+    }
 }

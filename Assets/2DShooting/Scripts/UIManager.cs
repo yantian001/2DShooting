@@ -385,14 +385,24 @@ public class UIManager : MonoBehaviour
                 Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
                 if (txtScore)
                 {
-                    txtScore.text = record.Scores.ToString();
+                    //txtScore.text = record.Scores.ToString();
+                    StartCoroutine(DigitalDisplay(txtScore, record.Scores));
                 }
+
+               
 
                 //加成分数
                 Text txtBounsScore = bgRect.FindChild("BonusSocreText").GetComponent<Text>();
                 if (txtBounsScore)
                 {
                     txtBounsScore.text = string.Format(txtBounsScore.text, record.WeaponScoreBonus.ToString());
+                }
+
+                Text txtMoneyEarn = bgRect.FindChild("MoneyEarned").GetComponent<Text>();
+                if (txtMoneyEarn)
+                {
+                    int moneyEarned = GameGlobalValue.GetMoneyFromRecord(record);
+                    StartCoroutine(DigitalDisplay(txtMoneyEarn, moneyEarned));
                 }
 
                 //重新开始按钮
@@ -413,6 +423,25 @@ public class UIManager : MonoBehaviour
             }
 
         }
+    }
+
+    IEnumerator DigitalDisplay(Text txt ,int to ,int from = 0,int per = 100)
+    {
+        if(txt !=null)
+        {
+            while(from < to)
+            {
+                if (to - from >= per)
+                {
+                    from += per;
+                }
+                else
+                    from = to;
+                txt.text = from.ToString();
+                yield return null;
+            }
+        }
+        yield return null;
     }
 
     void OnRestartClicked()

@@ -9,13 +9,29 @@ public class Weapon : MonoBehaviour
     /// </summary>
     public int ID = 0;
 
+    private WeaponItem weaponItem;
+    /// <summary>
+    /// 武器名字
+    /// </summary>
     public string Name = "";
-    //是否可以连续开枪
-    public bool canComboFire = true;
     //枪支的攻击力
     public float attack = 1.0f;
     //射击间隔
     public float shootInterval = 0.2f;
+    //子弹数量
+    public int BulletCount;
+    /// <summary>
+    /// 弹夹容量
+    /// </summary>
+    private int magSize;
+    /// <summary>
+    /// 得分加成
+    /// </summary>
+    public float scoreBonus = 0.0f;
+
+    //是否可以连续开枪
+    public bool canComboFire = true;
+
     //瞄准器的位置
     public Transform signTransform;
     //是否随机射击，否则一直射击准星
@@ -33,8 +49,7 @@ public class Weapon : MonoBehaviour
     public GameObject impactEffect;
     //子弹
     public GameObject bullet;
-    //子弹数量
-    public int BulletCount;
+    
 
     //场景对象
     public GameObject background;
@@ -56,10 +71,7 @@ public class Weapon : MonoBehaviour
     /// 近敌人移动速度
     /// </summary>
     public float nearTargetMoveSpeed = 20f;
-    /// <summary>
-    /// 得分加成
-    /// </summary>
-    public float scoreBonus = 0.0f;
+
 
     /// <summary>
     /// 武器的icon
@@ -70,7 +82,7 @@ public class Weapon : MonoBehaviour
     float deltaTime = 0.0f;
     Animator anim;
 
-    int curBulltCount;
+    int curBulltCount,curMagSize;
     bool isBulltOk = false;
 
     void Start()
@@ -80,7 +92,22 @@ public class Weapon : MonoBehaviour
 
     public void Awake()
     {
-        Debug.Log("wepon init");
+        //Debug.Log("wepon init");
+        weaponItem = WeaponManager.Instance.GetWeaponItemById(ID);
+        if(weaponItem == null)
+        {
+            Debug.LogError("Miss weapon info.");
+            return;
+        }
+
+        WeaponProperty wp = weaponItem.GetCurrentProperty();
+        attack = wp.Power;
+        shootInterval = 1f / wp.FireRate;
+        this.scoreBonus = wp.ScoreBonus;
+        curBulltCount= BulletCount = wp.BulletCount;
+        
+        magSize = wp.ClipSize;
+
     }
 
     public void OnEnable()
@@ -134,7 +161,7 @@ public class Weapon : MonoBehaviour
         }
 
         //现有子弹数量
-        curBulltCount = BulletCount;
+        curMagSize = magSize;
         isBulltOk = true;
         //监听换弹夹事件
         LeanTween.addListener(gameObject, (int)Events.RELOAD, Reload);
@@ -151,13 +178,19 @@ public class Weapon : MonoBehaviour
     //更新子弹数量显示
     void UpdateBulletDisplay()
     {
-        LeanTween.dispatchEvent((int)Events.BULLETCHANGED, string.Format("{0}/{1}", curBulltCount, BulletCount));
+        LeanTween.dispatchEvent((int)Events.BULLETCHANGED, string.Format("{0}/{1}/{2}", curMagSize,magSize,curBulltCount));
     }
 
     //换弹夹
     void Reload(LTEvent ent = null)
     {
-        curBulltCount = BulletCount;
+        int refillCount = magSize - curMagSize;
+        if(curBulltCount < refillCount)
+        {
+            refillCount = curBulltCount;
+        }
+        curBulltCount -= refillCount;
+        curMagSize += refillCount;
         if (anim)
         {
             isBulltOk = false;
@@ -184,14 +217,22 @@ public class Weapon : MonoBehaviour
         {
             canShoot = false;
         }
+        
         CheckBulletStatu();
     }
 
     void CheckBulletStatu()
     {
-        if (curBulltCount <= 0)
+        if (curMagSize <= 0 && curBulltCount > 0)
         {
             Reload();
+        }
+        else
+        {
+            if(curMagSize <=0 && curBulltCount <=0)
+            {
+                isBulltOk = false;
+            }
         }
     }
 
@@ -240,7 +281,7 @@ public class Weapon : MonoBehaviour
         PlayShootAudio();
         ShowBullet(postion);
         //更新子弹数量显示
-        curBulltCount -= 1;
+        curMagSize -= 1;
         UpdateBulletDisplay();
         if (shakeWhenShoot)
         {

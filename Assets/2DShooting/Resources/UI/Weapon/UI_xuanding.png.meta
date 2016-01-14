@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 431e1be201c2b3149a7091308c74d52f
-timeCreated: 1449819809
+guid: 3a344866978c9584d92ca08140f98576
+timeCreated: 1452758721
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -45,12 +45,12 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   textureType: 5
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: 
+  spritePackingTag: WeaponUI
   userData: 
   assetBundleName: 
   assetBundleVariant: 

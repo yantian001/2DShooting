@@ -10,6 +10,8 @@ public class LevelMapWeaponObject : MonoBehaviour {
     /// </summary>
     public GameObject WeaponObject;
 
+    public int weaponId = 0;
+
     Weapon weapon = null;
 
     public Weapon GetWeapon()

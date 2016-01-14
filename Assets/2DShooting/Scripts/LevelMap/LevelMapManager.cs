@@ -20,7 +20,10 @@ public class LevelMapManager : MonoBehaviour
     /// 玩家名称显示
     /// </summary>
     public Text playerNameText;
-
+    /// <summary>
+    /// 玩家金钱数
+    /// </summary>
+    public Text playerMoneyText;
     /// <summary>
     /// 排名显示区域
     /// </summary>
@@ -85,6 +88,11 @@ public class LevelMapManager : MonoBehaviour
         {
             playerNameText.text = Player.CurrentPlayer.UserName;
         }
+        if(playerMoneyText != null)
+        {
+            playerMoneyText.text = Player.CurrentPlayer.Money.ToString();
+        }
+
         //附加选择事件
         if (Scenes != null)
         {
@@ -116,7 +124,7 @@ public class LevelMapManager : MonoBehaviour
         }
         ChangeUIDisplay(action);
 
-        if(backButton != null )
+        if (backButton != null)
         {
             backButton.onClick.AddListener(OnBackButtonClicked);
         }
@@ -152,7 +160,8 @@ public class LevelMapManager : MonoBehaviour
                     for (int i = 0; i < weapons.Length; i++)
                     {
                         Toggle weapon = weapons[i];
-                        weapon.onValueChanged.AddListener(b => {
+                        weapon.onValueChanged.AddListener(b =>
+                        {
                             OnSelectWeaponChanged(b, weapon.GetComponent<LevelMapWeaponObject>());
                         });
                         if (weapon.isOn)
@@ -195,7 +204,7 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     void OnPlayButtonClicked()
     {
-        if(action == 0)
+        if (action == 0)
         {
             action = 1;
             ChangeUIDisplay(action);
@@ -210,7 +219,7 @@ public class LevelMapManager : MonoBehaviour
                 GameLogic.Instance.Loading();
             }
         }
-       
+
     }
 
     void OnToggleValueChange(bool selected, LevelMapObject mapObj)
@@ -234,40 +243,42 @@ public class LevelMapManager : MonoBehaviour
     }
 
 
-    void OnSelectWeaponChanged(bool isOn , LevelMapWeaponObject weaponObject)
+    void OnSelectWeaponChanged(bool isOn, LevelMapWeaponObject weaponObject)
     {
-        if(isOn && weaponObject)
+        if (isOn && weaponObject)
         {
-            Weapon weapon = weaponObject.GetWeapon();
-            if(weapon)
+            //Weapon weapon = weaponObject.GetWeapon();
+            // WeaponProperty wp = WeaponManager.Instance.GetCurrentPropertyById(weaponObject.weaponId);
+            WeaponItem wi = WeaponManager.Instance.GetWeaponItemById(weaponObject.weaponId);
+            if (wi != null)
             {
-                selectWeaponId = weapon.ID;
-                if(weaponInfo != null)
+                selectWeaponId = wi.Id;
+                //设置名字
+                SetChildText(weaponSelect.GetComponent<RectTransform>(), "SelectedWeaponName", wi.Name);
+                WeaponProperty wp = wi.GetCurrentProperty();
+                if (wp != null)
                 {
-                    //设置名字
-                    SetChildText(weaponSelect.GetComponent<RectTransform>(), "SelectedWeaponName", weapon.Name);
-
                     //设置武器攻击值
-                    SetChildSliderValue(weaponInfo, "Pwoer", weapon.attack / GameGlobalValue.s_MaxWeaponAttack);
+                    SetChildSliderValue(weaponInfo, "Pwoer", wp.Power / GameGlobalValue.s_MaxWeaponAttack);
                     //设置攻击次数
-                    SetChildSliderValue(weaponInfo, "FireRate", (1.0f/weapon.shootInterval) / GameGlobalValue.s_MaxFireRatePerSeconds);
-                    
-                    //准确度
-                    float stab = 1.0f;
-                    if (weapon.randomShooting)
-                    {
-                        stab -= weapon.randomShootingSize.x / GameGlobalValue.s_MaxShakeDistance;
-                    }
+                    SetChildSliderValue(weaponInfo, "FireRate", (wp.FireRate) / GameGlobalValue.s_MaxFireRatePerSeconds);
 
-                    SetChildSliderValue(weaponInfo, "Stability", stab);
+                    //准确度
+                    //float stab = 1.0f;
+                    //if (weapon.randomShooting)
+                    //{
+                    //    stab -= weapon.randomShootingSize.x / GameGlobalValue.s_MaxShakeDistance;
+                    //}
+
+                    //SetChildSliderValue(weaponInfo, "Stability", stab);
 
                     //弹夹
-                    SetChildSliderValue(weaponInfo, "Magazine", (float)weapon.BulletCount / GameGlobalValue.s_MaxMagazineSize);
+                    SetChildSliderValue(weaponInfo, "Magazine", (float)wp.ClipSize / GameGlobalValue.s_MaxMagazineSize);
 
                     //移动速度
-                    SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
+                   // SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
                     //得分能力
-                    SetChildSliderValue(weaponInfo, "ScoreBouns", weapon.scoreBonus / GameGlobalValue.s_MaxSocreBonus);
+                    SetChildSliderValue(weaponInfo, "ScoreBouns", wp.ScoreBonus / GameGlobalValue.s_MaxSocreBonus);
                 }
             }
         }
@@ -277,7 +288,7 @@ public class LevelMapManager : MonoBehaviour
         }
     }
     #endregion
-    
+
     /// <summary>
     /// 更新排行版显示
     /// </summary>
@@ -365,12 +376,12 @@ public class LevelMapManager : MonoBehaviour
     {
         action = _action;
         //显示排行榜
-        if(action == 0)
+        if (action == 0)
         {
             highScore.SetActive(true);
             weaponSelect.SetActive(false);
         }
-        else if(action == 1)
+        else if (action == 1)
         {
             highScore.SetActive(false);
             weaponSelect.SetActive(true);
@@ -402,13 +413,13 @@ public class LevelMapManager : MonoBehaviour
     /// <param name="parent"></param>
     /// <param name="child"></param>
     /// <param name="value"></param>
-    void SetChildSliderValue(Transform parent ,string child , float value)
+    void SetChildSliderValue(Transform parent, string child, float value)
     {
         Transform childTran = parent.FindChild(child);
-        if(childTran)
+        if (childTran)
         {
             Slider slider = childTran.GetComponentInChildren<Slider>();
-            if(slider)
+            if (slider)
             {
                 slider.value = value;
             }

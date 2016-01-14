@@ -24,29 +24,30 @@ public class HUDScript : MonoBehaviour
             Demage d = evt.data as Demage;
             if (d != null && hudRoot != null)
             {
-
+                //hudRoot.HideDistance = 1
+               
                 if (d.isEnemy)
                 {
                     if (d.isHeadShot)
                     {
                         if (Random.Range(0, 2) == 1)
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, 1f, 2.5f, bl_Guidance.RightDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
                         }
                         else
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, 1f, 2.5f, bl_Guidance.LeftDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
                         }
                     }
                     else
                     {
                         if (Random.Range(0, 2) == 1)
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -1f, 2.2f, bl_Guidance.RightDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
                         }
                         else
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -1f, 2.2f, bl_Guidance.LeftDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
                         }
                     }
 
