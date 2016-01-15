@@ -74,5 +74,9 @@ public enum Events
     /// <summary>
     /// 受到伤害
     /// </summary>
-    DEMAGE
+    DEMAGE,
+    /// <summary>
+    /// 金钱变化
+    /// </summary>
+    MONEYCHANGED,
 }

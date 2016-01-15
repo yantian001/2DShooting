@@ -21,6 +21,10 @@ public class WeaponItem
     /// </summary>
     public bool IsEnabled;
     /// <summary>
+    /// 武器价格
+    /// </summary>
+    public int Prices;
+    /// <summary>
     /// 武器当前级别
     /// </summary>
     public int Level = 0;
@@ -49,5 +53,13 @@ public class WeaponItem
         if (level >= 0 && level < Levels.Length)
             return Levels[level];
         return null;
+    }
+    /// <summary>
+    /// 是否解锁了.
+    /// </summary>
+    /// <returns></returns>
+    public bool Enabled()
+    {
+        return IsDefault || IsEnabled;
     }
 }

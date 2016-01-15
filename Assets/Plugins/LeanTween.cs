@@ -4345,8 +4345,8 @@ private static float easeInOutElastic(float start, float end, float val, float o
 private static System.Action<LTEvent>[] eventListeners;
 private static GameObject[] goListeners;
 private static int eventsMaxSearch = 0;
-public static int EVENTS_MAX = 20;
-public static int LISTENERS_MAX = 20;
+public static int EVENTS_MAX = 30;
+public static int LISTENERS_MAX = 10;
 private static int INIT_LISTENERS_MAX = LISTENERS_MAX;
 
 public static void addListener( int eventId, System.Action<LTEvent> callback ){

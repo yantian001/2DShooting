@@ -92,7 +92,6 @@ public class LevelMapManager : MonoBehaviour
         {
             playerMoneyText.text = Player.CurrentPlayer.Money.ToString();
         }
-
         //附加选择事件
         if (Scenes != null)
         {

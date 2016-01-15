@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 053e12716b9f76f4c9990fdc0166e0f6
-timeCreated: 1452758721
+guid: 197f9d8bffabcc54d88f976dcfd4fc2f
+timeCreated: 1452836259
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -50,7 +50,7 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites: []
-  spritePackingTag: WeaponUI
+  spritePackingTag: 
   userData: 
   assetBundleName: 
   assetBundleVariant: 

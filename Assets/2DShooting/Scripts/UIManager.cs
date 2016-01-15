@@ -441,7 +441,7 @@ public class UIManager : MonoBehaviour
                 yield return null;
             }
         }
-        yield return null;
+       // yield return null;
     }
 
     void OnRestartClicked()
