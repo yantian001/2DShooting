@@ -54,6 +54,33 @@ public class WeaponItem
             return Levels[level];
         return null;
     }
+
+    /// <summary>
+    /// 能否升级
+    /// </summary>
+    /// <returns></returns>
+    public bool CanUpgrade()
+    {
+        return Enabled() && Level < Levels.Length;
+    }
+
+    public int GetUpgradePrice()
+    {
+        var wp = GetCurrentProperty();
+        if (wp != null)
+            return wp.UpgPrice;
+        return 0;
+    }
+
+    public void Upgrade()
+    {
+        Level += 1;
+    }
+
+    public void Unlock()
+    {
+        IsEnabled = true;
+    }
     /// <summary>
     /// 是否解锁了.
     /// </summary>

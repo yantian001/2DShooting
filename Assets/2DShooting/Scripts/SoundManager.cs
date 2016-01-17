@@ -19,7 +19,8 @@ public class SoundManager : MonoBehaviour {
         GetLife,
         PlayerDie,
         WaveCountDown,
-        WaveSuccess
+        WaveSuccess,
+        WeaponUpgrade,
     }
     /*--
     **/
@@ -37,6 +38,7 @@ public class SoundManager : MonoBehaviour {
     public AudioClip playerDie;
     public AudioClip waveCountDown;
     public AudioClip waveSuccess;
+    public AudioClip weaponUpgrade;
 
     public static SoundManager _instance;
 
@@ -159,6 +161,13 @@ public class SoundManager : MonoBehaviour {
                 if(waveCountDown)
                 {
                     PlaySound(waveCountDown, volume, delay);
+                }
+                break;
+            case SoundType.WeaponUpgrade:
+                if(weaponUpgrade)
+                {
+                    PlaySound(weaponUpgrade, volume, delay);
+
                 }
                 break;
             default:

@@ -37,9 +37,9 @@ public class WeaponManager : MonoBehaviour
     public WeaponItem GetWeaponItemById(int id)
     {
         WeaponItem wi = null;
-        if(Weapons!= null && Weapons.Length > 0)
+        if (Weapons != null && Weapons.Length > 0)
         {
-            for(int i=0;i<Weapons.Length;i++)
+            for (int i = 0; i < Weapons.Length; i++)
             {
                 if (Weapons[i].Id == id)
                 {
@@ -56,14 +56,14 @@ public class WeaponManager : MonoBehaviour
     /// <param name="id">武器ID</param>
     /// <param name="level">武器等级</param>
     /// <returns></returns>
-    public WeaponProperty GetPropertyById(int id,int level)
+    public WeaponProperty GetPropertyById(int id, int level)
     {
         WeaponProperty wp = null;
         WeaponItem wi = GetWeaponItemById(id);
-        if(wi != null)
+        if (wi != null)
         {
             //当level = -1时获取当前武器信息
-            if(level == -1)
+            if (level == -1)
             {
                 wp = wi.Levels[wi.Level];
             }
@@ -93,6 +93,39 @@ public class WeaponManager : MonoBehaviour
         if (wi != null)
             level = wi.Level;
         return level;
+    }
+    /// <summary>
+    /// 武器升级
+    /// </summary>
+    /// <param name="id"></param>
+    public void WeaponUpgrade(int id)
+    {
+        WeaponItem wi = GetWeaponItemById(id);
+        if (wi != null)
+        {
+            if (wi.CanUpgrade())
+            {
+                Player.CurrentPlayer.UpgradeWeapon(wi.Id, wi.GetUpgradePrice());
+                wi.Upgrade();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 武器购买
+    /// </summary>
+    /// <param name="id"></param>
+    public void WeaponBuy(int id)
+    {
+        WeaponItem wi = GetWeaponItemById(id);
+        if (wi != null)
+        {
+            if (!wi.Enabled())
+            {
+                if (Player.CurrentPlayer.BuyWeapon(wi.Id, wi.Prices))
+                    wi.Unlock();
+            }
+        }
     }
 
     #region Monobehaviour
@@ -124,14 +157,14 @@ public class WeaponManager : MonoBehaviour
         {
             //Debug.Log(Weapons[i]);
             PlayerWeaponInfo pw = Player.CurrentPlayer.GetWeaponInfoById(Weapons[i].Id);
-            if(pw != null)
+            if (pw != null)
             {
                 Weapons[i].IsEnabled = pw.IsUnlocked;
                 Weapons[i].Level = pw.Level;
             }
             else
             {
-                if(Weapons[i].IsDefault)
+                if (Weapons[i].IsDefault)
                 {
                     Player.CurrentPlayer.UnlockWeapon(Weapons[i].Id);
                 }

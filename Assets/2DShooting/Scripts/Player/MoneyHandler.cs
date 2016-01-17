@@ -31,7 +31,7 @@ public class MoneyHandler : MonoBehaviour
     private void OnMoneyChanged(LTEvent obj)
     {
         //throw new NotImplementedException();
-        DynamicDisplayMoeny(Player.CurrentPlayer.Money, currentMoney, 100);
+       StartCoroutine(DynamicDisplayMoeny(Player.CurrentPlayer.Money, currentMoney, 100));
     }
 
 
@@ -39,7 +39,7 @@ public class MoneyHandler : MonoBehaviour
     {
         if (moneyDisplays != null)
         {
-            int diff = from - to;
+            int diff = to - from;
             int normal = Mathf.CeilToInt((float)diff / time);
             while (from != to)
             {

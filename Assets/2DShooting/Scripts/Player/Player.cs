@@ -31,11 +31,15 @@ public class Player
     /// <summary>
     /// 角色武器
     /// </summary>
-    public List< PlayerWeaponInfo>Weapons;
+    public List< PlayerWeaponInfo> Weapons;
     /// <summary>
     /// 角色金钱数
     /// </summary>
     public int Money;
+    /// <summary>
+    /// 已装备的武器ID
+    /// </summary>
+    public int EquipedWeaponId = 0;
 
     #endregion
 
@@ -256,6 +260,17 @@ public class Player
 
     #endregion
 
+    #region Money
+
+    public void UseMoney(int money)
+    {
+        Money -= money;
+        LeanTween.dispatchEvent((int)Events.MONEYCHANGED, Money);
+        Save2File();
+    }
+
+    #endregion
+
     #region Weapon
     /// <summary>
     /// 根据武器ID获取当前武器信息
@@ -292,6 +307,48 @@ public class Player
         }
         Weapons.Add(pwi);
         Save2File();
+    }
+
+    /// <summary>
+    /// 武器购买
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="money"></param>
+    /// <returns></returns>
+    public bool BuyWeapon(int id ,int money)
+    {
+        if(Money >= money)
+        {
+            UseMoney(money);
+            UnlockWeapon(id);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void EquipWeapon(int id)
+    {
+        if(EquipedWeaponId != id)
+        {
+            EquipedWeaponId = id;
+            Save2File();
+        }
+
+    }
+
+    public void UpgradeWeapon(int id,int money)
+    {
+        //UseMoney(money);
+        PlayerWeaponInfo pwi = GetWeaponInfoById(id);
+        if(pwi != null && pwi.IsUnlocked)
+        {
+            pwi.Level += 1;
+            UseMoney(money);
+            Save2File();
+        }
     }
     #endregion
 }
