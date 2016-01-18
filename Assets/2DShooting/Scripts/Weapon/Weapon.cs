@@ -179,6 +179,7 @@ public class Weapon : MonoBehaviour
         isBulltOk = true;
         //监听换弹夹事件
         LeanTween.addListener(gameObject, (int)Events.RELOAD, Reload);
+        LeanTween.addListener(gameObject, (int)Events.CLIPREFILL, Refill);
         UpdateBulletDisplay();
         //Debug.Log("Weapon enabled!");
     }
@@ -186,6 +187,7 @@ public class Weapon : MonoBehaviour
     public void OnDisable()
     {
         LeanTween.removeListener((int)Events.RELOAD, Reload);
+        LeanTween.removeListener(gameObject, (int)Events.CLIPREFILL, Refill);
     }
 
 
@@ -217,6 +219,16 @@ public class Weapon : MonoBehaviour
             isBulltOk = true;
         }
         //isBulltOk = false;
+    }
+
+    /// <summary>
+    /// 重新填充
+    /// </summary>
+    public void Refill(LTEvent evt)
+    {
+        //curMagSize = magSize;
+        curBulltCount += BulletCount;
+        UpdateBulletDisplay();
     }
 
     // Update is called once per frame

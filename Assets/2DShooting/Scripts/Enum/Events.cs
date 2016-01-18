@@ -79,4 +79,8 @@ public enum Events
     /// 金钱变化
     /// </summary>
     MONEYCHANGED,
+    /// <summary>
+    /// 重新装弹
+    /// </summary>
+    CLIPREFILL,
 }
