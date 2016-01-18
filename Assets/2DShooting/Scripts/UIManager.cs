@@ -359,49 +359,29 @@ public class UIManager : MonoBehaviour
                 //更新数据显示
 
                 //杀敌数
-                Text txtKillCount = bgRect.FindChild("KillsTitle/KillsCount").GetComponent<Text>();
-                if (txtKillCount)
-                {
-                    txtKillCount.text = record.EnemyKills.ToString();
-                }
+                CommonUtils.SetChildText(bgRect, "Infos/Kills/TextCount", record.EnemyKills.ToString());
                 //最大连击数
-                Text txtMaxHits = bgRect.FindChild("MaxHitsTitle/MaxHitsCount").GetComponent<Text>();
-                if (txtMaxHits)
-                    txtMaxHits.text = record.MaxCombos.ToString();
-                //连击加分
-                Text txtMaxAddScoreHits = bgRect.FindChild("MaxHitsTitle/MaxHitsAddScore").GetComponent<Text>();
-                if (txtMaxAddScoreHits)
-                    txtMaxAddScoreHits.text = string.Format(txtMaxAddScoreHits.text, record.HitAddAcores.ToString());
+                CommonUtils.SetChildText(bgRect, "Infos/MaxHits/TextCount", record.MaxCombos.ToString());
+
 
                 //爆头数
-                Text txtHeadShot = bgRect.FindChild("HeadShotTitle/HeadShotCount").GetComponent<Text>();
-                if (txtHeadShot)
-                    txtHeadShot.text = record.HeadShotCount.ToString();
-                //爆头加分
-                Text txtHeadShotAddScore = bgRect.FindChild("HeadShotTitle/HeadShotAddScore").GetComponent<Text>();
-                if (txtHeadShotAddScore)
-                    txtHeadShotAddScore.text = string.Format(txtHeadShotAddScore.text, record.HeadshotAddScore.ToString());
+                CommonUtils.SetChildText(bgRect, "Infos/HeadShot/TextCount", record.HeadShotCount.ToString());
+
                 //分数
-                Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
+                //CommonUtils.SetChildText(bgRect, "Infos/ScoreText", record.Scores.ToString());
+
+                Text txtScore = bgRect.FindChild("Infos/ScoreText").GetComponent<Text>();
                 if (txtScore)
                 {
                     //txtScore.text = record.Scores.ToString();
                     StartCoroutine(DigitalDisplay(txtScore, record.Scores));
                 }
-
-               
-
-                //加成分数
-                Text txtBounsScore = bgRect.FindChild("BonusSocreText").GetComponent<Text>();
-                if (txtBounsScore)
-                {
-                    txtBounsScore.text = string.Format(txtBounsScore.text, record.WeaponScoreBonus.ToString());
-                }
-
-                Text txtMoneyEarn = bgRect.FindChild("MoneyEarned").GetComponent<Text>();
+                
+                Text txtMoneyEarn = bgRect.FindChild("Infos/MoenyEarn/TextCount").GetComponent<Text>();
                 if (txtMoneyEarn)
                 {
                     int moneyEarned = GameGlobalValue.GetMoneyFromRecord(record);
+                    Player.CurrentPlayer.EarnMoney(moneyEarned);
                     StartCoroutine(DigitalDisplay(txtMoneyEarn, moneyEarned));
                 }
 
@@ -412,6 +392,7 @@ public class UIManager : MonoBehaviour
                     btnRestart.onClick.AddListener(OnRestartClicked);
                 }
 
+              
 
                 //回主页按钮
                 Button btnMainMenu = bgRect.FindChild("BtnMainMenu").GetComponent<Button>();

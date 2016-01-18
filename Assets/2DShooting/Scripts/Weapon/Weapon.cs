@@ -14,8 +14,21 @@ public class Weapon : MonoBehaviour
     /// 武器名字
     /// </summary>
     public string Name = "";
+
+    private float _attack;
     //枪支的攻击力
-    public float attack = 1.0f;
+    public float attack
+    {
+        get
+        {
+            
+            return Mathf.CeilToInt( _attack * (1 - UnityEngine.Random.Range(-10f,10f)/100));
+        }
+        set
+        {
+            _attack = value;
+        }
+    }
     //射击间隔
     public float shootInterval = 0.2f;
     //子弹数量
@@ -92,6 +105,7 @@ public class Weapon : MonoBehaviour
 
     public void Awake()
     {
+        
         //Debug.Log("wepon init");
         weaponItem = WeaponManager.Instance.GetWeaponItemById(ID);
         if(weaponItem == null)

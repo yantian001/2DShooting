@@ -269,6 +269,13 @@ public class Player
         Save2File();
     }
 
+    public void EarnMoney(int money)
+    {
+        Money += money;
+        LeanTween.dispatchEvent((int)Events.MONEYCHANGED, Money);
+        Save2File();
+    }
+
     #endregion
 
     #region Weapon

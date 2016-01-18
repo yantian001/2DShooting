@@ -21,6 +21,9 @@ public class SoundManager : MonoBehaviour {
         WaveCountDown,
         WaveSuccess,
         WeaponUpgrade,
+        WeaponEqiuped,
+        WeaponBought,
+        ButtonClicked
     }
     /*--
     **/
@@ -39,6 +42,9 @@ public class SoundManager : MonoBehaviour {
     public AudioClip waveCountDown;
     public AudioClip waveSuccess;
     public AudioClip weaponUpgrade;
+    public AudioClip weaponEqiuped;
+    public AudioClip weaponBought;
+    public AudioClip buttonClicked;
 
     public static SoundManager _instance;
 
@@ -168,6 +174,25 @@ public class SoundManager : MonoBehaviour {
                 {
                     PlaySound(weaponUpgrade, volume, delay);
 
+                }
+                break;
+            case SoundType.WeaponEqiuped:
+                if(weaponEqiuped)
+                {
+                    PlaySound(weaponEqiuped, volume, delay);
+
+                }
+                break;
+            case SoundType.WeaponBought:
+                if(weaponBought)
+                {
+                    PlaySound(weaponBought, volume, delay);
+                }
+                break;
+            case SoundType.ButtonClicked:
+                if(buttonClicked)
+                {
+                    PlaySound(buttonClicked, volume, delay);
                 }
                 break;
             default:

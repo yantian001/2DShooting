@@ -201,7 +201,7 @@ public class WeaponShop : MonoBehaviour
                 {
                     //Player.CurrentPlayer.UpgradeWeapon(selectWeaponId, -wp.UpgPrice);
                     WeaponManager.Instance.WeaponBuy(selectWeaponId);
-                    SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponUpgrade);
+                    SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponBought);
                     OnWeaponSelected(true, selectWeaponItem);
                 }
                 else
@@ -259,11 +259,16 @@ public class WeaponShop : MonoBehaviour
         if (selectWeaponId != -1)
         {
             Player.CurrentPlayer.EquipWeapon(selectWeaponId);
+            SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponEqiuped);
             OnWeaponSelected(true, selectWeaponItem);
         }
 
     }
 
+    public void OnButtonCloseClicked()
+    {
+        gameObject.SetActive(false);
+    }
 
     // Update is called once per frame
     void Update()

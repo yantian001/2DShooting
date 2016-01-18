@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class LevelMapManager : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class LevelMapManager : MonoBehaviour
     /// <summary>
     /// 武器选择区域
     /// </summary>
-    public GameObject weaponSelect;
+    private GameObject weaponSelect;
     /// <summary>
     /// 排行版区域
     /// </summary>
@@ -52,12 +53,21 @@ public class LevelMapManager : MonoBehaviour
     /// <summary>
     /// 武器信息
     /// </summary>
-    public Transform weaponInfo;
+    private Transform weaponInfo;
+
+    /// <summary>
+    /// 武器UI
+    /// </summary>
+    public GameObject UIWeapon;
 
     /// <summary>
     /// 开始按钮
     /// </summary>
     public Button playButton;
+    /// <summary>
+    /// Store按钮
+    /// </summary>
+    public Button storeButton;
 
     /// <summary>
     /// 返回按钮
@@ -88,7 +98,7 @@ public class LevelMapManager : MonoBehaviour
         {
             playerNameText.text = Player.CurrentPlayer.UserName;
         }
-        if(playerMoneyText != null)
+        if (playerMoneyText != null)
         {
             playerMoneyText.text = Player.CurrentPlayer.Money.ToString();
         }
@@ -121,23 +131,36 @@ public class LevelMapManager : MonoBehaviour
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
-        ChangeUIDisplay(action);
+        //ChangeUIDisplay(action);
 
         if (backButton != null)
         {
             backButton.onClick.AddListener(OnBackButtonClicked);
         }
+        if(storeButton != null)
+        {
+            storeButton.onClick.AddListener(OnStoreButtonClicked);
+        }
 
         //添加事件监听
-        AddEventListener();
+        //AddEventListener();
 
         //显示广告
         ChartboostUtil.Instance.ShowInterstitialOnHomescreen();
     }
 
+    private void OnStoreButtonClicked()
+    {
+        //throw new NotImplementedException();
+        if(UIWeapon != null)
+        {
+            UIWeapon.SetActive(true);
+        }
+    }
+
     void OnBackButtonClicked()
     {
-        Debug.Log("back clicked");
+        //Debug.Log("back clicked");
         LeanTween.dispatchEvent((int)Events.BACKTOSTART);
     }
 
@@ -203,21 +226,25 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     void OnPlayButtonClicked()
     {
-        if (action == 0)
+        //if (action == 0)
+        //{
+        //    action = 1;
+        //    ChangeUIDisplay(action);
+        //}
+        //else
+        //{
+        if (selectScene != -1 && Player.CurrentPlayer.EquipedWeaponId != -1)
         {
-            action = 1;
-            ChangeUIDisplay(action);
+            GameGlobalValue.s_CurrentScene = selectScene;
+            GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
+            GameGlobalValue.s_currentWeaponId = Player.CurrentPlayer.EquipedWeaponId;
+            GameLogic.Instance.Loading();
         }
         else
         {
-            if (selectScene != -1 && selectWeaponId != -1)
-            {
-                GameGlobalValue.s_CurrentScene = selectScene;
-                GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
-                GameGlobalValue.s_currentWeaponId = selectWeaponId;
-                GameLogic.Instance.Loading();
-            }
+            Message.PopupMessage("Please select scene first !");
         }
+        // }
 
     }
 
@@ -225,7 +252,7 @@ public class LevelMapManager : MonoBehaviour
     {
         if (selected)
         {
-            ChangeUIDisplay(0);
+            //ChangeUIDisplay(0);
             if (mapObj)
             {
                 currentMapObject = mapObj;
@@ -275,7 +302,7 @@ public class LevelMapManager : MonoBehaviour
                     SetChildSliderValue(weaponInfo, "Magazine", (float)wp.ClipSize / GameGlobalValue.s_MaxMagazineSize);
 
                     //移动速度
-                   // SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
+                    // SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
                     //得分能力
                     SetChildSliderValue(weaponInfo, "ScoreBouns", wp.ScoreBonus / GameGlobalValue.s_MaxSocreBonus);
                 }
