@@ -26,6 +26,11 @@ public class PositionProperty : MonoBehaviour {
     /// </summary>
     public bool allowWanderX = true;
     /// <summary>
+    /// 是否允许跑
+    /// </summary>
+    [Tooltip("是否允许跑")]
+    public bool allowRunX = true;
+    /// <summary>
     /// 允许的敌人种类
     /// </summary>
     public GameObject[] allowedEmenys;

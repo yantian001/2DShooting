@@ -4,7 +4,7 @@ using System.Collections;
 public class GAFObjectColiderRoot : MonoBehaviour {
 
    public Animator animator;
-    public string specialClipName = "";
+    public string[] specialClipName;
 
     public Collider2D[] myColliders;
 
@@ -49,14 +49,18 @@ public class GAFObjectColiderRoot : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName));
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName))
+        for (int i = 0; i < specialClipName.Length; i++)
         {
-            SetMyCollierStatus(true);
+            if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName[i]))
+            {
+                SetMyCollierStatus(true);
+            }
+            else
+            {
+                SetMyCollierStatus(false);
+            }
         }
-        else
-        {
-            SetMyCollierStatus(false);
-        }
+       
             //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("gun"));
 
 	}

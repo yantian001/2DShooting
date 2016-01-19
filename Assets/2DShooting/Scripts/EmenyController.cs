@@ -347,13 +347,19 @@ public class EmenyController : MonoBehaviour
             {
                 for (int i = 0; i < wanders.Length; i++)
                 {
-                    wanders[i].enabled = posProperty.allowWanderX;
-
+                    if(wanders[i].GetType() == typeof(EnemyWanderRunX))
+                    {
+                        wanders[i].enabled = posProperty.allowRunX;
+                    }
+                    else
+                    {
+                        wanders[i].enabled = posProperty.allowWanderX;
+                    }
                     wanders[i].minMovementX = posProperty.minMovementX;
                     wanders[i].maxMovementX = posProperty.maxMovementX;
                 }
             }
-
+            
             //通知GameManager ，产生了敌人
             AddAliveEmeny();
             needCreateEnemy--;

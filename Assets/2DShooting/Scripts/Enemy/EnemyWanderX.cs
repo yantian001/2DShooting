@@ -9,6 +9,8 @@ public class EnemyWanderX : EnemyAction
     /// 每次移动的最大距离
     /// </summary>
     public float maxMoveDistance = 1.0f;
+
+    public float minMoveDistance = 0f;
     /// <summary>
     /// 运行速度
     /// </summary>
@@ -38,7 +40,15 @@ public class EnemyWanderX : EnemyAction
         {
             if (!base.Run())
                 break;
-            distance = Random.Range(-maxMoveDistance, maxMoveDistance);
+            if(Random.Range(0,2) == 1)
+            {
+                distance = Random.Range(minMoveDistance, maxMoveDistance);
+            }
+            else
+            {
+                distance = Random.Range(-minMoveDistance, -maxMoveDistance);
+            }
+            
             //float to = transform.localPosition.x + distance;
             float worldx =transform.parent.TransformPoint(transform.localPosition).x;
             float to = this.ClampMovementX(worldx + distance);
