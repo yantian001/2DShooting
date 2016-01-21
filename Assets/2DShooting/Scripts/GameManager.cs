@@ -378,36 +378,39 @@ public class GameManager : MonoBehaviour
     /// <param name="demage">伤害值</param>
     public void PlayerInjured(float demage)
     {
-        if (haveShield && shieldValue > 0)
+        if (!isInEnergyPower)
         {
-            if (shieldValue >= demage)
+            if (haveShield && shieldValue > 0)
             {
-                shieldValue -= demage;
-                curQurShildValue -= demage;
-                if (curQurShildValue <= 0)
+                if (shieldValue >= demage)
                 {
-                    UIManager.Instance.UpdateShieldStatu();
-                    curQurShildValue = qurShieldValue;
+                    shieldValue -= demage;
+                    curQurShildValue -= demage;
+                    if (curQurShildValue <= 0)
+                    {
+                        UIManager.Instance.UpdateShieldStatu();
+                        curQurShildValue = qurShieldValue;
+                    }
+                }
+                else
+                {
+                    shieldValue = 0;
+                    playerCurrentHP -= (demage - shieldValue);
+                    UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+                    UIManager.Instance.ShowPlayDamageEffect();
+                }
+                if (shieldValue <= 0)
+                {
+                    haveShield = false;
+                    UIManager.Instance.HideShield();
                 }
             }
             else
             {
-                shieldValue = 0;
-                playerCurrentHP -= (demage - shieldValue);
+                playerCurrentHP -= demage;
                 UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
                 UIManager.Instance.ShowPlayDamageEffect();
             }
-            if (shieldValue <= 0)
-            {
-                haveShield = false;
-                UIManager.Instance.HideShield();
-            }
-        }
-        else
-        {
-            playerCurrentHP -= demage;
-            UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
-            UIManager.Instance.ShowPlayDamageEffect();
         }
     }
 
@@ -751,17 +754,30 @@ public class GameManager : MonoBehaviour
     public void OnEnterEnergyPower(LTEvent evt)
     {
         isInEnergyPower = true;
-        currentWeapon.WeaponOut(()=> 
+        currentWeapon.WeaponOut(() =>
         {
             //currentWeapon.gameObject.transform.parent.gameObject.SetActive(false);
-            if(powerWeapon != null)
+            if (powerWeapon != null)
             {
-                powerWeapon.gameObject.transform.position=new Vector3(powerWeapon.gameObject.transform.position.x, -10, powerWeapon.gameObject.transform.position.z);
+                powerWeapon.gameObject.transform.position = new Vector3(powerWeapon.gameObject.transform.position.x, -10, powerWeapon.gameObject.transform.position.z);
                 powerWeapon.gameObject.transform.parent.gameObject.SetActive(true);
                 LeanTween.moveLocalY(powerWeapon.gameObject, -3.4f, 1f);
             }
 
         });
+    }
+
+    public void OnExitEnergyPower(LTEvent evt)
+    {
+        if (powerWeapon != null)
+        {
+            LeanTween.moveLocalY(powerWeapon.gameObject, -10f, 1f).setOnComplete(() =>
+            {
+                powerWeapon.gameObject.transform.parent.gameObject.SetActive(false);
+                currentWeapon.WeaponIn();
+                isInEnergyPower = false;
+            });
+        }
     }
 
     #endregion
@@ -776,6 +792,7 @@ public class GameManager : MonoBehaviour
         //监听获得盾牌
         LeanTween.addListener((int)Events.ITEMSHIELDHIT, OnGetShield);
         LeanTween.addListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
+        LeanTween.addListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
     }
 
 
@@ -863,6 +880,7 @@ public class GameManager : MonoBehaviour
         LeanTween.removeListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);
         LeanTween.removeListener((int)Events.ITEMSHIELDHIT, OnGetShield);
         LeanTween.removeListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
+        LeanTween.removeListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
     }
 
     #endregion

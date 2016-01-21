@@ -6,8 +6,16 @@ public class EnergyItemPower : EnergyItem {
     private bool isInPower = false;
     public override void OnItemUse()
     {
-        base.OnItemUse();
-        isInPower = false;
-        LeanTween.dispatchEvent((int)Events.ENERGYPOWERIN);
+        if (!isInPower)
+        {
+            base.OnItemUse();
+            isInPower = true;
+            LeanTween.dispatchEvent((int)Events.ENERGYPOWERIN);
+        }
+        else
+        {
+            isInPower = false;
+            LeanTween.dispatchEvent((int)Events.ENERGYPOWEROUT);
+        }
     }
 }

@@ -480,4 +480,16 @@ public class Weapon : MonoBehaviour
         if (weaponOutCallback != null)
             weaponOutCallback();
     }
+
+    public void WeaponIn()
+    {
+        //throw new NotImplementedException();
+        transform.parent.gameObject.SetActive(true);
+        anim.SetTrigger("in");
+    }
+
+    public void OnWeaponInComplete()
+    {
+        transform.localPosition = transform.localPosition;
+    }
 }
