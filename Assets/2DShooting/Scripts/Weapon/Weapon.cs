@@ -21,25 +21,30 @@ public class Weapon : MonoBehaviour
     {
         get
         {
-            
-            return Mathf.CeilToInt( _attack * (1 - UnityEngine.Random.Range(-10f,10f)/100));
+
+            return Mathf.CeilToInt(_attack * (1 - UnityEngine.Random.Range(-10f, 10f) / 100));
         }
         set
         {
             _attack = value;
         }
     }
+
     //射击间隔
+    [HideInInspector]
     public float shootInterval = 0.2f;
     //子弹数量
+    [HideInInspector]
     public int BulletCount;
     /// <summary>
     /// 弹夹容量
     /// </summary>
+    [HideInInspector]
     private int magSize;
     /// <summary>
     /// 得分加成
     /// </summary>
+    [HideInInspector]
     public float scoreBonus = 0.0f;
 
     //是否可以连续开枪
@@ -62,7 +67,7 @@ public class Weapon : MonoBehaviour
     public GameObject impactEffect;
     //子弹
     public GameObject bullet;
-    
+
 
     //场景对象
     public GameObject background;
@@ -93,22 +98,23 @@ public class Weapon : MonoBehaviour
 
     bool canShoot = false;
     float deltaTime = 0.0f;
-    Animator anim;
+    public Animator anim;
 
-    int curBulltCount,curMagSize;
+    int curBulltCount, curMagSize;
     bool isBulltOk = false;
 
     void Start()
     {
+
         UpdateBulletDisplay();
     }
 
     public void Awake()
     {
-        
+
         //Debug.Log("wepon init");
         weaponItem = WeaponManager.Instance.GetWeaponItemById(ID);
-        if(weaponItem == null)
+        if (weaponItem == null)
         {
             Debug.LogError("Miss weapon info.");
             return;
@@ -118,8 +124,8 @@ public class Weapon : MonoBehaviour
         attack = wp.Power;
         shootInterval = 1f / wp.FireRate;
         this.scoreBonus = wp.ScoreBonus;
-        curBulltCount= BulletCount = wp.BulletCount;
-        
+        curBulltCount = BulletCount = wp.BulletCount;
+
         magSize = wp.ClipSize;
 
     }
@@ -194,14 +200,14 @@ public class Weapon : MonoBehaviour
     //更新子弹数量显示
     void UpdateBulletDisplay()
     {
-        LeanTween.dispatchEvent((int)Events.BULLETCHANGED, string.Format("{0}/{1}/{2}", curMagSize,magSize,curBulltCount));
+        LeanTween.dispatchEvent((int)Events.BULLETCHANGED, string.Format("{0}/{1}/{2}", curMagSize, magSize, curBulltCount));
     }
 
     //换弹夹
     void Reload(LTEvent ent = null)
     {
         int refillCount = magSize - curMagSize;
-        if(curBulltCount < refillCount)
+        if (curBulltCount < refillCount)
         {
             refillCount = curBulltCount;
         }
@@ -226,6 +232,7 @@ public class Weapon : MonoBehaviour
     /// </summary>
     public void Refill(LTEvent evt)
     {
+        SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponEqiuped);
         //curMagSize = magSize;
         curBulltCount += BulletCount;
         UpdateBulletDisplay();
@@ -243,7 +250,7 @@ public class Weapon : MonoBehaviour
         {
             canShoot = false;
         }
-        
+
         CheckBulletStatu();
     }
 
@@ -255,9 +262,13 @@ public class Weapon : MonoBehaviour
         }
         else
         {
-            if(curMagSize <=0 && curBulltCount <=0)
+            if (curMagSize <= 0 && curBulltCount <= 0)
             {
                 isBulltOk = false;
+            }
+            else
+            {
+                isBulltOk = true;
             }
         }
     }
@@ -454,5 +465,19 @@ public class Weapon : MonoBehaviour
             //			AudioSource auio = (AudioSource)Instantiate(fireAudio);
             //			auio.Play();
         }
+    }
+    private System.Action weaponOutCallback;
+    public void WeaponOut(System.Action callback)
+    {
+        weaponOutCallback = callback;
+        anim.SetBool("isOut", true);
+    }
+
+
+    public void OnWeaponOutComplete()
+    {
+        transform.parent.gameObject.SetActive(false);
+        if (weaponOutCallback != null)
+            weaponOutCallback();
     }
 }

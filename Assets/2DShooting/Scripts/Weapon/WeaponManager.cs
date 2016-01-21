@@ -134,6 +134,7 @@ public class WeaponManager : MonoBehaviour
         if (_instance == null)
         {
             _instance = this;
+            InitWeapon();
             DontDestroyOnLoad(_instance);
         }
         else
@@ -142,10 +143,10 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    public void OnEnable()
-    {
-        InitWeapon();
-    }
+    //public void OnEnable()
+    //{
+    //   // InitWeapon();
+    //}
 
     void InitWeapon()
     {

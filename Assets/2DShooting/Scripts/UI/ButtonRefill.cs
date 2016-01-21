@@ -20,7 +20,7 @@ public class ButtonRefill : MonoBehaviour {
             }
             Player.CurrentPlayer.UseMoney(50);
             LeanTween.dispatchEvent((int)Events.CLIPREFILL);
-            SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponEqiuped);
+            
         }
        else
         {

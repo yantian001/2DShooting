@@ -83,4 +83,24 @@ public enum Events
     /// 重新装弹
     /// </summary>
     CLIPREFILL,
+    /// <summary>
+    /// 能量值变化
+    /// </summary>
+    ENERGYCHANGED,
+    /// <summary>
+    /// 使用了能量道具
+    /// </summary>
+    ENERGYITEMUSED,
+    /// <summary>
+    /// 连杀
+    /// </summary>
+    ENEMYCOMBO,
+    /// <summary>
+    /// 进入机甲状态
+    /// </summary>
+    ENERGYPOWERIN,
+    /// <summary>
+    /// 退出机甲状态
+    /// </summary>
+    ENERGYPOWEROUT,
 }
