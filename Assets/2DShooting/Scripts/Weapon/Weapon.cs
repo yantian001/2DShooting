@@ -68,6 +68,10 @@ public class Weapon : MonoBehaviour
     //子弹
     public GameObject bullet;
 
+    public Transform shellPlace;
+
+    public GameObject shellEffect;
+
 
     //场景对象
     public GameObject background;
@@ -102,6 +106,7 @@ public class Weapon : MonoBehaviour
 
     int curBulltCount, curMagSize;
     bool isBulltOk = false;
+    bool isReloading = false;
 
     void Start()
     {
@@ -206,6 +211,8 @@ public class Weapon : MonoBehaviour
     //换弹夹
     void Reload(LTEvent ent = null)
     {
+        if (isReloading)
+            return;
         int refillCount = magSize - curMagSize;
         if (curBulltCount < refillCount)
         {
@@ -215,14 +222,14 @@ public class Weapon : MonoBehaviour
         curMagSize += refillCount;
         if (anim)
         {
-            isBulltOk = false;
+            isReloading = true;
             anim.SetTrigger("reload");
 
         }
         else
         {
             UpdateBulletDisplay();
-            isBulltOk = true;
+            isReloading = false;
         }
         //isBulltOk = false;
     }
@@ -275,7 +282,7 @@ public class Weapon : MonoBehaviour
 
     void LoadFinish()
     {
-        isBulltOk = true;
+        isReloading = false;
         UpdateBulletDisplay();
     }
 
@@ -288,7 +295,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk && (!GameManager.Instance.IsGamePauseOrOver()))
+        if (canFire && canShoot && isBulltOk && !isReloading && (!GameManager.Instance.IsGamePauseOrOver()))
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);
@@ -317,6 +324,7 @@ public class Weapon : MonoBehaviour
         PlaySignEffect();
         PlayShootAudio();
         ShowBullet(postion);
+        ShowShell();
         //更新子弹数量显示
         curMagSize -= 1;
         UpdateBulletDisplay();
@@ -325,27 +333,9 @@ public class Weapon : MonoBehaviour
             ShakeBackground();
         }
         RaycastHit2D rayhit = Physics2D.Raycast(postion, Vector2.zero);
+        bool isHitEnemy = false;
         if (rayhit.collider != null)
         {
-            // Debug.Log(rayhit.collider.name);
-
-            //是否击中了敌人
-            //Enemy enemy = rayhit.collider.gameObject.GetComponent<Enemy>();
-            //if (enemy != null)
-            //{
-
-            //    Debug.Log(rayhit.collider.GetType());
-            //    if (rayhit.collider.GetType() == typeof(CircleCollider2D))
-            //    {
-            //        enemy.TakeDamage(attack, true);
-            //    }
-            //    else
-            //    {
-            //        enemy.TakeDamage(attack);
-            //    }
-
-            //}
-
             GAFEnemy gafEnemy = rayhit.collider.gameObject.GetComponentInParent<GAFEnemy>();
             if (gafEnemy == null)
             {
@@ -364,13 +354,14 @@ public class Weapon : MonoBehaviour
                 {
                     gafEnemy.TakeDamage(attack);
                 }
-
+                isHitEnemy = true;
             }
 
             Shootable shootable = rayhit.collider.GetComponent<Shootable>();
             if (shootable != null)
             {
                 shootable.TakeDemage(attack);
+                isHitEnemy = true;
             }
 
             //判断是否击中了箱子
@@ -378,9 +369,10 @@ public class Weapon : MonoBehaviour
             if (item)
             {
                 item.TakeDamage(attack);
+                isHitEnemy = true;
             }
         }
-        else
+        if (!isHitEnemy)
         {
             PlaySignImpactEffect(postion);
         }
@@ -429,6 +421,15 @@ public class Weapon : MonoBehaviour
 
     }
 
+    void ShowShell()
+    {
+        if (shellPlace && shellEffect)
+        {
+            var shell = (GameObject)Instantiate(shellEffect, shellPlace.position, shellPlace.rotation);
+            shell.transform.SetParent(shellPlace);
+        }
+    }
+
     public void OnBulletMoveComplete(System.Object target)
     {
         // Debug.Log("move complete");
@@ -470,7 +471,7 @@ public class Weapon : MonoBehaviour
     public void WeaponOut(System.Action callback)
     {
         weaponOutCallback = callback;
-        anim.SetBool("isOut", true);
+        anim.SetTrigger("out");
     }
 
 

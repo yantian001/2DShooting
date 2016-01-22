@@ -759,9 +759,10 @@ public class GameManager : MonoBehaviour
             //currentWeapon.gameObject.transform.parent.gameObject.SetActive(false);
             if (powerWeapon != null)
             {
-                powerWeapon.gameObject.transform.position = new Vector3(powerWeapon.gameObject.transform.position.x, -10, powerWeapon.gameObject.transform.position.z);
+                //powerWeapon.gameObject.transform.position = new Vector3(powerWeapon.gameObject.transform.position.x, -10, powerWeapon.gameObject.transform.position.z);
                 powerWeapon.gameObject.transform.parent.gameObject.SetActive(true);
-                LeanTween.moveLocalY(powerWeapon.gameObject, -3.4f, 1f);
+                powerWeapon.WeaponIn();
+                //LeanTween.moveLocalY(powerWeapon.gameObject, -3.4f, 1f);
             }
 
         });
@@ -771,7 +772,7 @@ public class GameManager : MonoBehaviour
     {
         if (powerWeapon != null)
         {
-            LeanTween.moveLocalY(powerWeapon.gameObject, -10f, 1f).setOnComplete(() =>
+           powerWeapon.WeaponOut(() =>
             {
                 powerWeapon.gameObject.transform.parent.gameObject.SetActive(false);
                 currentWeapon.WeaponIn();

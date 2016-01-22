@@ -81,8 +81,8 @@ public class JoystickCameraMovment : MonoBehaviour {
         float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
         //CrossPlatformInputManager.SetAxisZero("JoyStickX");
         //CrossPlatformInputManager.SetAxisZero("JoyStickY");
-        //Debug.Log(horazital);
-        float smooth = smoothRatio;
+        Debug.Log(Mathf.Sqrt(horazital*horazital + vertical * vertical));
+        float smooth = Mathf.Clamp( Mathf.Sqrt( Mathf.Sqrt(horazital * horazital + vertical * vertical)),0,4);
         if (checkNearTarget && signTran != null)
         {
             //Transform signTran = GameObject.Find("Sign").transform;
