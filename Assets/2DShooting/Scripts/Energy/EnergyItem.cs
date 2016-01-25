@@ -32,12 +32,13 @@ public class EnergyItem : MonoBehaviour
         }
     }
 
-    public void OnEnable()
+    public virtual void OnEnable()
     {
+        
         LeanTween.addListener((int)Events.ENERGYCHANGED, OnEnergyChanged);
     }
 
-    public void OnDisable()
+    public virtual void OnDisable()
     {
         LeanTween.removeListener((int)Events.ENERGYCHANGED, OnEnergyChanged);
     }

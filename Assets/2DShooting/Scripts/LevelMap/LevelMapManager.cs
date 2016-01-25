@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System;
+using UnityEngine.Analytics;
 
 public class LevelMapManager : MonoBehaviour
 {
@@ -238,6 +237,7 @@ public class LevelMapManager : MonoBehaviour
             GameGlobalValue.s_CurrentScene = selectScene;
             GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
             GameGlobalValue.s_currentWeaponId = Player.CurrentPlayer.EquipedWeaponId;
+            AnalysticUtil.TrackEvent("Scene Start", new Dictionary<string, object>() { { "Scene Id", selectScene } });
             GameLogic.Instance.Loading();
         }
         else

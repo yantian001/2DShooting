@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class WeaponShop : MonoBehaviour
@@ -203,10 +203,13 @@ public class WeaponShop : MonoBehaviour
                     WeaponManager.Instance.WeaponBuy(selectWeaponId);
                     SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponBought);
                     OnWeaponSelected(true, selectWeaponItem);
+                    AnalysticUtil.TrackEvent("Buy Weapon", new Dictionary<string, object>() { { "Weapon ID",selectWeaponId} });
                 }
                 else
                 {
                     Message.PopupMessage("NOT ENOUGH CASH!", 2f);
+                    AnalysticUtil.TrackEvent("Want Weapon", new Dictionary<string, object>() { { "Weapon ID", selectWeaponId } });
+
                 }
             }
             else
@@ -236,10 +239,12 @@ public class WeaponShop : MonoBehaviour
                         WeaponManager.Instance.WeaponUpgrade(selectWeaponId);
                         SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponUpgrade);
                         OnWeaponSelected(true, selectWeaponItem);
+                        AnalysticUtil.TrackEvent("Upgrade Weapon", new Dictionary<string, object>() { { "Weapon ID", selectWeaponId } });
                     }
                     else
                     {
                         Message.PopupMessage("NOT ENOUGH CASH!", 2f);
+                        AnalysticUtil.TrackEvent("Want Upgrade Weapon", new Dictionary<string, object>() { { "Weapon ID", selectWeaponId } });
                     }
                 }
                 else
@@ -261,6 +266,7 @@ public class WeaponShop : MonoBehaviour
             Player.CurrentPlayer.EquipWeapon(selectWeaponId);
             SoundManager.Instance.PlaySound(SoundManager.SoundType.WeaponEqiuped);
             OnWeaponSelected(true, selectWeaponItem);
+            AnalysticUtil.TrackEvent("Equiped Weapon", new Dictionary<string, object>() { { "Weapon ID", selectWeaponId } });
         }
 
     }

@@ -839,6 +839,7 @@ public class GameManager : MonoBehaviour
         if (emenyController.IsWaveCompleted())
         {
             OnWaveCompleted();
+            LeanTween.dispatchEvent((int)Events.WAVECOMPLETED,currentWave);
         }
     }
 

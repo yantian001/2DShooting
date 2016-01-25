@@ -102,4 +102,20 @@ public class CommonUtils
         }
 
     }
+
+    /// <summary>
+    /// 拷贝UI对象的位置，以及父对象
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    public static void CopyRectTransfrom(RectTransform from, RectTransform to)
+    {
+        if (from == null || to == null)
+            return;
+        to.SetParent(from.parent);
+        to.anchoredPosition = from.anchoredPosition;
+        to.anchorMax = from.anchorMax;
+        to.anchorMin = from.anchorMin;
+        to.pivot = from.pivot;
+    }
 }

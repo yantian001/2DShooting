@@ -115,6 +115,12 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region 分数显示
+    /// <summary>
+    /// 是否显示分数
+    /// </summary>
+    [Tooltip("是否显示分数")]
+    public bool isShowPoint = true;
+
     [Tooltip("连击分数预制")]
     public GameObject comboPoint;
     [Tooltip("爆头分数预制")]
@@ -126,6 +132,8 @@ public class UIManager : MonoBehaviour
 
     public void ShowPoint(int score, bool isHeadShot)
     {
+        if (!isShowPoint)
+            return;
         if (pointTransform == null)
         {
             return;

@@ -103,4 +103,8 @@ public enum Events
     /// 退出机甲状态
     /// </summary>
     ENERGYPOWEROUT,
+    /// <summary>
+    /// 当前波数完成
+    /// </summary>
+    WAVECOMPLETED,
 }

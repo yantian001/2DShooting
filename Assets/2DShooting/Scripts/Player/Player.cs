@@ -35,7 +35,7 @@ public class Player
     /// <summary>
     /// 角色金钱数
     /// </summary>
-    public int Money;
+    public int Money = 500;
     /// <summary>
     /// 已装备的武器ID
     /// </summary>
@@ -83,6 +83,7 @@ public class Player
             player.UserID = SystemInfo.deviceUniqueIdentifier;
             player.UserName = "Player" + player.UserID.Substring(0, 4);
             player.LevelScores.Add(new LevelScore(1) { LeardBoardID = "CgkImsCF9cIaEAIQAA" });
+            player.Money = 500;
             player.Save2File();
         }
 
