@@ -6,9 +6,14 @@ public class StartScript : MonoBehaviour {
    // public GoogleAnalyticsV3 googleAnalyticsV3;
 
 	// Use this for initialization
-	void Start () {
+	//void Start () {
+ //       Application.targetFrameRate = 60;
+	//}
+
+    void Awake()
+    {
         Application.targetFrameRate = 60;
-	}
+    }
 
     /// <summary>
     /// 开始按钮事件

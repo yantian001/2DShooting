@@ -25,7 +25,8 @@ public class JoystickCameraMovment : MonoBehaviour {
     void Start () {
         came = this.GetComponent<Camera>();
         CalculteSize();
-	}
+        //StartCoroutine(CoroutineMove());
+    }
 
     void CalculteSize()
     {
@@ -72,17 +73,32 @@ public class JoystickCameraMovment : MonoBehaviour {
         {
             signTran = GameObject.Find("Sign").transform;
         }
+       
     }
 	
 	// Update is called once per frame
 	void Update () {
+        Move(Time.fixedDeltaTime);
+    }
+
+    IEnumerator CoroutineMove()
+    {
+        while(true)
+        {
+            Move(1f / 60);
+            yield return new WaitForSeconds(1f / 60);
+        }
+    }
+
+    void Move(float delta)
+    {
 
         float horazital = CrossPlatformInputManager.GetAxis("JoyStickX");
         float vertical = CrossPlatformInputManager.GetAxis("JoyStickY");
-        //CrossPlatformInputManager.SetAxisZero("JoyStickX");
-        //CrossPlatformInputManager.SetAxisZero("JoyStickY");
-        Debug.Log(Mathf.Sqrt(horazital*horazital + vertical * vertical));
-        float smooth = Mathf.Clamp( Mathf.Sqrt( Mathf.Sqrt(horazital * horazital + vertical * vertical)),0,4);
+        CrossPlatformInputManager.SetAxisZero("JoyStickX");
+        CrossPlatformInputManager.SetAxisZero("JoyStickY");
+        // Debug.Log(Mathf.Sqrt(horazital*horazital + vertical * vertical));
+        float smooth = Mathf.Clamp(Mathf.Sqrt(Mathf.Sqrt(horazital * horazital + vertical * vertical)), 0, 3);
         if (checkNearTarget && signTran != null)
         {
             //Transform signTran = GameObject.Find("Sign").transform;
@@ -117,6 +133,6 @@ public class JoystickCameraMovment : MonoBehaviour {
             newPos = new Vector3(Mathf.Clamp(newPos.x, minWidth, MaxWidth), Mathf.Clamp(newPos.y, minHight, maxHight), newPos.z);
         }
 
-        transform.position = Vector3.Lerp(transform.position,newPos,Time.deltaTime * smooth);
+        transform.position = Vector3.Lerp(transform.position, newPos, delta * smooth);
     }
 }
