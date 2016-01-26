@@ -107,6 +107,7 @@ public class Weapon : MonoBehaviour
     int curBulltCount, curMagSize;
     bool isBulltOk = false;
     bool isReloading = false;
+    bool isWeaponOuting = false;
 
     void Start()
     {
@@ -295,7 +296,7 @@ public class Weapon : MonoBehaviour
         {
             canFire = false;
         }
-        if (canFire && canShoot && isBulltOk && !isReloading && (!GameManager.Instance.IsGamePauseOrOver()))
+        if (canFire && canShoot && isBulltOk && !isReloading && !isWeaponOuting && (!GameManager.Instance.IsGamePauseOrOver()))
         {
             Vector3 pos = GetShootPosition(isCombo);
             Shoot(pos);
@@ -470,6 +471,7 @@ public class Weapon : MonoBehaviour
     private System.Action weaponOutCallback;
     public void WeaponOut(System.Action callback)
     {
+        isWeaponOuting = true;
         weaponOutCallback = callback;
         anim.SetTrigger("out");
     }
@@ -478,6 +480,7 @@ public class Weapon : MonoBehaviour
     public void OnWeaponOutComplete()
     {
         transform.parent.gameObject.SetActive(false);
+        isWeaponOuting = false;
         if (weaponOutCallback != null)
             weaponOutCallback();
     }

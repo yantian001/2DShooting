@@ -107,4 +107,8 @@ public enum Events
     /// 当前波数完成
     /// </summary>
     WAVECOMPLETED,
+    /// <summary>
+    /// 创建血
+    /// </summary>
+    CREATEBLOOD,
 }

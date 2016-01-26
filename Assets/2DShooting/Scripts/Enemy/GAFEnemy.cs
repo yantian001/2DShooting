@@ -238,9 +238,10 @@ public class GAFEnemy : MonoBehaviour
 
     void Die(bool isHeadShot = false)
     {
+
         //play die animation
         isDead = true;
-
+        gameObject.BroadcastMessage("EnemyDie", SendMessageOptions.DontRequireReceiver);
         if (coliders != null)
         {
             for (int i = 0; i < coliders.Length; i++)
@@ -249,9 +250,19 @@ public class GAFEnemy : MonoBehaviour
             }
         }
 
+        //var colids = GetComponentsInChildren<Collider>();
+        //if(colids != null)
+        //{
+        //    for(int i= 0;i<colids.Length;i++)
+        //    {
+        //        colids[i].enabled = false;
+        //    }
+        //}
+
         if (anim != null)
         {
             anim.SetTrigger("dead");
+            
             //float length = anim.GetCurrentAnimatorClipInfo(0).Length;
         }
 

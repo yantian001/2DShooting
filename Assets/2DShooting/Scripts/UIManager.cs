@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour
     {
         if (isComboShow)
         {
-            LeanTween.move(Combo.GetComponent<RectTransform>(), new Vector3(-259f, 25f, 0), 0.1f);
+            LeanTween.move(Combo.GetComponent<RectTransform>(), new Vector3(-320f, 25f, 0), 0.1f);
             isComboShow = false;
         }
     }
@@ -313,6 +313,8 @@ public class UIManager : MonoBehaviour
         {
             playerDamage.damaged = true;
         }
+        if (Random.Range(0, 3) == 0)
+            LeanTween.dispatchEvent((int)Events.CREATEBLOOD);
     }
     #endregion
 
@@ -382,9 +384,9 @@ public class UIManager : MonoBehaviour
                 if (txtScore)
                 {
                     //txtScore.text = record.Scores.ToString();
-                    StartCoroutine(DigitalDisplay(txtScore, record.Scores));
+                    StartCoroutine(DigitalDisplay(txtScore, record.Scores, 0, 1000));
                 }
-                
+
                 Text txtMoneyEarn = bgRect.FindChild("Infos/MoenyEarn/TextCount").GetComponent<Text>();
                 if (txtMoneyEarn)
                 {
@@ -400,7 +402,7 @@ public class UIManager : MonoBehaviour
                     btnRestart.onClick.AddListener(OnRestartClicked);
                 }
 
-              
+
 
                 //回主页按钮
                 Button btnMainMenu = bgRect.FindChild("BtnMainMenu").GetComponent<Button>();
@@ -414,11 +416,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    IEnumerator DigitalDisplay(Text txt ,int to ,int from = 0,int per = 100)
+    IEnumerator DigitalDisplay(Text txt, int to, int from = 0, int per = 100)
     {
-        if(txt !=null)
+        if (txt != null)
         {
-            while(from < to)
+            while (from < to)
             {
                 if (to - from >= per)
                 {
@@ -430,7 +432,7 @@ public class UIManager : MonoBehaviour
                 yield return null;
             }
         }
-       // yield return null;
+        // yield return null;
     }
 
     void OnRestartClicked()
@@ -662,7 +664,7 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-   
+
 
     #region 暂停
 
@@ -702,11 +704,11 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-       
+
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);
         LeanTween.addListener(gameObject, (int)Events.GAMEFAILED, OnGameFailed);
-       
+
     }
 
     public void OnDisable()

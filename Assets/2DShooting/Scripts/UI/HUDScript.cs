@@ -32,22 +32,22 @@ public class HUDScript : MonoBehaviour
                     {
                         if (Random.Range(0, 2) == 1)
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 12, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
                         }
                         else
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, headshotHUDColor, 12, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
                         }
                     }
                     else
                     {
                         if (Random.Range(0, 2) == 1)
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 12, 10f, -0.5f, 2.2f, bl_Guidance.RightDown);
                         }
                         else
                         {
-                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 10, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
+                            hudRoot.NewText("- " + d.demageVal.ToString(), d.tran, normalHUDColor, 12, 10f, -0.5f, 2.2f, bl_Guidance.LeftDown);
                         }
                     }
 

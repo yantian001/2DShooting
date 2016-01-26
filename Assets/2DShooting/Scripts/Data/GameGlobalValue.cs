@@ -13,7 +13,7 @@ public class GameGlobalValue
     public static float hit6Score = .6f;
     public static float headShotScore = 1f;
 
-    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkImsCF9cIaEAIQAA" } , { 2, "CgkImsCF9cIaEAIQAw" }, { 3, "CgkImsCF9cIaEAIQBA" } };
+    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkIkfn43vwGEAIQAQ" } , { 2, "CgkIkfn43vwGEAIQAg" }, { 3, "CgkIkfn43vwGEAIQAw" } };
 
     public static int GetLevelIdByBoardId(string id)
     {
@@ -88,7 +88,7 @@ public class GameGlobalValue
     /// <summary>
     /// 当前武器ID
     /// </summary>
-    public static int s_currentWeaponId = 1;
+    public static int s_currentWeaponId = 0;
 
 
     #region 武器相关

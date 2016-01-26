@@ -51,7 +51,7 @@ public class EnergyHandler : MonoBehaviour
 
     public Color displayFlashColor = Color.white;
 
-   public Color displayCurrentColor;
+    public Color displayCurrentColor;
     public int maxDisplayValue = 100;
 
     public int headshotEnergy = 1;
@@ -83,6 +83,18 @@ public class EnergyHandler : MonoBehaviour
     /// </summary>
     [Tooltip("每秒减少的能量")]
     public int reducePerSecond = 2;
+
+    public GameObject moneyPrefab;
+
+    public Transform moneyCreatePosition;
+    /// <summary>
+    /// 能量恢复的价格
+    /// </summary>
+    public int energyPrice = 500;
+    /// <summary>
+    /// 能量恢复的数量 
+    /// </summary>
+    public int energyIncrease = 10;
 
 
     bool isExitPower = false;
@@ -253,11 +265,13 @@ public class EnergyHandler : MonoBehaviour
 
     void SetDisplayColor(Color c)
     {
-        var graphic = display.targetGraphic;
-        if(graphic != null)
-        {
-            graphic.color = c;
-        }
+        //LeanTween.color(display.fillRect.gameObject, c, 0.1f);
+        iTween.ColorTo(display.fillRect.gameObject, c, 0.2f);
+        //var graphic = display.targetGraphic;
+        //if(graphic != null)
+        //{
+        //    graphic.color = c;
+        //}
     }
 
     void OnEnergyItemUsed(LTEvent evt)
@@ -266,4 +280,27 @@ public class EnergyHandler : MonoBehaviour
         AddEnergy(cost);
     }
 
+
+    public void OnAddEnergyClicked()
+    {
+
+        if (Player.CurrentPlayer.Money >= energyPrice)
+        {
+            Player.CurrentPlayer.UseMoney(energyPrice);
+            AddEnergy(energyIncrease);
+            if (moneyPrefab && moneyCreatePosition)
+            {
+                var createObj = (GameObject)Instantiate(moneyPrefab, moneyCreatePosition.position, Quaternion.identity);
+                CommonUtils.SetChildText(createObj.GetComponent<RectTransform>(), "Text", (0 -energyPrice).ToString());
+                createObj.transform.SetParent(moneyCreatePosition.parent);
+                createObj.transform.localScale = new Vector3(1f, 1f, 1f);
+                LeanTween.moveY(createObj, createObj.transform.position.y - 50, 1f).setDestroyOnComplete(true);
+            }
+        }
+        else
+        {
+            Message.PopupMessage("NOT ENOUGH CASH!", 1f);
+        }
+
+    }
 }

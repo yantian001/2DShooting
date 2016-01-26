@@ -39,7 +39,7 @@ public class Player
     /// <summary>
     /// 已装备的武器ID
     /// </summary>
-    public int EquipedWeaponId = 0;
+    public int EquipedWeaponId = 1;
 
     #endregion
 
@@ -82,7 +82,7 @@ public class Player
             player = new Player();
             player.UserID = SystemInfo.deviceUniqueIdentifier;
             player.UserName = "Player" + player.UserID.Substring(0, 4);
-            player.LevelScores.Add(new LevelScore(1) { LeardBoardID = "CgkImsCF9cIaEAIQAA" });
+            player.LevelScores.Add(new LevelScore(1) { LeardBoardID = "CgkIkfn43vwGEAIQAQ" });
             player.Money = 500;
             player.Save2File();
         }

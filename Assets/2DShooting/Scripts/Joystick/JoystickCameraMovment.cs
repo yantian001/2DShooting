@@ -71,7 +71,12 @@ public class JoystickCameraMovment : MonoBehaviour {
 
         if (signTran == null)
         {
-            signTran = GameObject.Find("Sign").transform;
+            var sign = GameObject.Find("Sign");
+            if(sign != null)
+            {
+                signTran = sign.transform;
+            }
+           // signTran = GameObject.Find("Sign").transform;
         }
        
     }

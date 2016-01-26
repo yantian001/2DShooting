@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 玩家当前血量
     /// </summary>
-    float playerCurrentHP;
+    float playerCurrentHP,playerMaxHP;
     bool isPlayerDie = false;
     /// <summary>
     /// 是否有护盾
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
 
     public Weapon powerWeapon = null;
 
-    private int currentWeaponId = 1;
+    private int currentWeaponId = 0;
     /// <summary>
     /// 是否显示过广告
     /// </summary>
@@ -306,7 +306,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("Init level gamedata error");
         }
-        playerCurrentHP = gameData.playerHealth;
+        playerCurrentHP = playerMaxHP = gameData.playerHealth;
         if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Time))
         {
             curMissionCount = gameData.missionCount;
@@ -398,6 +398,11 @@ public class GameManager : MonoBehaviour
                     playerCurrentHP -= (demage - shieldValue);
                     UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
                     UIManager.Instance.ShowPlayDamageEffect();
+                   // if(UnityEngine.Random.Range(0,1)==0)
+                  //  { 
+                        
+                    //}
+                   // Random.rang
                 }
                 if (shieldValue <= 0)
                 {
@@ -541,13 +546,13 @@ public class GameManager : MonoBehaviour
             Player.CurrentPlayer.AddPlayRecord(records);
         }
         //显示广告
-        if (GoogleAdsUtil.Instance.HasInterstital())
-        {
-            GoogleAdsUtil.Instance.ShowInterstital();
-        }
-        else if (ChartboostUtil.Instance.HasInterstitialOnDefault())
+        if (ChartboostUtil.Instance.HasInterstitialOnDefault())
         {
             ChartboostUtil.Instance.ShowInterstitialOnDefault();
+        }
+        else if(GoogleAdsUtil.Instance.HasInterstital())
+        {
+            GoogleAdsUtil.Instance.ShowInterstital();
         }
     }
 
@@ -658,7 +663,7 @@ public class GameManager : MonoBehaviour
     /// <param name="value"></param>
     void AddLife(float value)
     {
-        playerCurrentHP += value;
+        playerCurrentHP += (value / 100 ) * playerMaxHP;
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
     }
@@ -676,7 +681,7 @@ public class GameManager : MonoBehaviour
             if (float.TryParse(evt.data.ToString(), out addedVal))
             {
                 this.haveShield = true;
-                shieldValue += addedVal;
+                shieldValue += (addedVal / 100 ) * playerMaxHP;
                 qurShieldValue = shieldValue / 4;
                 curQurShildValue = qurShieldValue;
                 UIManager.Instance.ShowShield();
@@ -712,6 +717,7 @@ public class GameManager : MonoBehaviour
     public void OnPauseClicked()
     {
         ChangeGameStatu(GameStatu.GamePaused);
+        Debug.Log("Pause");
         UIManager.Instance.ShowPauseUI();
         GoogleAdsUtil.Instance.ShowPauseBanner();
     }
@@ -875,6 +881,14 @@ public class GameManager : MonoBehaviour
     void ChangeGameStatu(GameStatu statu)
     {
         this.Statu = statu;
+        //if(statu == GameStatu.GameFailed || statu == GameStatu.GameSuccessed || statu == GameStatu.GamePaused)
+        //{
+        //   // Time.timeScale = 0;
+        //}
+        //else
+        //{
+        //   // Time.timeScale = 1;
+        //}
     }
 
     public void OnDisable()
@@ -883,6 +897,7 @@ public class GameManager : MonoBehaviour
         LeanTween.removeListener((int)Events.ITEMSHIELDHIT, OnGetShield);
         LeanTween.removeListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
         LeanTween.removeListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
+       // Time.timeScale = 1;
     }
 
     #endregion
