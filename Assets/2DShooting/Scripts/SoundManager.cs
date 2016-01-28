@@ -221,7 +221,11 @@ public class SoundManager : MonoBehaviour {
         //iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
         LeanAudio.play(ac);
     }
-
+    public static void PlayAduioITween(GameObject obj, AudioClip ac, float volume = 1.0f, float delay = 0f)
+    {
+        iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
+        //LeanAudio.play(ac, default(Vector3), 1, delay);
+    }
     /// <summary>
     /// 播放连杀音效
     /// </summary>

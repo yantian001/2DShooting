@@ -122,7 +122,7 @@ public class GameGlobalValue
     /// <summary>
     /// 分数转换率
     /// </summary>
-    public static float s_moneyRate = 0.005f;
+    public static float s_moneyRate = 0.01f;
 
     public static int GetMoneyFromRecord(GameRecords record)
     {

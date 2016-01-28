@@ -382,6 +382,7 @@ public class GameManager : MonoBehaviour
         {
             if (haveShield && shieldValue > 0)
             {
+                //UIManager.Instance.ShakeShiled();
                 if (shieldValue >= demage)
                 {
                     shieldValue -= demage;
@@ -391,6 +392,7 @@ public class GameManager : MonoBehaviour
                         UIManager.Instance.UpdateShieldStatu();
                         curQurShildValue = qurShieldValue;
                     }
+
                 }
                 else
                 {

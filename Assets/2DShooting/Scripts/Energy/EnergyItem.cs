@@ -18,7 +18,7 @@ public class EnergyItem : MonoBehaviour
     /// </summary>
     public bool shakeOnEnable;
 
-    bool enabled = false;
+    protected bool isActive = false;
     // Use this for initialization
     void Start()
     {
@@ -50,13 +50,13 @@ public class EnergyItem : MonoBehaviour
         {
             currentEnergy = ConvertUtil.ToInt32(evt.data);
         }
-        enabled = currentEnergy >= energyCost;
+        isActive = currentEnergy >= energyCost;
         bool statusChange = false;
-        if(useButton.interactable != enabled)
+        if(useButton.interactable != isActive)
         {
             statusChange = true;
         }
-        if (statusChange && enabled && shakeOnEnable)
+        if (statusChange && isActive && shakeOnEnable)
         {
             iTween.ShakeScale(gameObject, new Vector3(1.2f, 1.2f, 1.2f), 0.5f);
             SoundManager.Instance.PlaySound(SoundManager.SoundType.EnergyItemEnabled);

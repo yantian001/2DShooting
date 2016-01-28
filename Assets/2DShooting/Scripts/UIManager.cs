@@ -313,7 +313,7 @@ public class UIManager : MonoBehaviour
         {
             playerDamage.damaged = true;
         }
-        if (Random.Range(0, 3) == 0)
+        if (Random.Range(0, 10) == 0)
             LeanTween.dispatchEvent((int)Events.CREATEBLOOD);
     }
     #endregion
@@ -497,6 +497,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void ShakeShiled()
+    {
+        iTween.ShakePosition(itemShield.gameObject, new Vector3(0.2f, 0.2f, 0.2f),0.5f);
+    }
 
     /// <summary>
     /// 隐藏盾牌

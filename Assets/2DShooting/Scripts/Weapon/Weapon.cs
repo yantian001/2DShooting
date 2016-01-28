@@ -272,6 +272,10 @@ public class Weapon : MonoBehaviour
         {
             if (curMagSize <= 0 && curBulltCount <= 0)
             {
+                if(isBulltOk == true)
+                {
+                    LeanTween.dispatchEvent((int)Events.NEEDBULLET);
+                }
                 isBulltOk = false;
             }
             else
@@ -415,8 +419,9 @@ public class Weapon : MonoBehaviour
         {
             return;
         }
-        GameObject bult = Instantiate(bullet) as GameObject;
-        bult.transform.position = muzzleEffectPlace.transform.position;
+        Vector3 to = target - muzzleEffectPlace.transform.position;
+        GameObject bult = Instantiate(bullet, muzzleEffectPlace.transform.position, Quaternion.FromToRotation(Vector3.up, to)) as GameObject;
+       // bult.transform.position = muzzleEffectPlace.transform.position;
 
         iTween.MoveTo(bult, iTween.Hash("position", target, "time", 0.2, "oncomplete", "OnBulletMoveComplete", "oncompletetarget", gameObject, "oncompleteparams", bult));
 

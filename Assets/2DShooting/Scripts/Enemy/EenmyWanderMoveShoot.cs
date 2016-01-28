@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyShoot : EnemyAction
-{
+public class EenmyWanderMoveShoot : EnemyWanderMoveX {
+    public float attactPerTime = 0.1f;
+
+    public float shootRate = 0.1f;
+
     /// <summary>
     /// 可攻击的目标
     /// </summary>
@@ -42,82 +45,24 @@ public class EnemyShoot : EnemyAction
     /// </summary>
     public AudioClip fireAudio;
     /// <summary>
-    /// 攻击值
-    /// </summary>
-    public float attack = 1f;
-    /// <summary>
     /// 需要目标
     /// </summary>
     public bool needTarget = true;
-    #region Monobehavior
 
-    public override void Start()
+    public override void OnMoveStart()
     {
-        base.Start();
-        if(getAllTargets)
-        {
-            GetAllTargets();
-        }
-        this.animParamName = "shoot";
-        this.animParamType = AnimatorParameterType.Trigger;
+        base.OnMoveStart();
+        InvokeRepeating("shoot", 0, shootRate);
     }
 
-    #endregion
-
-    public virtual void GetAllTargets()
+    public override void OnMoveComplete()
     {
-        targets = GameObject.FindGameObjectsWithTag(targetTag);
+        base.OnMoveComplete();
+        CancelInvoke("shoot");
     }
 
-    /// <summary>
-    /// 获取攻击目标
-    /// </summary>
-    /// <returns></returns>
-    public virtual GameObject GetTarget()
+   public void shoot()
     {
-        GameObject rst = null;
-
-        if(targets != null && targets.Length > 0)
-        {
-            int totalWeight = 0;
-            int i = 0;
-            while (i < targets.Length)
-            {
-                Weight w = targets[i].GetComponent<Weight>();
-                if(w != null)
-                {
-                    totalWeight += w._Weight;
-                }
-                i++;
-            }
-
-            int randomWeight = Random.Range(0, totalWeight + 1);
-            i = 0;
-            while(randomWeight > 0)
-            {
-                Weight w = targets[i].GetComponent<Weight>();
-                if (w != null)
-                {
-                    randomWeight -= w._Weight;
-                }
-                if(randomWeight <= 0)
-                {
-                    break;
-                }
-                i++;
-                if (i == targets.Length)
-                    i = 0;
-            }
-            rst = targets[i];
-        }
-
-        return rst;
-    }
-
-    public override bool Run()
-    {
-        if (!base.Run())
-            return false;
         if (needTarget)
         {
             if (target == null || randomTarget)
@@ -126,7 +71,7 @@ public class EnemyShoot : EnemyAction
             }
 
             if (target == null)
-                return false;
+                return;
         }
 
         //播放动画
@@ -136,15 +81,12 @@ public class EnemyShoot : EnemyAction
         PlayFireAudio();
         PlayerInjure();
 
-        return true;
     }
-
-
 
     /// <summary>
     /// 播放开火动画
     /// </summary>
-   protected virtual void PlayFireAnimation()
+    protected virtual void PlayFireAnimation()
     {
 
     }
@@ -154,7 +96,7 @@ public class EnemyShoot : EnemyAction
     /// </summary>
     protected virtual void PlayMuzzleEffect()
     {
-        if(muzzleEffect && firePlace)
+        if (muzzleEffect && firePlace)
         {
             GameObject muzzle = Instantiate(muzzleEffect);
             muzzle.transform.position = firePlace.position;
@@ -191,7 +133,7 @@ public class EnemyShoot : EnemyAction
         if (fireAudio != null)
         {
             //iTween.Stab(gameObject, fireAudio, 0f);
-            SoundManager.PlayAduioITween(gameObject, fireAudio,0.3f);
+            SoundManager.PlayAduioITween(gameObject, fireAudio,0.2f);
         }
     }
     /// <summary>
@@ -199,6 +141,58 @@ public class EnemyShoot : EnemyAction
     /// </summary>
     protected virtual void PlayerInjure()
     {
-        GameManager.Instance.PlayerInjured(attack);
+        GameManager.Instance.PlayerInjured(attactPerTime);
+    }
+
+    public virtual GameObject GetTarget()
+    {
+        GameObject rst = null;
+
+        if(targets == null || targets.Length <= 0)
+        {
+            targets = GameObject.FindGameObjectsWithTag(targetTag);
+        }
+
+        if (targets != null && targets.Length > 0)
+        {
+            int totalWeight = 0;
+            int i = 0;
+            while (i < targets.Length)
+            {
+                Weight w = targets[i].GetComponent<Weight>();
+                if (w != null)
+                {
+                    totalWeight += w._Weight;
+                }
+                i++;
+            }
+
+            int randomWeight = Random.Range(0, totalWeight + 1);
+            i = 0;
+            while (randomWeight > 0)
+            {
+                Weight w = targets[i].GetComponent<Weight>();
+                if (w != null)
+                {
+                    randomWeight -= w._Weight;
+                }
+                if (randomWeight <= 0)
+                {
+                    break;
+                }
+                i++;
+                if (i == targets.Length)
+                    i = 0;
+            }
+            rst = targets[i];
+        }
+
+        return rst;
+    }
+    public override void EnemyDie()
+    {
+        base.EnemyDie();
+        LeanTween.cancel(gameObject);
+        OnMoveComplete();
     }
 }

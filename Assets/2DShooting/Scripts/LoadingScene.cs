@@ -52,7 +52,7 @@ public class LoadingScene : MonoBehaviour {
         {
             progress.value = (float)nowProcess / 100;
         }
-        if(totalTime>=waitSconds && totalProcess == 100)
+        if(totalProcess == 100)
         {
             GoogleAdsUtil.Instance.HideTopBannerView();
             async.allowSceneActivation = true;

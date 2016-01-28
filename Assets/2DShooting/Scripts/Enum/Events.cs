@@ -111,4 +111,8 @@ public enum Events
     /// 创建血
     /// </summary>
     CREATEBLOOD,
+    /// <summary>
+    /// 需要子弹
+    /// </summary>
+    NEEDBULLET,
 }

@@ -24,7 +24,7 @@ public class EnergyHandler : MonoBehaviour
     /// <summary>
     /// 当前能量值
     /// </summary>
-    private int currentEnergy;
+    private int currentEnergy = 1;
     /// <summary>
     /// 父对象
     /// </summary>

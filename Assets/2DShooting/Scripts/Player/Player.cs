@@ -73,7 +73,7 @@ public class Player
         if (PlayerPrefs.HasKey("GameData"))
         {
             string jsonstr = PlayerPrefs.GetString("GameData");
-            Debug.Log(jsonstr);
+            //Debug.Log(jsonstr);
             player = JsonConvert.DeserializeObject<Player>(jsonstr);
 
         }
