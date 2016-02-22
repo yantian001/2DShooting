@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Analytics;
 
 public class LevelMapManager : MonoBehaviour
 {
@@ -20,7 +20,10 @@ public class LevelMapManager : MonoBehaviour
     /// 玩家名称显示
     /// </summary>
     public Text playerNameText;
-
+    /// <summary>
+    /// 玩家金钱数
+    /// </summary>
+    public Text playerMoneyText;
     /// <summary>
     /// 排名显示区域
     /// </summary>
@@ -41,7 +44,7 @@ public class LevelMapManager : MonoBehaviour
     /// <summary>
     /// 武器选择区域
     /// </summary>
-    public GameObject weaponSelect;
+    private GameObject weaponSelect;
     /// <summary>
     /// 排行版区域
     /// </summary>
@@ -49,12 +52,21 @@ public class LevelMapManager : MonoBehaviour
     /// <summary>
     /// 武器信息
     /// </summary>
-    public Transform weaponInfo;
+    private Transform weaponInfo;
+
+    /// <summary>
+    /// 武器UI
+    /// </summary>
+    public GameObject UIWeapon;
 
     /// <summary>
     /// 开始按钮
     /// </summary>
     public Button playButton;
+    /// <summary>
+    /// Store按钮
+    /// </summary>
+    public Button storeButton;
 
     /// <summary>
     /// 返回按钮
@@ -85,6 +97,10 @@ public class LevelMapManager : MonoBehaviour
         {
             playerNameText.text = Player.CurrentPlayer.UserName;
         }
+        if (playerMoneyText != null)
+        {
+            playerMoneyText.text = Player.CurrentPlayer.Money.ToString();
+        }
         //附加选择事件
         if (Scenes != null)
         {
@@ -114,23 +130,36 @@ public class LevelMapManager : MonoBehaviour
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
         }
-        ChangeUIDisplay(action);
+        //ChangeUIDisplay(action);
 
-        if(backButton != null )
+        if (backButton != null)
         {
             backButton.onClick.AddListener(OnBackButtonClicked);
         }
+        if(storeButton != null)
+        {
+            storeButton.onClick.AddListener(OnStoreButtonClicked);
+        }
 
         //添加事件监听
-        AddEventListener();
+        //AddEventListener();
 
         //显示广告
         ChartboostUtil.Instance.ShowInterstitialOnHomescreen();
     }
 
+    private void OnStoreButtonClicked()
+    {
+        //throw new NotImplementedException();
+        if(UIWeapon != null)
+        {
+            UIWeapon.SetActive(true);
+        }
+    }
+
     void OnBackButtonClicked()
     {
-        Debug.Log("back clicked");
+        //Debug.Log("back clicked");
         LeanTween.dispatchEvent((int)Events.BACKTOSTART);
     }
 
@@ -152,7 +181,8 @@ public class LevelMapManager : MonoBehaviour
                     for (int i = 0; i < weapons.Length; i++)
                     {
                         Toggle weapon = weapons[i];
-                        weapon.onValueChanged.AddListener(b => {
+                        weapon.onValueChanged.AddListener(b =>
+                        {
                             OnSelectWeaponChanged(b, weapon.GetComponent<LevelMapWeaponObject>());
                         });
                         if (weapon.isOn)
@@ -195,29 +225,34 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     void OnPlayButtonClicked()
     {
-        if(action == 0)
+        //if (action == 0)
+        //{
+        //    action = 1;
+        //    ChangeUIDisplay(action);
+        //}
+        //else
+        //{
+        if (selectScene != -1 && Player.CurrentPlayer.EquipedWeaponId != -1)
         {
-            action = 1;
-            ChangeUIDisplay(action);
+            GameGlobalValue.s_CurrentScene = selectScene;
+            GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
+            GameGlobalValue.s_currentWeaponId = Player.CurrentPlayer.EquipedWeaponId;
+            AnalysticUtil.TrackEvent("Scene Start", new Dictionary<string, object>() { { "Scene Id", selectScene } });
+            GameLogic.Instance.Loading();
         }
         else
         {
-            if (selectScene != -1 && selectWeaponId != -1)
-            {
-                GameGlobalValue.s_CurrentScene = selectScene;
-                GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
-                GameGlobalValue.s_currentWeaponId = selectWeaponId;
-                GameLogic.Instance.Loading();
-            }
+            Message.PopupMessage("Please select scene first !");
         }
-       
+        // }
+
     }
 
     void OnToggleValueChange(bool selected, LevelMapObject mapObj)
     {
         if (selected)
         {
-            ChangeUIDisplay(0);
+            //ChangeUIDisplay(0);
             if (mapObj)
             {
                 currentMapObject = mapObj;
@@ -234,40 +269,42 @@ public class LevelMapManager : MonoBehaviour
     }
 
 
-    void OnSelectWeaponChanged(bool isOn , LevelMapWeaponObject weaponObject)
+    void OnSelectWeaponChanged(bool isOn, LevelMapWeaponObject weaponObject)
     {
-        if(isOn && weaponObject)
+        if (isOn && weaponObject)
         {
-            Weapon weapon = weaponObject.GetWeapon();
-            if(weapon)
+            //Weapon weapon = weaponObject.GetWeapon();
+            // WeaponProperty wp = WeaponManager.Instance.GetCurrentPropertyById(weaponObject.weaponId);
+            WeaponItem wi = WeaponManager.Instance.GetWeaponItemById(weaponObject.weaponId);
+            if (wi != null)
             {
-                selectWeaponId = weapon.ID;
-                if(weaponInfo != null)
+                selectWeaponId = wi.Id;
+                //设置名字
+                SetChildText(weaponSelect.GetComponent<RectTransform>(), "SelectedWeaponName", wi.Name);
+                WeaponProperty wp = wi.GetCurrentProperty();
+                if (wp != null)
                 {
-                    //设置名字
-                    SetChildText(weaponSelect.GetComponent<RectTransform>(), "SelectedWeaponName", weapon.Name);
-
                     //设置武器攻击值
-                    SetChildSliderValue(weaponInfo, "Pwoer", weapon.attack / GameGlobalValue.s_MaxWeaponAttack);
+                    SetChildSliderValue(weaponInfo, "Pwoer", wp.Power / GameGlobalValue.s_MaxWeaponAttack);
                     //设置攻击次数
-                    SetChildSliderValue(weaponInfo, "FireRate", (1.0f/weapon.shootInterval) / GameGlobalValue.s_MaxFireRatePerSeconds);
-                    
-                    //准确度
-                    float stab = 1.0f;
-                    if (weapon.randomShooting)
-                    {
-                        stab -= weapon.randomShootingSize.x / GameGlobalValue.s_MaxShakeDistance;
-                    }
+                    SetChildSliderValue(weaponInfo, "FireRate", (wp.FireRate) / GameGlobalValue.s_MaxFireRatePerSeconds);
 
-                    SetChildSliderValue(weaponInfo, "Stability", stab);
+                    //准确度
+                    //float stab = 1.0f;
+                    //if (weapon.randomShooting)
+                    //{
+                    //    stab -= weapon.randomShootingSize.x / GameGlobalValue.s_MaxShakeDistance;
+                    //}
+
+                    //SetChildSliderValue(weaponInfo, "Stability", stab);
 
                     //弹夹
-                    SetChildSliderValue(weaponInfo, "Magazine", (float)weapon.BulletCount / GameGlobalValue.s_MaxMagazineSize);
+                    SetChildSliderValue(weaponInfo, "Magazine", (float)wp.ClipSize / GameGlobalValue.s_MaxMagazineSize);
 
                     //移动速度
-                    SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
+                    // SetChildSliderValue(weaponInfo, "Mobility", weapon.moveSpeed / GameGlobalValue.s_MaxMobility);
                     //得分能力
-                    SetChildSliderValue(weaponInfo, "ScoreBouns", weapon.scoreBonus / GameGlobalValue.s_MaxSocreBonus);
+                    SetChildSliderValue(weaponInfo, "ScoreBouns", wp.ScoreBonus / GameGlobalValue.s_MaxSocreBonus);
                 }
             }
         }
@@ -277,7 +314,7 @@ public class LevelMapManager : MonoBehaviour
         }
     }
     #endregion
-    
+
     /// <summary>
     /// 更新排行版显示
     /// </summary>
@@ -365,12 +402,12 @@ public class LevelMapManager : MonoBehaviour
     {
         action = _action;
         //显示排行榜
-        if(action == 0)
+        if (action == 0)
         {
             highScore.SetActive(true);
             weaponSelect.SetActive(false);
         }
-        else if(action == 1)
+        else if (action == 1)
         {
             highScore.SetActive(false);
             weaponSelect.SetActive(true);
@@ -402,13 +439,13 @@ public class LevelMapManager : MonoBehaviour
     /// <param name="parent"></param>
     /// <param name="child"></param>
     /// <param name="value"></param>
-    void SetChildSliderValue(Transform parent ,string child , float value)
+    void SetChildSliderValue(Transform parent, string child, float value)
     {
         Transform childTran = parent.FindChild(child);
-        if(childTran)
+        if (childTran)
         {
             Slider slider = childTran.GetComponentInChildren<Slider>();
-            if(slider)
+            if (slider)
             {
                 slider.value = value;
             }

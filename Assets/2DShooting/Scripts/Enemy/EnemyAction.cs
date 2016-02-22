@@ -32,6 +32,8 @@ public class EnemyAction : MonoBehaviour {
     /// </summary>
     public bool isMainAction = false;
 
+    bool isDie = false;
+
     #region MonoBehaviour Function
     public virtual void Start()
     {
@@ -117,5 +119,10 @@ public class EnemyAction : MonoBehaviour {
         {
             enemy.UpdateAction(isRunning, this.GetType().ToString());
         }
+    }
+
+    public virtual void EnemyDie()
+    {
+        isDie = true;
     }
 }

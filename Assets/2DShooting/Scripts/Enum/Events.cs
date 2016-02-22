@@ -71,4 +71,48 @@ public enum Events
     /// 镜头晃动
     /// </summary>
     SHAKECAMERA,
+    /// <summary>
+    /// 受到伤害
+    /// </summary>
+    DEMAGE,
+    /// <summary>
+    /// 金钱变化
+    /// </summary>
+    MONEYCHANGED,
+    /// <summary>
+    /// 重新装弹
+    /// </summary>
+    CLIPREFILL,
+    /// <summary>
+    /// 能量值变化
+    /// </summary>
+    ENERGYCHANGED,
+    /// <summary>
+    /// 使用了能量道具
+    /// </summary>
+    ENERGYITEMUSED,
+    /// <summary>
+    /// 连杀
+    /// </summary>
+    ENEMYCOMBO,
+    /// <summary>
+    /// 进入机甲状态
+    /// </summary>
+    ENERGYPOWERIN,
+    /// <summary>
+    /// 退出机甲状态
+    /// </summary>
+    ENERGYPOWEROUT,
+    /// <summary>
+    /// 当前波数完成
+    /// </summary>
+    WAVECOMPLETED,
+    /// <summary>
+    /// 创建血
+    /// </summary>
+    CREATEBLOOD,
+    /// <summary>
+    /// 需要子弹
+    /// </summary>
+    NEEDBULLET,
 }

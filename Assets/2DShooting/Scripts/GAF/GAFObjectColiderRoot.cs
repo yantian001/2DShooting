@@ -1,23 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GAFObjectColiderRoot : MonoBehaviour {
+public class GAFObjectColiderRoot : MonoBehaviour
+{
 
-   public Animator animator;
-    public string specialClipName = "";
+    public Animator animator;
+    public string[] specialClipName;
 
     public Collider2D[] myColliders;
 
     public Collider2D[] colliders;
 
     public bool isBaked = false;
-	// Use this for initialization
-	void Start () {
-      
-        
+
+    bool isEnemyDie = false;
+    // Use this for initialization
+    void Start()
+    {
+
+
         if (!isBaked)
         {
-            if(colliders == null)
+            if (colliders == null)
             {
                 colliders = GetComponentsInChildren<Collider2D>();
             }
@@ -39,27 +43,41 @@ public class GAFObjectColiderRoot : MonoBehaviour {
         }
         else
         {
-            if(animator == null)
+            if (animator == null)
             {
                 animator = GetComponentInChildren<Animator>();
             }
         }
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName));
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName))
-        {
-            SetMyCollierStatus(true);
-        }
-        else
-        {
-            SetMyCollierStatus(false);
-        }
-            //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("gun"));
+    }
 
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        if (!isEnemyDie)
+        {
+            //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName));
+            for (int i = 0; i < specialClipName.Length; i++)
+            {
+                if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName(specialClipName[i]))
+                {
+                    SetMyCollierStatus(true);
+                }
+                else
+                {
+                    SetMyCollierStatus(false);
+                }
+            }
+        }
+        //Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("gun"));
+
+    }
+
+    void EnemyDie()
+    {
+        isEnemyDie = true;
+       // Debug.Log("Call method in children!");
+    }
+
 
     void SetMyCollierStatus(bool isEnable)
     {
@@ -71,9 +89,9 @@ public class GAFObjectColiderRoot : MonoBehaviour {
             }
         }
 
-        if(isBaked)
+        if (isBaked)
         {
-            if(colliders != null)
+            if (colliders != null)
             {
                 for (int i = 0; i < colliders.Length; i++)
                 {

@@ -172,7 +172,7 @@ public class GAFEnemy : MonoBehaviour
             actions[actionIndex].Run();
         }
     }
-    
+
     /// <summary>
     /// 判断是否能打断射击
     /// </summary>
@@ -211,14 +211,17 @@ public class GAFEnemy : MonoBehaviour
         {
             return;
         }
+        float val = damageVal;
         if (isHeadShot)
         {
-            _HP -= damageVal * 2;
+            val = damageVal * 2;
         }
-        else
-        {
-            _HP -= damageVal;
-        }
+        _HP -= val;
+        Demage d = new Demage() { isEnemy = true, demageVal = val };
+        d.tran = transform.GetComponentInChildren<Collider>().transform;
+        d.isHeadShot = isHeadShot;
+        if (d.tran != null)
+            LeanTween.dispatchEvent((int)Events.DEMAGE, d);
         if (_HP <= 0.0f)
         {
             Die(isHeadShot);
@@ -235,9 +238,10 @@ public class GAFEnemy : MonoBehaviour
 
     void Die(bool isHeadShot = false)
     {
+
         //play die animation
         isDead = true;
-
+        gameObject.BroadcastMessage("EnemyDie", SendMessageOptions.DontRequireReceiver);
         if (coliders != null)
         {
             for (int i = 0; i < coliders.Length; i++)
@@ -246,22 +250,31 @@ public class GAFEnemy : MonoBehaviour
             }
         }
 
+        //var colids = GetComponentsInChildren<Collider>();
+        //if(colids != null)
+        //{
+        //    for(int i= 0;i<colids.Length;i++)
+        //    {
+        //        colids[i].enabled = false;
+        //    }
+        //}
+
         if (anim != null)
         {
             anim.SetTrigger("dead");
+            
             //float length = anim.GetCurrentAnimatorClipInfo(0).Length;
         }
 
         //取消所有动作
         LeanTween.cancel(gameObject);
-        iTween.Stop(gameObject, true);
+        iTween.Stop(gameObject, false);
         Destroy(gameObject, 1);
         PlayDeathAudio();
 
         //通知GameManager死亡
         GameManager.Instance.EmenyDead(score, isHeadShot);
-
-        LeanTween.dispatchEvent((int)Events.EMENYDIE);
+        LeanTween.dispatchEvent((int)Events.EMENYDIE,isHeadShot);
     }
 
     /// <summary>
@@ -281,13 +294,13 @@ public class GAFEnemy : MonoBehaviour
 
         EnemyAction[] actions = GetComponents<EnemyAction>();
 
-        if(actions != null && actions.Length > 0)
+        if (actions != null && actions.Length > 0)
         {
-            for(int i = 0;i<actions.Length;i++)
+            for (int i = 0; i < actions.Length; i++)
             {
-                if(actions[i].isMainAction)
+                if (actions[i].isMainAction)
                 {
-                    actions[i].weight =Mathf.CeilToInt( actions[i].weight * value);
+                    actions[i].weight = Mathf.CeilToInt(actions[i].weight * value);
                 }
             }
         }

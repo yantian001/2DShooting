@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 玩家当前血量
     /// </summary>
-    float playerCurrentHP;
+    float playerCurrentHP,playerMaxHP;
     bool isPlayerDie = false;
     /// <summary>
     /// 是否有护盾
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
     /// 盾值的4分之一
     /// </summary>
     float qurShieldValue = 0.0f;
-    
+
     float curQurShildValue = 0.0f;
     //游戏记录
     public GameRecords records = null;
@@ -110,10 +110,16 @@ public class GameManager : MonoBehaviour
     /// 武器集合
     /// </summary>
     public Weapon[] weaponList;
+    /// <summary>
+    /// 机甲武器ID
+    /// </summary>
+    public int powerWeaponId = 100;
 
     private Weapon currentWeapon = null;
 
-    private int currentWeaponId = 1;
+    public Weapon powerWeapon = null;
+
+    private int currentWeaponId = 0;
     /// <summary>
     /// 是否显示过广告
     /// </summary>
@@ -121,7 +127,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 视频广告等待时间
     /// </summary>
-    [Range(1,10)]
+    [Range(1, 10)]
     public int timeWaitVideo = 5;
     /// <summary>
     /// 视频广告奖励
@@ -133,6 +139,8 @@ public class GameManager : MonoBehaviour
     int currentWave = 1;
 
     int currentTurns = 1;
+
+    bool isInEnergyPower = false;
 
     void Init()
     {
@@ -149,8 +157,8 @@ public class GameManager : MonoBehaviour
         }
         //初始化游戏数据
         InitGameData();
-       
-       
+
+
         //初始化UI
         InitUI();
         //初始化武器
@@ -176,15 +184,15 @@ public class GameManager : MonoBehaviour
         }
         currentWeapon = GetWeapon(currentWeaponId);
 
-        if(currentWeapon == null)
+        if (currentWeapon == null)
         {
             Debug.LogError("Current weapon error!");
         }
-        
-        currentWeapon.gameObject.transform.parent.gameObject.SetActive( true);
+
+        currentWeapon.gameObject.transform.parent.gameObject.SetActive(true);
 
         //设置相关属性
-        if(controlModule == JoystickControl.Background)
+        if (controlModule == JoystickControl.Background)
         {
             var background = GameObject.FindGameObjectWithTag("Background");
             //设置移动速度
@@ -203,10 +211,10 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        else if(controlModule == JoystickControl.Camera)
+        else if (controlModule == JoystickControl.Camera)
         {
             var joystickCamera = FindObjectOfType<JoystickCameraMovment>();
-            if(joystickCamera != null )
+            if (joystickCamera != null)
             {
                 joystickCamera.signTran = currentWeapon.signTransform;
                 if (currentWeapon.overrideMovement)
@@ -218,6 +226,15 @@ public class GameManager : MonoBehaviour
             }
         }
         UIManager.Instance.ChangeWeaponIcon(currentWeapon.WeaponIcon);
+    }
+
+    /// <summary>
+    /// 获取当前武器
+    /// </summary>
+    /// <returns></returns>
+    public Weapon GetCurrentWeapon()
+    {
+        return currentWeapon;
     }
 
     Weapon GetWeapon(int weaponId)
@@ -267,13 +284,13 @@ public class GameManager : MonoBehaviour
     {
         int waves = gameData.waves.Length;
 
-        int waveIndex = (currentWave -1) % waves;
+        int waveIndex = (currentWave - 1) % waves;
 
         currentTurns = currentWave / waves;
 
-        emenyController.SetWave(gameData.waves[waveIndex],currentTurns,waveIndex);
+        emenyController.SetWave(gameData.waves[waveIndex], currentTurns, waveIndex);
 
-        
+
         StartCoroutine(WaveStartCountDown());
     }
 
@@ -283,19 +300,19 @@ public class GameManager : MonoBehaviour
     {
         //if(gameData == null)
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
-        gameData = Instantiate( Resources.Load<GameData>(levelPath));
-        
+        gameData = Instantiate(Resources.Load<GameData>(levelPath));
+
         if (gameData == null)
         {
             Debug.LogError("Init level gamedata error");
         }
-        playerCurrentHP = gameData.playerHealth;
+        playerCurrentHP = playerMaxHP = gameData.playerHealth;
         if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Time))
         {
             curMissionCount = gameData.missionCount;
         }
 
-        if(gameData.autoEnhance)
+        if (gameData.autoEnhance)
         {
             StartCoroutine(GameEnhance());
         }
@@ -303,15 +320,15 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameEnhance()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(gameData.enhanceAfterSeconds);
-            if(IsInGame())
+            if (IsInGame())
                 gameData.AutoEnhanment();
         }
-       
+
     }
-    
+
     /// <summary>
     /// 敌人死亡
     /// </summary>
@@ -343,7 +360,7 @@ public class GameManager : MonoBehaviour
             records.HitAddAcores += addScore;
 
         //计算武器加成
-        if(currentWeapon != null)
+        if (currentWeapon != null)
         {
             records.WeaponScoreBonus += (int)(currentWeapon.scoreBonus * score);
             score += (int)(currentWeapon.scoreBonus * score);
@@ -361,36 +378,46 @@ public class GameManager : MonoBehaviour
     /// <param name="demage">伤害值</param>
     public void PlayerInjured(float demage)
     {
-        if (haveShield && shieldValue > 0)
+        if (!isInEnergyPower)
         {
-            if (shieldValue >= demage)
+            if (haveShield && shieldValue > 0)
             {
-                shieldValue -= demage;
-                curQurShildValue -= demage;
-                if (curQurShildValue <= 0)
+                //UIManager.Instance.ShakeShiled();
+                if (shieldValue >= demage)
                 {
-                    UIManager.Instance.UpdateShieldStatu();
-                    curQurShildValue = qurShieldValue;
+                    shieldValue -= demage;
+                    curQurShildValue -= demage;
+                    if (curQurShildValue <= 0)
+                    {
+                        UIManager.Instance.UpdateShieldStatu();
+                        curQurShildValue = qurShieldValue;
+                    }
+
+                }
+                else
+                {
+                    shieldValue = 0;
+                    playerCurrentHP -= (demage - shieldValue);
+                    UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
+                    UIManager.Instance.ShowPlayDamageEffect();
+                   // if(UnityEngine.Random.Range(0,1)==0)
+                  //  { 
+                        
+                    //}
+                   // Random.rang
+                }
+                if (shieldValue <= 0)
+                {
+                    haveShield = false;
+                    UIManager.Instance.HideShield();
                 }
             }
             else
             {
-                shieldValue = 0;
-                playerCurrentHP -= (demage - shieldValue);
+                playerCurrentHP -= demage;
                 UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
                 UIManager.Instance.ShowPlayDamageEffect();
             }
-            if (shieldValue <= 0)
-            {
-                haveShield = false;
-                UIManager.Instance.HideShield();
-            }
-        }
-        else
-        {
-            playerCurrentHP -= demage;
-            UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
-            UIManager.Instance.ShowPlayDamageEffect();
         }
     }
 
@@ -411,18 +438,18 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerDie)
         {
-            if((!alreadyShowVedio)&& (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
+            if ((!alreadyShowVedio) && (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
             {
                 ChangeGameStatu(GameStatu.ShowContinuVedio);
                 UIManager.Instance.ShowVedioUI();
                 LeanTween.addListener((int)Events.WATCHVIDEOCLICKED, OnWatchVideoClicked);
-               vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
+                vedioCountDownCorotuine = StartCoroutine(VideoCountDown(timeWaitVideo));
             }
             else
             {
                 GameFinish();
             }
-           
+
         }
 
         if (gameData.gameType == GameData.GameType.Count)
@@ -444,7 +471,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        
+
     }
 
     /// <summary>
@@ -457,7 +484,7 @@ public class GameManager : MonoBehaviour
         //停止倒计时
         //StopCoroutine(VideoCountDown(timeWaitVideo));
         //StopCoroutine();
-        if(vedioCountDownCorotuine != null )
+        if (vedioCountDownCorotuine != null)
         {
             StopCoroutine(vedioCountDownCorotuine);
         }
@@ -483,7 +510,7 @@ public class GameManager : MonoBehaviour
     {
         LeanTween.removeListener((int)Events.VIDEOREWARD, OnVideoRewarded);
         LeanTween.removeListener((int)Events.VIDEOCLOSED, OnVideoClosed);
-        if(videoRewarded)
+        if (videoRewarded)
         {
             // GameContinue();
             GameReward();
@@ -521,13 +548,13 @@ public class GameManager : MonoBehaviour
             Player.CurrentPlayer.AddPlayRecord(records);
         }
         //显示广告
-        if(GoogleAdsUtil.Instance.HasInterstital())
-        {
-            GoogleAdsUtil.Instance.ShowInterstital();
-        }
-       else if(ChartboostUtil.Instance.HasInterstitialOnDefault())
+        if (ChartboostUtil.Instance.HasInterstitialOnDefault())
         {
             ChartboostUtil.Instance.ShowInterstitialOnDefault();
+        }
+        else if(GoogleAdsUtil.Instance.HasInterstital())
+        {
+            GoogleAdsUtil.Instance.ShowInterstital();
         }
     }
 
@@ -548,7 +575,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator VideoCountDown(int total)
     {
-        while(total >=0)
+        while (total >= 0)
         {
             UIManager.Instance.UpdateVideoCountDownText(total);
             yield return new WaitForSeconds(1.0f);
@@ -568,6 +595,10 @@ public class GameManager : MonoBehaviour
             curRemainComboInterval -= Time.deltaTime;
             if (curRemainComboInterval <= 0.0f)
             {
+                if (currentCombo > 1)
+                {
+                    LeanTween.dispatchEvent((int)Events.ENEMYCOMBO, currentCombo);
+                }
                 isCombo = false;
                 currentCombo = 0;
                 UIManager.Instance.HideCombo();
@@ -633,8 +664,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="value"></param>
     void AddLife(float value)
-    { 
-        playerCurrentHP += value;
+    {
+        playerCurrentHP += (value / 100 ) * playerMaxHP;
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
     }
@@ -652,7 +683,7 @@ public class GameManager : MonoBehaviour
             if (float.TryParse(evt.data.ToString(), out addedVal))
             {
                 this.haveShield = true;
-                shieldValue += addedVal;
+                shieldValue += (addedVal / 100 ) * playerMaxHP;
                 qurShieldValue = shieldValue / 4;
                 curQurShildValue = qurShieldValue;
                 UIManager.Instance.ShowShield();
@@ -688,6 +719,7 @@ public class GameManager : MonoBehaviour
     public void OnPauseClicked()
     {
         ChangeGameStatu(GameStatu.GamePaused);
+        Debug.Log("Pause");
         UIManager.Instance.ShowPauseUI();
         GoogleAdsUtil.Instance.ShowPauseBanner();
     }
@@ -696,11 +728,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnContinueClicked()
     {
-        
+
         GoogleAdsUtil.Instance.HidePauseBanner();
         UIManager.Instance.HidePauseUI();
         GameContinue();
-        
+
     }
     /// <summary>
     /// 重新开始点击事件
@@ -724,6 +756,42 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
+    #region 机甲相关
+
+    public void OnEnterEnergyPower(LTEvent evt)
+    {
+        isInEnergyPower = true;
+        currentWeapon.WeaponOut(() =>
+        {
+            //currentWeapon.gameObject.transform.parent.gameObject.SetActive(false);
+            if (powerWeapon != null)
+            {
+                //powerWeapon.gameObject.transform.position = new Vector3(powerWeapon.gameObject.transform.position.x, -10, powerWeapon.gameObject.transform.position.z);
+                powerWeapon.gameObject.transform.parent.gameObject.SetActive(true);
+                powerWeapon.WeaponIn();
+                //LeanTween.moveLocalY(powerWeapon.gameObject, -3.4f, 1f);
+            }
+
+        });
+    }
+
+    public void OnExitEnergyPower(LTEvent evt)
+    {
+        if (powerWeapon != null)
+        {
+           powerWeapon.WeaponOut(() =>
+            {
+                powerWeapon.gameObject.transform.parent.gameObject.SetActive(false);
+                currentWeapon.WeaponIn();
+                isInEnergyPower = false;
+            });
+        }
+    }
+
+    #endregion
+
+
     #region MonoBehaviour Method
 
     public void OnEnable()
@@ -732,6 +800,8 @@ public class GameManager : MonoBehaviour
         LeanTween.addListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);
         //监听获得盾牌
         LeanTween.addListener((int)Events.ITEMSHIELDHIT, OnGetShield);
+        LeanTween.addListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
+        LeanTween.addListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
     }
 
 
@@ -774,9 +844,10 @@ public class GameManager : MonoBehaviour
     {
         if (emenyController == null)
             return;
-        if(emenyController.IsWaveCompleted())
+        if (emenyController.IsWaveCompleted())
         {
             OnWaveCompleted();
+            LeanTween.dispatchEvent((int)Events.WAVECOMPLETED,currentWave);
         }
     }
 
@@ -794,10 +865,10 @@ public class GameManager : MonoBehaviour
     {
         int countDown = waveStartCount;
         UIManager.Instance.ShowWaveCountDown();
-        while(countDown > 0)
+        while (countDown > 0)
         {
             UIManager.Instance.UpdateWaveCountDownText(currentWave, countDown);
-            if(countDown <= 3)
+            if (countDown <= 3)
             {
                 SoundManager.Instance.PlaySound(SoundManager.SoundType.WaveCountDown);
             }
@@ -806,18 +877,29 @@ public class GameManager : MonoBehaviour
         }
         UIManager.Instance.HideWaveCountDown();
         ChangeGameStatu(GameStatu.InGame);
-        
+
     }
 
     void ChangeGameStatu(GameStatu statu)
     {
         this.Statu = statu;
+        //if(statu == GameStatu.GameFailed || statu == GameStatu.GameSuccessed || statu == GameStatu.GamePaused)
+        //{
+        //   // Time.timeScale = 0;
+        //}
+        //else
+        //{
+        //   // Time.timeScale = 1;
+        //}
     }
 
     public void OnDisable()
     {
         LeanTween.removeListener((int)Events.ITEMMEDKITHIT, OnGetMedKit);
         LeanTween.removeListener((int)Events.ITEMSHIELDHIT, OnGetShield);
+        LeanTween.removeListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
+        LeanTween.removeListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
+       // Time.timeScale = 1;
     }
 
     #endregion

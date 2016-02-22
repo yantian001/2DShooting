@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyShootMissile : EnemyShootGun {
+public class EnemyShootMissile : EnemyShoot {
 
     public override void Start()
     {

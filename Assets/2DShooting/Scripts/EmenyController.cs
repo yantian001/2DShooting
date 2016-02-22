@@ -25,6 +25,11 @@ public class EmenyController : MonoBehaviour
     /// 每波增强的系数
     /// </summary>
     public float enhancePerWave = 0.1f;
+    /// <summary>
+    /// 最大敌人数,-1为不限制
+    /// </summary>
+    [Tooltip("场景上同时存在的最多敌人数,-1为不限制")]
+    public int maxAliveEnemy = -1;
 
     /// <summary>
     /// 当前波数信息
@@ -194,6 +199,10 @@ public class EmenyController : MonoBehaviour
         {
             return false;
         }
+        if (maxAliveEnemy > 0 && aliveEnemyCount >= maxAliveEnemy)
+        {
+            return false;
+        }
         return true;
     }
 
@@ -252,10 +261,39 @@ public class EmenyController : MonoBehaviour
                 }
             }
         });
-
+        //根据权重获取
         if (lstCanSpwan != null && lstCanSpwan.Count > 0)
         {
-            rst = lstCanSpwan[Random.Range(0, lstCanSpwan.Count)].transform;
+            int totalWeight = 0;
+            for (int i = 0; i < lstCanSpwan.Count; i++)
+            {
+                var weight = lstCanSpwan[i].GetComponent<Weight>();
+                if (weight)
+                {
+                    totalWeight += weight._Weight;
+                }
+            }
+            if (totalWeight == 0)
+            {
+                rst = lstCanSpwan[Random.Range(0, lstCanSpwan.Count)].transform;
+            }
+            else
+            {
+                int randomWeight = Random.Range(0, totalWeight + 1);
+                for (int i = 0; i < lstCanSpwan.Count; i++)
+                {
+                    var weight = lstCanSpwan[i].GetComponent<Weight>();
+                    if (weight)
+                    {
+                        randomWeight -= weight._Weight;
+                        if(randomWeight <= 0)
+                        {
+                            rst = lstCanSpwan[i].transform;
+                            break;
+                        }
+                    }
+                }
+            }
         }
         return rst;
     }
@@ -296,11 +334,15 @@ public class EmenyController : MonoBehaviour
         }
         if (swpanObj != null)
         {
+            //避免重叠
+            float timeFlag = Time.time / 100000;
+            timeFlag = timeFlag - Mathf.FloorToInt(timeFlag);
+            swpanObj.transform.position += new Vector3(0, 0, -timeFlag);
             //swpanObj.transform. = parent.transform;
             swpanObj.transform.localScale = parent.transform.lossyScale;
 
             //disable mask 
-            if(!posProperty.enableMask)
+            if (!posProperty.enableMask)
             {
                 var mask = swpanObj.transform.FindChild("mask");
                 mask.gameObject.SetActive(false);
@@ -321,7 +363,7 @@ public class EmenyController : MonoBehaviour
                 e = swpanObj.AddComponent<GAFEnemy>();
             }
 
-            e.EnhanceByTurn(1 + currentTurn  * enhancePerTurn + currentWave * enhancePerWave);
+            e.EnhanceByTurn(1 + currentTurn * enhancePerTurn + currentWave * enhancePerWave);
             SortLayer sl = parent.GetComponent<SortLayer>();
             if (sl != null && sl.layerName != "")
             {
@@ -343,8 +385,14 @@ public class EmenyController : MonoBehaviour
             {
                 for (int i = 0; i < wanders.Length; i++)
                 {
-                    wanders[i].enabled = posProperty.allowWanderX;
-
+                    if (wanders[i].GetType() == typeof(EnemyWanderRunX))
+                    {
+                        wanders[i].enabled = posProperty.allowRunX;
+                    }
+                    else
+                    {
+                        wanders[i].enabled = posProperty.allowWanderX;
+                    }
                     wanders[i].minMovementX = posProperty.minMovementX;
                     wanders[i].maxMovementX = posProperty.maxMovementX;
                 }
@@ -378,7 +426,7 @@ public class EmenyController : MonoBehaviour
     /// </summary>
     /// <param name="data"></param>
     /// <param name="turn"></param>
-    public void SetWave(WaveData data, int turn,int wave = 1)
+    public void SetWave(WaveData data, int turn, int wave = 1)
     {
         waveData = data;
         currentWave = wave;

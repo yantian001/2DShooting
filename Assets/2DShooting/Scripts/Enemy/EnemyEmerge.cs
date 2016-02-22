@@ -10,6 +10,7 @@ public class EnemyEmerge : MonoBehaviour
         Runin,
         Dropdown,
         Roll,
+        Movein,
         ParaChute
     }
     //进入的方式
@@ -80,6 +81,9 @@ public class EnemyEmerge : MonoBehaviour
             case EmergeType.Runin:
                 RunAction("isWalking");
                 break;
+            case EmergeType.Movein:
+                RunAction("isMoving");
+                break;
             case EmergeType.Dropdown:
                 RunDrop();
                 break;
@@ -105,7 +109,7 @@ public class EnemyEmerge : MonoBehaviour
             mask.gameObject.SetActive(false);
 
         Vector3 pos = gameObject.transform.localPosition + emergeValue;
-        pos = gameObject.transform.parent.InverseTransformVector(pos);
+        pos = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.parent.InverseTransformVector(pos).y, gameObject.transform.localPosition.z);
         iTween.MoveTo(gameObject, iTween.Hash("position", pos, "time", emergeTime, "easetype", "linear", "oncomplete", "OnRunParachuteComplete", "islocal", true, "oncompletetarget", gameObject));
         if (anim != null)
         {

@@ -113,7 +113,7 @@ public class GoogleAdsUtil : MonoBehaviour
     /// </summary>
     public void ShowPauseBanner()
     {
-        if(bannerPause != null)
+        if (bannerPause != null)
         {
             bannerPause.Show();
         }
@@ -142,7 +142,7 @@ public class GoogleAdsUtil : MonoBehaviour
         bannerPause = new BannerView(adUnitID, AdSize.Banner, AdPosition.Bottom);
         AdRequest request = new AdRequest.Builder().Build();
         bannerPause.LoadAd(request);
-        bannerPause.AdFailedToLoad += Banner_AdFailedToLoad;
+        // bannerPause.AdFailedToLoad += Banner_AdFailedToLoad;
         bannerPause.Hide();
     }
 
@@ -154,7 +154,7 @@ public class GoogleAdsUtil : MonoBehaviour
 
     public void ShowTopBannerView()
     {
-        if(banner != null)
+        if (banner != null)
         {
             banner.Show();
         }
@@ -177,19 +177,19 @@ public class GoogleAdsUtil : MonoBehaviour
 #elif UNITY_IPHONE
         string adUnitID = iOSUnitId;
 #endif
-       // Debug.Log("Start Interstitial");
+        // Debug.Log("Start Interstitial");
         intersititial = new InterstitialAd(adUnitID);
         AdRequest request = new AdRequest.Builder().Build();
         intersititial.AdClosed += Intersititial_AdClosed;
-        intersititial.AdLoaded += Intersititial_AdLoaded;
-        intersititial.AdFailedToLoad += Intersititial_AdFailedToLoad;
+        //intersititial.AdLoaded += Intersititial_AdLoaded;
+        //intersititial.AdFailedToLoad += Intersititial_AdFailedToLoad;
         intersititial.LoadAd(request);
     }
 
     private void Intersititial_AdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
     {
         //throw new System.NotImplementedException();
-        Debug.Log("Load google ads failed :"+ e.Message);
+        Debug.Log("Load google ads failed :" + e.Message);
     }
 
     private void Intersititial_AdLoaded(object sender, System.EventArgs e)
@@ -227,5 +227,14 @@ public class GoogleAdsUtil : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void OnDisable()
+    {
+        if(intersititial != null)
+        {
+            intersititial.AdClosed -= Intersititial_AdClosed;
+            intersititial.Destroy();
+        }
     }
 }

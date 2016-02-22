@@ -19,7 +19,12 @@ public class SoundManager : MonoBehaviour {
         GetLife,
         PlayerDie,
         WaveCountDown,
-        WaveSuccess
+        WaveSuccess,
+        WeaponUpgrade,
+        WeaponEqiuped,
+        WeaponBought,
+        ButtonClicked,
+        EnergyItemEnabled,
     }
     /*--
     **/
@@ -37,6 +42,11 @@ public class SoundManager : MonoBehaviour {
     public AudioClip playerDie;
     public AudioClip waveCountDown;
     public AudioClip waveSuccess;
+    public AudioClip weaponUpgrade;
+    public AudioClip weaponEqiuped;
+    public AudioClip weaponBought;
+    public AudioClip buttonClicked;
+    public AudioClip energyItemEnabled;
 
     public static SoundManager _instance;
 
@@ -161,6 +171,38 @@ public class SoundManager : MonoBehaviour {
                     PlaySound(waveCountDown, volume, delay);
                 }
                 break;
+            case SoundType.WeaponUpgrade:
+                if(weaponUpgrade)
+                {
+                    PlaySound(weaponUpgrade, volume, delay);
+
+                }
+                break;
+            case SoundType.WeaponEqiuped:
+                if(weaponEqiuped)
+                {
+                    PlaySound(weaponEqiuped, volume, delay);
+
+                }
+                break;
+            case SoundType.WeaponBought:
+                if(weaponBought)
+                {
+                    PlaySound(weaponBought, volume, delay);
+                }
+                break;
+            case SoundType.ButtonClicked:
+                if(buttonClicked)
+                {
+                    PlaySound(buttonClicked, volume, delay);
+                }
+                break;
+            case SoundType.EnergyItemEnabled:
+                if(energyItemEnabled)
+                {
+                    PlaySound(energyItemEnabled, volume, delay);
+                }
+                break;
             default:
                 break;
         }
@@ -168,14 +210,22 @@ public class SoundManager : MonoBehaviour {
 
     void PlaySound(AudioClip ac ,float volume ,float delay)
     {
-        iTween.Stab(gameObject, iTween.Hash("audioclip",ac, "volume",volume, "delay", delay));
+        LeanAudio.play(ac);
+        
+        //iTween.Stab(gameObject, iTween.Hash("audioclip",ac, "volume",volume, "delay", delay));
+        
     }
 
     public static void PlayAduio(GameObject obj,AudioClip ac ,float volume = 1.0f, float delay = 0f)
     {
-        iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
+        //iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
+        LeanAudio.play(ac);
     }
-
+    public static void PlayAduioITween(GameObject obj, AudioClip ac, float volume = 1.0f, float delay = 0f)
+    {
+        iTween.Stab(obj, iTween.Hash("audioclip", ac, "volume", volume, "delay", delay));
+        //LeanAudio.play(ac, default(Vector3), 1, delay);
+    }
     /// <summary>
     /// 播放连杀音效
     /// </summary>

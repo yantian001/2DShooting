@@ -191,7 +191,7 @@ public class EnemyShoot : EnemyAction
         if (fireAudio != null)
         {
             //iTween.Stab(gameObject, fireAudio, 0f);
-            SoundManager.PlayAduio(gameObject, fireAudio);
+            SoundManager.PlayAduioITween(gameObject, fireAudio,0.3f);
         }
     }
     /// <summary>

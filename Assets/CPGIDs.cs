@@ -24,9 +24,9 @@
 
 public static class CPGIDs
 {
-        public const string leaderboard_level_2_highscores = "CgkImsCF9cIaEAIQAw"; // <GPGSID>
-        public const string leaderboard_level_1_highscores = "CgkImsCF9cIaEAIQAA"; // <GPGSID>
-        public const string leaderboard_level_3_highscores = "CgkImsCF9cIaEAIQBA"; // <GPGSID>
+        public const string leaderboard_desert_city = "CgkIkfn43vwGEAIQAw"; // <GPGSID>
+        public const string leaderboard_middle_east = "CgkIkfn43vwGEAIQAQ"; // <GPGSID>
+        public const string leaderboard_slum_town = "CgkIkfn43vwGEAIQAg"; // <GPGSID>
 
 }
 

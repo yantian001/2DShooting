@@ -4,7 +4,7 @@ using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
-    
+
     #region 连杀UI
     public RectTransform Combo;
     public Text comboText;
@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour
     {
         if (isComboShow)
         {
-            LeanTween.move(Combo.GetComponent<RectTransform>(), new Vector3(-259f, 25f, 0), 0.1f);
+            LeanTween.move(Combo.GetComponent<RectTransform>(), new Vector3(-320f, 25f, 0), 0.1f);
             isComboShow = false;
         }
     }
@@ -115,6 +115,12 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region 分数显示
+    /// <summary>
+    /// 是否显示分数
+    /// </summary>
+    [Tooltip("是否显示分数")]
+    public bool isShowPoint = true;
+
     [Tooltip("连击分数预制")]
     public GameObject comboPoint;
     [Tooltip("爆头分数预制")]
@@ -126,6 +132,8 @@ public class UIManager : MonoBehaviour
 
     public void ShowPoint(int score, bool isHeadShot)
     {
+        if (!isShowPoint)
+            return;
         if (pointTransform == null)
         {
             return;
@@ -305,6 +313,8 @@ public class UIManager : MonoBehaviour
         {
             playerDamage.damaged = true;
         }
+        if (Random.Range(0, 10) == 0)
+            LeanTween.dispatchEvent((int)Events.CREATEBLOOD);
     }
     #endregion
 
@@ -359,40 +369,30 @@ public class UIManager : MonoBehaviour
                 //更新数据显示
 
                 //杀敌数
-                Text txtKillCount = bgRect.FindChild("KillsTitle/KillsCount").GetComponent<Text>();
-                if (txtKillCount)
-                {
-                    txtKillCount.text = record.EnemyKills.ToString();
-                }
+                CommonUtils.SetChildText(bgRect, "Infos/Kills/TextCount", record.EnemyKills.ToString());
                 //最大连击数
-                Text txtMaxHits = bgRect.FindChild("MaxHitsTitle/MaxHitsCount").GetComponent<Text>();
-                if (txtMaxHits)
-                    txtMaxHits.text = record.MaxCombos.ToString();
-                //连击加分
-                Text txtMaxAddScoreHits = bgRect.FindChild("MaxHitsTitle/MaxHitsAddScore").GetComponent<Text>();
-                if (txtMaxAddScoreHits)
-                    txtMaxAddScoreHits.text = string.Format(txtMaxAddScoreHits.text, record.HitAddAcores.ToString());
+                CommonUtils.SetChildText(bgRect, "Infos/MaxHits/TextCount", record.MaxCombos.ToString());
+
 
                 //爆头数
-                Text txtHeadShot = bgRect.FindChild("HeadShotTitle/HeadShotCount").GetComponent<Text>();
-                if (txtHeadShot)
-                    txtHeadShot.text = record.HeadShotCount.ToString();
-                //爆头加分
-                Text txtHeadShotAddScore = bgRect.FindChild("HeadShotTitle/HeadShotAddScore").GetComponent<Text>();
-                if (txtHeadShotAddScore)
-                    txtHeadShotAddScore.text = string.Format(txtHeadShotAddScore.text, record.HeadshotAddScore.ToString());
+                CommonUtils.SetChildText(bgRect, "Infos/HeadShot/TextCount", record.HeadShotCount.ToString());
+
                 //分数
-                Text txtScore = bgRect.FindChild("ScoreText").GetComponent<Text>();
+                //CommonUtils.SetChildText(bgRect, "Infos/ScoreText", record.Scores.ToString());
+
+                Text txtScore = bgRect.FindChild("Infos/ScoreText").GetComponent<Text>();
                 if (txtScore)
                 {
-                    txtScore.text = record.Scores.ToString();
+                    //txtScore.text = record.Scores.ToString();
+                    StartCoroutine(DigitalDisplay(txtScore, record.Scores, 0, 1000));
                 }
 
-                //加成分数
-                Text txtBounsScore = bgRect.FindChild("BonusSocreText").GetComponent<Text>();
-                if (txtBounsScore)
+                Text txtMoneyEarn = bgRect.FindChild("Infos/MoenyEarn/TextCount").GetComponent<Text>();
+                if (txtMoneyEarn)
                 {
-                    txtBounsScore.text = string.Format(txtBounsScore.text, record.WeaponScoreBonus.ToString());
+                    int moneyEarned = GameGlobalValue.GetMoneyFromRecord(record);
+                    Player.CurrentPlayer.EarnMoney(moneyEarned);
+                    StartCoroutine(DigitalDisplay(txtMoneyEarn, moneyEarned));
                 }
 
                 //重新开始按钮
@@ -401,6 +401,7 @@ public class UIManager : MonoBehaviour
                 {
                     btnRestart.onClick.AddListener(OnRestartClicked);
                 }
+
 
 
                 //回主页按钮
@@ -413,6 +414,25 @@ public class UIManager : MonoBehaviour
             }
 
         }
+    }
+
+    IEnumerator DigitalDisplay(Text txt, int to, int from = 0, int per = 100)
+    {
+        if (txt != null)
+        {
+            while (from < to)
+            {
+                if (to - from >= per)
+                {
+                    from += per;
+                }
+                else
+                    from = to;
+                txt.text = from.ToString();
+                yield return null;
+            }
+        }
+        // yield return null;
     }
 
     void OnRestartClicked()
@@ -477,6 +497,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void ShakeShiled()
+    {
+        iTween.ShakePosition(itemShield.gameObject, new Vector3(0.2f, 0.2f, 0.2f),0.5f);
+    }
 
     /// <summary>
     /// 隐藏盾牌
@@ -504,14 +528,14 @@ public class UIManager : MonoBehaviour
     #region 武器Icon
 
     public RawImage weaponIcon;
-    
+
 
     public void ChangeWeaponIcon(Texture2D texture)
     {
-        if(weaponIcon != null && texture != null)
+        if (weaponIcon != null && texture != null)
         {
             weaponIcon.texture = texture;
-           // weaponIcon = Sprite.Create(texture, weaponIcon.textureRect, weaponIcon.pivot);
+            // weaponIcon = Sprite.Create(texture, weaponIcon.textureRect, weaponIcon.pivot);
         }
     }
 
@@ -606,7 +630,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void HideCountDown()
     {
-        if(UICountDown)
+        if (UICountDown)
         {
             UICountDown.SetActive(false);
         }
@@ -620,15 +644,15 @@ public class UIManager : MonoBehaviour
 
     public void ShowWaveCountDown()
     {
-        if(waveCountDownText != null)
+        if (waveCountDownText != null)
         {
             waveCountDownText.gameObject.SetActive(true);
         }
     }
 
-    public void UpdateWaveCountDownText(int wave ,int time)
+    public void UpdateWaveCountDownText(int wave, int time)
     {
-        if(waveCountDownText != null )
+        if (waveCountDownText != null)
         {
             waveCountDownText.text = string.Format("Wave {0} will start after {1} seconds", wave, time);
         }
@@ -636,13 +660,16 @@ public class UIManager : MonoBehaviour
 
     public void HideWaveCountDown()
     {
-        if(waveCountDownText != null)
+        if (waveCountDownText != null)
         {
             waveCountDownText.gameObject.SetActive(false);
         }
     }
 
     #endregion
+
+
+
     #region 暂停
 
     public GameObject uiPause;
@@ -651,7 +678,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ShowPauseUI()
     {
-        if(uiPause != null)
+        if (uiPause != null)
         {
             uiPause.SetActive(true);
         }
@@ -662,13 +689,15 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void HidePauseUI()
     {
-        if(uiPause != null)
+        if (uiPause != null)
         {
             uiPause.SetActive(false);
         }
     }
 
     #endregion
+
+    #region Monobehavior
 
     public void OnEnable()
     {
@@ -679,11 +708,11 @@ public class UIManager : MonoBehaviour
     {
         //添加子弹数量变化事件
         LeanTween.addListener(gameObject, (int)Events.BULLETCHANGED, UpdateBulletDisplay);
-       // Debug.Log("UIManager Inited");
 
         //监听游戏完成
         LeanTween.addListener(gameObject, (int)Events.GAMESUCCESS, OnGameSuccess);
         LeanTween.addListener(gameObject, (int)Events.GAMEFAILED, OnGameFailed);
+
     }
 
     public void OnDisable()
@@ -704,6 +733,8 @@ public class UIManager : MonoBehaviour
     {
 
     }
+
+    #endregion
 
     /// <summary>
     /// 拷贝UI对象的位置，以及父对象
