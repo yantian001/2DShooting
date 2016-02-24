@@ -390,7 +390,7 @@ public class UIManager : MonoBehaviour
                 Text txtMoneyEarn = bgRect.FindChild("Infos/MoenyEarn/TextCount").GetComponent<Text>();
                 if (txtMoneyEarn)
                 {
-                    int moneyEarned = GameGlobalValue.GetMoneyFromRecord(record);
+                    int moneyEarned = GameGlobalValue.GetMoneyFromRecord(record,success);
                     Player.CurrentPlayer.EarnMoney(moneyEarned);
                     StartCoroutine(DigitalDisplay(txtMoneyEarn, moneyEarned));
                 }
