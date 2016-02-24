@@ -28,10 +28,11 @@ public class Player
     /// </summary>
     public List<LevelScore> LevelScores { get; set; }
 
+    public Dictionary<int, int> LevelUnlocked { get; set; }
     /// <summary>
     /// 角色武器
     /// </summary>
-    public List< PlayerWeaponInfo> Weapons;
+    public List<PlayerWeaponInfo> Weapons;
     /// <summary>
     /// 角色金钱数
     /// </summary>
@@ -137,6 +138,7 @@ public class Player
     {
         LevelScores = new List<LevelScore>();
         Weapons = new List<PlayerWeaponInfo>();
+        LevelUnlocked = new Dictionary<int, int>();
     }
     #endregion
 
@@ -167,6 +169,30 @@ public class Player
             });
         }
         Save2File();
+    }
+    /// <summary>
+    /// 添加场景关卡纪录,大于最大关卡号时,解锁新关卡
+    /// </summary>
+    /// <param name="scene">场景号</param>
+    /// <param name="level">关卡</param>
+    public void AddLevelRecord(int scene, int level)
+    {
+        IsSceneRecordExist(scene);
+        if(LevelUnlocked[scene] < level)
+        {
+            LevelUnlocked[scene] = level;
+            Save2File();
+        }
+    }
+    /// <summary>
+    /// 获取场景当前的关卡号
+    /// </summary>
+    /// <param name="scene"></param>
+    /// <returns></returns>
+    public int GetSceneCurrentLevel(int scene)
+    {
+        IsSceneRecordExist(scene);
+        return LevelUnlocked[scene] + 1;
     }
 
     /// <summary>
@@ -206,6 +232,24 @@ public class Player
             LevelScores.Add(score);
         }
         return score;
+    }
+
+    public bool IsLevelUnlocked(int scene, int level)
+    {
+        IsSceneRecordExist(scene);
+        return LevelUnlocked[scene] + 1 >= level;
+    }
+    /// <summary>
+    /// 是否存在关卡纪录
+    /// </summary>
+    /// <param name="scene"></param>
+    void IsSceneRecordExist(int scene)
+    {
+        if (!LevelUnlocked.ContainsKey(scene))
+        {
+            LevelUnlocked.Add(scene, 0);
+            Save2File();
+        }
     }
 
     /// <summary>
@@ -323,9 +367,9 @@ public class Player
     /// <param name="id"></param>
     /// <param name="money"></param>
     /// <returns></returns>
-    public bool BuyWeapon(int id ,int money)
+    public bool BuyWeapon(int id, int money)
     {
-        if(Money >= money)
+        if (Money >= money)
         {
             UseMoney(money);
             UnlockWeapon(id);
@@ -339,7 +383,7 @@ public class Player
 
     public void EquipWeapon(int id)
     {
-        if(EquipedWeaponId != id)
+        if (EquipedWeaponId != id)
         {
             EquipedWeaponId = id;
             Save2File();
@@ -347,11 +391,11 @@ public class Player
 
     }
 
-    public void UpgradeWeapon(int id,int money)
+    public void UpgradeWeapon(int id, int money)
     {
         //UseMoney(money);
         PlayerWeaponInfo pwi = GetWeaponInfoById(id);
-        if(pwi != null && pwi.IsUnlocked)
+        if (pwi != null && pwi.IsUnlocked)
         {
             pwi.Level += 1;
             UseMoney(money);

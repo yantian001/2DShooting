@@ -29,8 +29,14 @@ public class GameManager : MonoBehaviour
 
     //当前关卡
     public int level = 1;
-
-
+    /// <summary>
+    /// 小关卡号 , 在故事模式时使用
+    /// </summary>
+    public int subLevel = 1;
+    /// <summary>
+    /// 游戏类型
+    /// </summary>
+    public GameType gameType = GameType.Story;
     //游戏难度
     public GameDifficulty gameDifficulty = GameDifficulty.Normal;
     //游戏数据
@@ -80,13 +86,21 @@ public class GameManager : MonoBehaviour
     //private int maxCombo = 0;
 
     private bool isCombo = false;
-
+    /// <summary>
+    /// 是否波数开始使用倒计时
+    /// </summary>
+    [Tooltip("是否波数开始使用倒计时")]
+    public bool useWaveStartCountDown = true;
+    /// <summary>
+    /// 波数开始倒计时时间
+    /// </summary>
+    [Tooltip("波数开始倒计时时间")]
     public int waveStartCount = 5;
 
     /// <summary>
     /// 玩家当前血量
     /// </summary>
-    float playerCurrentHP,playerMaxHP;
+    float playerCurrentHP, playerMaxHP;
     bool isPlayerDie = false;
     /// <summary>
     /// 是否有护盾
@@ -146,6 +160,8 @@ public class GameManager : MonoBehaviour
     {
         this.ChangeGameStatu(GameStatu.Init);
         level = GameGlobalValue.s_CurrentScene;
+        subLevel = GameGlobalValue.s_CurrentLevel;
+        gameType = GameGlobalValue.s_CurrentGameType;
         gameDifficulty = GameGlobalValue.s_CurrentDifficulty;
         currentWeaponId = GameGlobalValue.s_currentWeaponId;
 
@@ -153,8 +169,9 @@ public class GameManager : MonoBehaviour
         currentTurns = 1;
         if (records == null)
         {
-            records = new GameRecords(level, (int)gameDifficulty);
+            records = new GameRecords(level, (int)gameDifficulty,gameType);
         }
+        records.SubLevel = subLevel;
         //初始化游戏数据
         InitGameData();
 
@@ -282,16 +299,22 @@ public class GameManager : MonoBehaviour
 
     void SetWave()
     {
-        int waves = gameData.waves.Length;
+        if (gameType == GameType.Endless)
+        {
+            int waves = gameData.waves.Length;
 
-        int waveIndex = (currentWave - 1) % waves;
+            int waveIndex = (currentWave - 1) % waves;
 
-        currentTurns = currentWave / waves;
+            currentTurns = currentWave / waves;
 
-        emenyController.SetWave(gameData.waves[waveIndex], currentTurns, waveIndex);
-
-
-        StartCoroutine(WaveStartCountDown());
+            emenyController.SetWave(gameData.waves[waveIndex], currentTurns, waveIndex);
+            StartCoroutine(WaveStartCountDown());
+        }
+        else if(gameType == GameType.Story)
+        {
+            emenyController.SetWave(gameData.waves[0], level, subLevel);
+            ChangeGameStatu(GameStatu.InGame);
+        }
     }
 
 
@@ -300,11 +323,16 @@ public class GameManager : MonoBehaviour
     {
         //if(gameData == null)
         string levelPath = string.Format("GameData/Level{0}-{1}", level, (int)gameDifficulty);
+        if(gameType == GameType.Story)
+        {
+            levelPath = string.Format("GameData/SubLevels/SubLevel{0}", subLevel);
+        }
         gameData = Instantiate(Resources.Load<GameData>(levelPath));
 
         if (gameData == null)
         {
             Debug.LogError("Init level gamedata error");
+            OnBackClicked();
         }
         playerCurrentHP = playerMaxHP = gameData.playerHealth;
         if ((gameData.gameType == GameData.GameType.Count) || (gameData.gameType == GameData.GameType.Time))
@@ -312,10 +340,10 @@ public class GameManager : MonoBehaviour
             curMissionCount = gameData.missionCount;
         }
 
-        if (gameData.autoEnhance)
-        {
-            StartCoroutine(GameEnhance());
-        }
+        //if (gameData.autoEnhance)
+        //{
+        //    StartCoroutine(GameEnhance());
+        //}
     }
 
     IEnumerator GameEnhance()
@@ -400,11 +428,11 @@ public class GameManager : MonoBehaviour
                     playerCurrentHP -= (demage - shieldValue);
                     UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
                     UIManager.Instance.ShowPlayDamageEffect();
-                   // if(UnityEngine.Random.Range(0,1)==0)
-                  //  { 
-                        
+                    // if(UnityEngine.Random.Range(0,1)==0)
+                    //  { 
+
                     //}
-                   // Random.rang
+                    // Random.rang
                 }
                 if (shieldValue <= 0)
                 {
@@ -436,7 +464,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void CheckGameStatu()
     {
-        if (isPlayerDie)
+        if (gameType != GameType.Endless && emenyController.IsWaveCompleted())
+        {
+            GameFinish(true);
+        }
+        else if (isPlayerDie)
         {
             if ((!alreadyShowVedio) && (ChartboostUtil.Instance.HasGameOverVideo()) && UIManager.Instance.HasVedioUI())
             {
@@ -449,27 +481,26 @@ public class GameManager : MonoBehaviour
             {
                 GameFinish();
             }
-
         }
 
-        if (gameData.gameType == GameData.GameType.Count)
-        {
-            if (curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
-            {
-                ChangeGameStatu(GameStatu.GameSuccessed);
-                SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
-                LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
-            }
-        }
-        else if (gameData.gameType == GameData.GameType.Time)
-        {
-            if (curMissionCount <= 0)
-            {
-                ChangeGameStatu(GameStatu.GameSuccessed);
-                SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
-                LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
-            }
-        }
+        //if (gameData.gameType == GameData.GameType.Count)
+        //{
+        //    if (curMissionCount <= 0 && records.EnemyKills >= gameData.missionCount)
+        //    {
+        //        ChangeGameStatu(GameStatu.GameSuccessed);
+        //        SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
+        //        LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
+        //    }
+        //}
+        //else if (gameData.gameType == GameData.GameType.Time)
+        //{
+        //    if (curMissionCount <= 0)
+        //    {
+        //        ChangeGameStatu(GameStatu.GameSuccessed);
+        //        SoundManager.Instance.PlaySound(SoundManager.SoundType.GameFailed);
+        //        LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
+        //    }
+        //}
 
 
     }
@@ -537,22 +568,40 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 游戏结束
     /// </summary>
-    void GameFinish()
+    void GameFinish(bool success = false)
     {
+        if(success)
+        {
+            ChangeGameStatu(GameStatu.GameSuccessed);
+            SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
+            LeanTween.dispatchEvent((int)Events.GAMESUCCESS, records);
+        }
+        else
+        {
+            ChangeGameStatu(GameStatu.GameFailed);
+            LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
+        }
 
-        ChangeGameStatu(GameStatu.GameFailed);
-        SoundManager.Instance.PlaySound(SoundManager.SoundType.GameSuccess);
-        LeanTween.dispatchEvent((int)Events.GAMEFAILED, records);
         if (Statu == GameStatu.GameFailed || Statu == GameStatu.GameSuccessed)
         {
-            Player.CurrentPlayer.AddPlayRecord(records);
+            if (gameType == GameType.Endless)
+            {
+                Player.CurrentPlayer.AddPlayRecord(records);
+            }
+            else if(gameType == GameType.Story)
+            {
+                if(Statu == GameStatu.GameSuccessed)
+                {
+                    Player.CurrentPlayer.AddLevelRecord(level, subLevel);
+                }
+            }
         }
         //显示广告
         if (ChartboostUtil.Instance.HasInterstitialOnDefault())
         {
             ChartboostUtil.Instance.ShowInterstitialOnDefault();
         }
-        else if(GoogleAdsUtil.Instance.HasInterstital())
+        else if (GoogleAdsUtil.Instance.HasInterstital())
         {
             GoogleAdsUtil.Instance.ShowInterstital();
         }
@@ -665,7 +714,7 @@ public class GameManager : MonoBehaviour
     /// <param name="value"></param>
     void AddLife(float value)
     {
-        playerCurrentHP += (value / 100 ) * playerMaxHP;
+        playerCurrentHP += (value / 100) * playerMaxHP;
         UIManager.Instance.UpdatePlayerHUD(playerCurrentHP);
         SoundManager.Instance.PlaySound(SoundManager.SoundType.GetLife);
     }
@@ -683,7 +732,7 @@ public class GameManager : MonoBehaviour
             if (float.TryParse(evt.data.ToString(), out addedVal))
             {
                 this.haveShield = true;
-                shieldValue += (addedVal / 100 ) * playerMaxHP;
+                shieldValue += (addedVal / 100) * playerMaxHP;
                 qurShieldValue = shieldValue / 4;
                 curQurShildValue = qurShieldValue;
                 UIManager.Instance.ShowShield();
@@ -780,12 +829,12 @@ public class GameManager : MonoBehaviour
     {
         if (powerWeapon != null)
         {
-           powerWeapon.WeaponOut(() =>
-            {
-                powerWeapon.gameObject.transform.parent.gameObject.SetActive(false);
-                currentWeapon.WeaponIn();
-                isInEnergyPower = false;
-            });
+            powerWeapon.WeaponOut(() =>
+             {
+                 powerWeapon.gameObject.transform.parent.gameObject.SetActive(false);
+                 currentWeapon.WeaponIn();
+                 isInEnergyPower = false;
+             });
         }
     }
 
@@ -829,7 +878,10 @@ public class GameManager : MonoBehaviour
 
             CheckGameStatu();
 
-            CheckWave();
+            if (gameType == GameType.Endless)
+            {
+                CheckWave();
+            }
 
         }
         //更新连击
@@ -847,7 +899,7 @@ public class GameManager : MonoBehaviour
         if (emenyController.IsWaveCompleted())
         {
             OnWaveCompleted();
-            LeanTween.dispatchEvent((int)Events.WAVECOMPLETED,currentWave);
+            LeanTween.dispatchEvent((int)Events.WAVECOMPLETED, currentWave);
         }
     }
 
@@ -863,21 +915,29 @@ public class GameManager : MonoBehaviour
 
     IEnumerator WaveStartCountDown()
     {
-        int countDown = waveStartCount;
-        UIManager.Instance.ShowWaveCountDown();
-        while (countDown > 0)
+        if (useWaveStartCountDown)
         {
-            UIManager.Instance.UpdateWaveCountDownText(currentWave, countDown);
-            if (countDown <= 3)
+            int countDown = waveStartCount;
+            UIManager.Instance.ShowWaveCountDown();
+            while (countDown > 0)
             {
-                SoundManager.Instance.PlaySound(SoundManager.SoundType.WaveCountDown);
+                UIManager.Instance.UpdateWaveCountDownText(currentWave, countDown);
+                if (countDown <= 3)
+                {
+                    SoundManager.Instance.PlaySound(SoundManager.SoundType.WaveCountDown);
+                }
+                yield return new WaitForSeconds(1f);
+                countDown--;
             }
-            yield return new WaitForSeconds(1f);
-            countDown--;
-        }
-        UIManager.Instance.HideWaveCountDown();
-        ChangeGameStatu(GameStatu.InGame);
+            UIManager.Instance.HideWaveCountDown();
 
+        }
+        else
+        {
+            yield return new WaitForSeconds(2f);
+        }
+        UIManager.Instance.ShowWaveStart(currentWave);
+        ChangeGameStatu(GameStatu.InGame);
     }
 
     void ChangeGameStatu(GameStatu statu)
@@ -899,7 +959,7 @@ public class GameManager : MonoBehaviour
         LeanTween.removeListener((int)Events.ITEMSHIELDHIT, OnGetShield);
         LeanTween.removeListener((int)Events.ENERGYPOWERIN, OnEnterEnergyPower);
         LeanTween.removeListener((int)Events.ENERGYPOWEROUT, OnExitEnergyPower);
-       // Time.timeScale = 1;
+        // Time.timeScale = 1;
     }
 
     #endregion

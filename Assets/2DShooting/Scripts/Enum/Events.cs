@@ -115,4 +115,8 @@ public enum Events
     /// 需要子弹
     /// </summary>
     NEEDBULLET,
+    /// <summary>
+    /// 下一关
+    /// </summary>
+    GAMENEXT,
 }

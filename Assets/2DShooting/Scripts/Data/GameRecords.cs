@@ -9,6 +9,8 @@ public class GameRecords
 
     public int Level { get; private set; }
     public int LevelDiffcutly { get; private set; }
+    public int SubLevel = 1;
+    public GameType gameType = GameType.Endless;
 
     //记录游戏数据
     private int _maxCombos = 0;
@@ -93,10 +95,11 @@ public class GameRecords
     /// </summary>
     /// <param name="level"></param>
     /// <param name="diffcutly"></param>
-    public GameRecords(int level ,int diffcutly)
+    public GameRecords(int level ,int diffcutly,GameType gt = GameType.Endless)
     {
         Level = level;
         LevelDiffcutly = diffcutly;
+        gameType = gt;
     }
 }
 

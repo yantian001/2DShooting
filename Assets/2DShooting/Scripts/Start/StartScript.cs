@@ -18,10 +18,23 @@ public class StartScript : MonoBehaviour {
     /// <summary>
     /// 开始按钮事件
     /// </summary>
-   public void OnStartButtonClicked()
+    void OnStartButtonClicked()
     {
         LeanTween.dispatchEvent((int)Events.MAINMENU,false);
     }
+
+    public void OnStoryButtonClicked()
+    {
+        GameGlobalValue.s_CurrentGameType = GameType.Story;
+        OnStartButtonClicked();
+    }
+
+    public void OnEndlessButtonClicked()
+    {
+        GameGlobalValue.s_CurrentGameType = GameType.Endless;
+        OnStartButtonClicked();
+    }
+
 
     public void OnHighScoreClicked()
     {

@@ -13,5 +13,11 @@ public class LevelMapObject : MonoBehaviour {
     public Texture2D thumb;
     [Tooltip("排行榜ID")]
     public string LeardBoardID = "";
+    /// <summary>
+    /// 总共关卡数
+    /// </summary>
+    public int levelCount = 20;
+
+    
 
 }
