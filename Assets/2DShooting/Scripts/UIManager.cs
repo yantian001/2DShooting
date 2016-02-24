@@ -411,10 +411,42 @@ public class UIManager : MonoBehaviour
                     btnMainMenu.onClick.AddListener(OnMenuClicked);
                 }
 
+                Button btnNext = bgRect.FindChild("BtnNext").GetComponent<Button>();
+                if(btnNext)
+                {
+                    btnNext.onClick.AddListener(OnBtnNextClicked);
+                }
+
+                if(record.gameType == global::GameType.Story)
+                {
+                    if(success)
+                    {
+                        CommonUtils.SetChildText(bgRect, "Title", "Level Success");
+                        btnRestart.gameObject.SetActive(false);
+                        btnNext.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        CommonUtils.SetChildText(bgRect, "Title", "Level Failed");
+                        btnRestart.gameObject.SetActive(true);
+                        btnNext.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    btnRestart.gameObject.SetActive(true);
+                    btnNext.gameObject.SetActive(false);
+                }
             }
 
         }
     }
+
+    void OnBtnNextClicked()
+    {
+        LeanTween.dispatchEvent((int)Events.GAMENEXT);
+    }
+
 
     IEnumerator DigitalDisplay(Text txt, int to, int from = 0, int per = 100)
     {
@@ -642,6 +674,8 @@ public class UIManager : MonoBehaviour
 
     public Text waveCountDownText;
 
+    public Text waveStartText;
+
     public void ShowWaveCountDown()
     {
         if (waveCountDownText != null)
@@ -663,6 +697,15 @@ public class UIManager : MonoBehaviour
         if (waveCountDownText != null)
         {
             waveCountDownText.gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowWaveStart(int wave)
+    {
+        if(waveStartText)
+        {
+            waveStartText.text = string.Format("Wave {0} Start !", wave);
+            waveStartText.gameObject.SetActive(true);
         }
     }
 

@@ -25,6 +25,10 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     public Text playerMoneyText;
     /// <summary>
+    /// 排行版
+    /// </summary>
+    public GameObject ranks;
+    /// <summary>
     /// 排名显示区域
     /// </summary>
     public RectTransform rankZone;
@@ -41,6 +45,18 @@ public class LevelMapManager : MonoBehaviour
     /// </summary>
     [Tooltip("我的排名的显示区域")]
     public Transform myRankInfo;
+    /// <summary>
+    /// 关卡
+    /// </summary>
+    public GameObject levels;
+    /// <summary>
+    /// 关卡区域
+    /// </summary>
+    public RectTransform levelZone;
+    /// <summary>
+    /// 关卡对象模板
+    /// </summary>
+    public GameObject levelItemTemplate;
     /// <summary>
     /// 武器选择区域
     /// </summary>
@@ -74,6 +90,7 @@ public class LevelMapManager : MonoBehaviour
     public Button backButton;
 
     private int selectScene = -1;
+    private int selectLevel = -1;
     private int selectWeaponId = -1;
     private GameDifficulty selectDifficulty = GameDifficulty.Normal;
     /// <summary>
@@ -92,6 +109,20 @@ public class LevelMapManager : MonoBehaviour
     #region MonoBehaviour
     public void Start()
     {
+        //更新显示
+        //1.故事模式显示关卡
+        //2.无尽模式显示排行榜
+        if(GameGlobalValue.s_CurrentGameType == GameType.Endless)
+        {
+            ranks.SetActive(true);
+            levels.SetActive(false);
+        }
+        else if(GameGlobalValue.s_CurrentGameType == GameType.Story)
+        {
+            ranks.SetActive(false);
+            levels.SetActive(true);
+        }
+
         //更新名称显示
         if (playerNameText != null)
         {
@@ -237,6 +268,14 @@ public class LevelMapManager : MonoBehaviour
             GameGlobalValue.s_CurrentScene = selectScene;
             GameGlobalValue.s_CurrentDifficulty = selectDifficulty;
             GameGlobalValue.s_currentWeaponId = Player.CurrentPlayer.EquipedWeaponId;
+            if(GameGlobalValue.s_CurrentGameType == GameType.Story)
+            {
+                if(selectLevel == -1)
+                {
+                    selectLevel = Player.CurrentPlayer.GetSceneCurrentLevel(selectScene);
+                }
+                GameGlobalValue.s_CurrentLevel = selectLevel;
+            }
             AnalysticUtil.TrackEvent("Scene Start", new Dictionary<string, object>() { { "Scene Id", selectScene } });
             GameLogic.Instance.Loading();
         }
@@ -257,8 +296,18 @@ public class LevelMapManager : MonoBehaviour
             {
                 currentMapObject = mapObj;
                 selectScene = mapObj.level;
-                //获得当前的排名
-                UpdateRankDisplay(mapObj);
+                selectLevel = -1;
+                if(GameGlobalValue.s_CurrentGameType == GameType.Endless)
+                {
+                    //获得当前的排名
+                    UpdateRankDisplay(mapObj);
+                }
+                else if (GameGlobalValue.s_CurrentGameType == GameType.Story)
+                {
+                    
+                    UpdateLevelDisplay(mapObj);
+                }
+               
             }
         }
         else
@@ -315,6 +364,58 @@ public class LevelMapManager : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// 更新关卡显示
+    /// </summary>
+    /// <param name="mapObj"></param>
+    void UpdateLevelDisplay(LevelMapObject mapObj)
+    {
+        if (currentMapObject == null)
+            return;
+        if (levelItemTemplate == null)
+            Debug.LogError("Miss Level Item Template!");
+        levelZone.DetachChildren();
+        var gridGroup = levelZone.GetComponent<GridLayoutGroup>();
+        if(gridGroup != null)
+        {
+            int col = Mathf.FloorToInt((levelZone.rect.width - gridGroup.padding.left - gridGroup.padding.right + gridGroup.spacing.x) / (gridGroup.cellSize.x + gridGroup.spacing.x));
+            int row = Mathf.CeilToInt((float)currentMapObject.levelCount / col);
+            //levelZone.rect.Set(levelZone.rect.x,levelZone.rect.y,levelZone.rect.width, row * gridGroup.cellSize.y + gridGroup.padding.top);
+            levelZone.sizeDelta = new Vector2(levelZone.sizeDelta.x, row * gridGroup.cellSize.y + gridGroup.padding.top +(row -1) * gridGroup.spacing.y);
+            for(int i = 1;i < currentMapObject.levelCount + 1;i++)
+            {
+                var levelItem = Instantiate(levelItemTemplate) as GameObject;
+                //levelItem.GetComponent<RectTransform>().SetParent(levelZone);
+                levelItem.transform.SetParent(levelZone);
+                levelItem.transform.localScale = new Vector3(1f, 1f, 1f);
+                CommonUtils.SetChildText(levelItem.GetComponent<RectTransform>(), "Text", i.ToString());
+
+                var button = levelItem.GetComponent<Button>();
+                if(button)
+                {
+                    bool isUnlocked = Player.CurrentPlayer.IsLevelUnlocked(currentMapObject.level, i);
+                    button.interactable = isUnlocked;
+                    if(isUnlocked)
+                    {
+                        button.onClick.AddListener(()=>{ OnLevelItemClicked(button); });
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 关卡号点击事件
+    /// </summary>
+    void OnLevelItemClicked(Button btn)
+    {
+        var text = btn.GetComponentInChildren<Text>();
+        if(text)
+        {
+            selectLevel = ConvertUtil.ToInt32(text.text, -1);
+        }
+       // selectLevel = level;
+        OnPlayButtonClicked();
+    }
     /// <summary>
     /// 更新排行版显示
     /// </summary>

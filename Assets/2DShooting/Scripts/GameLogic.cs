@@ -43,6 +43,7 @@ public class GameLogic : MonoBehaviour
             LeanTween.addListener((int)Events.GAMERESTART, OnGameRestart);
             LeanTween.addListener((int)Events.MAINMENU, OnGameMainMenu);
             LeanTween.addListener((int)Events.BACKTOSTART, BackToStart);
+            LeanTween.addListener((int)Events.GAMENEXT, OnGameNext);
         }
         else
         {
@@ -54,6 +55,18 @@ public class GameLogic : MonoBehaviour
     {
         Application.LoadLevel(Application.loadedLevel);
     }
+
+    void OnGameNext(LTEvent evt)
+    {
+        if (GameGlobalValue.IsLastLevel(GameGlobalValue.s_CurrentLevel))
+            OnGameMainMenu(evt);
+        else
+        {
+            GameGlobalValue.s_CurrentLevel += 1;
+            Application.LoadLevel(Application.loadedLevel);
+        }
+    }
+    
 
     void OnGameMainMenu(LTEvent evt)
     {
@@ -77,6 +90,9 @@ public class GameLogic : MonoBehaviour
     {
         // Debug.Log("OnDisable");
         LeanTween.removeListener((int)Events.GAMERESTART, OnGameRestart);
+        //LeanTween.removeListener((int)Events.MAINMENU, OnGameMainMenu);
+        //LeanTween.removeListener((int)Events.BACKTOSTART, BackToStart);
+        //LeanTween.removeListener((int)Events.GAMENEXT, OnGameNext);
     }
 
     public void Loading(bool showLoading = true)

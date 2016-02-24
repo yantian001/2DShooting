@@ -13,7 +13,7 @@ public class GameGlobalValue
     public static float hit6Score = .6f;
     public static float headShotScore = 1f;
 
-    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkIkfn43vwGEAIQAQ" } , { 2, "CgkIkfn43vwGEAIQAg" }, { 3, "CgkIkfn43vwGEAIQAw" } };
+    public static IDictionary<int, string> LevelBoardMap = new Dictionary<int, string>() { { 1, "CgkIkfn43vwGEAIQAQ" }, { 2, "CgkIkfn43vwGEAIQAg" }, { 3, "CgkIkfn43vwGEAIQAw" } };
 
     public static int GetLevelIdByBoardId(string id)
     {
@@ -33,7 +33,7 @@ public class GameGlobalValue
     public static string GetBoardIdByLevel(int level)
     {
         string ret = "";
-        if(LevelBoardMap.ContainsKey(level))
+        if (LevelBoardMap.ContainsKey(level))
         {
             ret = LevelBoardMap[level];
         }
@@ -82,9 +82,26 @@ public class GameGlobalValue
     /// </summary>
     public static int s_CurrentScene = 1;
     /// <summary>
+    /// 当前关卡
+    /// </summary>
+    public static int s_CurrentLevel = 1;
+    /// <summary>
+    /// 没个场景的最大关数
+    /// </summary>
+    public static int maxLevelsPerScene = 20;
+
+    public static bool IsLastLevel(int level)
+    {
+        if (level + 1 > maxLevelsPerScene)
+            return true;
+        return false;
+    }
+    /// <summary>
     /// 当前游戏难度
     /// </summary>
     public static GameDifficulty s_CurrentDifficulty = GameDifficulty.Normal;
+
+    public static GameType s_CurrentGameType = GameType.Story;
     /// <summary>
     /// 当前武器ID
     /// </summary>
@@ -99,7 +116,7 @@ public class GameGlobalValue
     /// <summary>
     /// 每秒最大攻击次数
     /// </summary>
-    public static float s_MaxFireRatePerSeconds =  20;
+    public static float s_MaxFireRatePerSeconds = 20;
     /// <summary>
     /// 最大晃动距离
     /// </summary>
@@ -124,9 +141,25 @@ public class GameGlobalValue
     /// </summary>
     public static float s_moneyRate = 0.01f;
 
-    public static int GetMoneyFromRecord(GameRecords record)
+    public static int s_MoneyPerLevel = 500;
+    public static int GetMoneyFromRecord(GameRecords record, bool success = false)
     {
-        return Mathf.CeilToInt(s_moneyRate * record.Scores);
+        int money = Mathf.CeilToInt(s_moneyRate * record.Scores);
+        if (record.gameType == GameType.Story)
+        {
+            if (success)
+            {
+                if (Player.CurrentPlayer.GetSceneCurrentLevel(record.Level) > record.SubLevel)
+                {
+                    money += s_MoneyPerLevel / 10;
+                }
+                else
+                {
+                    money += s_MoneyPerLevel;
+                }
+            }
+        }
+        return money;
     }
 
     #endregion
